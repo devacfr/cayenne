@@ -19,26 +19,28 @@
 package org.apache.cayenne.di.spi;
 
 import org.apache.cayenne.di.DIRuntimeException;
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Provider;
 
 /**
  * A provider that provides scoping for other providers.
- * 
+ *
  * @since 3.1
  */
 public class DefaultScopeProvider<T> implements Provider<T> {
 
-    private Provider<T> delegate;
-    private DefaultScope scope;
+    private final Key<T> key;
+    private final javax.inject.Provider<T> delegate;
+    private final DefaultScope scope;
 
-    // presumably "volatile" works in Java 5 and newer to prevent double-checked locking
+    // presumably "volatile" works in Java 5 and newer to prevent double-checked
+    // locking
     private volatile T instance;
 
-    public DefaultScopeProvider(DefaultScope scope, Provider<T> delegate) {
+    public DefaultScopeProvider(final Key<T> key, final DefaultScope scope, final javax.inject.Provider<T> delegate) {
+        this.key = key;
         this.scope = scope;
         this.delegate = delegate;
-
-        scope.addScopeEventListener(this);
     }
 
     @Override
@@ -50,12 +52,9 @@ public class DefaultScopeProvider<T> implements Provider<T> {
                     instance = delegate.get();
 
                     if (instance == null) {
-                        throw new DIRuntimeException(
-                                "Underlying provider (%s) returned NULL instance",
-                                delegate.getClass().getName());
+                        throw new DIRuntimeException("Underlying provider (%s) returned NULL instance", delegate
+                                .getClass().getName());
                     }
-
-                    scope.addScopeEventListener(instance);
                 }
             }
         }
@@ -63,13 +62,59 @@ public class DefaultScopeProvider<T> implements Provider<T> {
         return instance;
     }
 
-    @AfterScopeEnd
-    public void afterScopeEnd() throws Exception {
+    T getInstance() {
+        return instance;
+    }
+
+    /**
+     * @return the key
+     */
+    public Key<T> getKey() {
+        return key;
+    }
+
+    /**
+     * Calls when associated scope {@link DefaultScope#reset() reset}. The
+     * method is typically used to release resources that it has been holding.
+     *
+     * @param injector
+     *            the associated injector.
+     */
+    void beforeEndScope(DefaultInjector injector) {
+        if (instance == null)
+            return;
+        Binding<?> binding = injector.getBinding(getKey());
+        binding.doPreDestroy(instance);
+    }
+
+    /**
+     * Calls when associated scope {@link DefaultScope#reset() reset}. The
+     * method is typically used to release scope resources that it has been
+     * holding.
+     *
+     * @param injector
+     *            the associated injector.
+     */
+    void afterEndScope(DefaultInjector injector) {
+        if (instance == null)
+            return;
+        Binding<?> binding = injector.getBinding(getKey());
+        binding.doPostDestroy(instance);
+        clear();
+    }
+
+    /**
+     * Allows detach the associated instance to this provider (internal use).
+     * <p>
+     * Note: used after the reset of associated scope.
+     * 
+     * @see #afterEndScope(DefaultInjector)
+     */
+    void clear() {
         Object localInstance = instance;
 
         if (localInstance != null) {
             instance = null;
-            scope.removeScopeEventListener(localInstance);
         }
     }
 }

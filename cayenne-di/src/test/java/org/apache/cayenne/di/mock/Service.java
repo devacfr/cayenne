@@ -16,34 +16,16 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.di;
+package org.apache.cayenne.di.mock;
 
-import junit.framework.TestCase;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-import org.apache.cayenne.di.BeforeScopeEnd;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.di.spi.DefaultScope;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
 
-public class DefaultUnitTestLifecycleManager implements UnitTestLifecycleManager {
+import javax.inject.Scope;
 
-    @Inject
-    protected Injector injector;
-
-    protected DefaultScope scope;
-
-    public DefaultUnitTestLifecycleManager(DefaultScope scope) {
-        this.scope = scope;
-    }
-
-    @Override
-    public <T extends TestCase> void setUp(T testCase) {
-        injector.injectMembers(testCase);
-    }
-
-    @Override
-    @BeforeScopeEnd
-    public <T extends TestCase> void tearDown(T testCase) {
-        scope.shutdown();
-    }
-}
+@Scope
+@Documented
+@Retention(RUNTIME)
+public @interface Service {}

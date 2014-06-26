@@ -18,15 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
+import java.lang.annotation.Annotation;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.BindingBuilder;
+import org.apache.cayenne.di.ConstantBindingBuilder;
 import org.apache.cayenne.di.DecoratorBuilder;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.ListBuilder;
 import org.apache.cayenne.di.MapBuilder;
+import org.apache.cayenne.di.Scope;
 
 /**
  * @since 3.1
@@ -37,6 +40,13 @@ class DefaultBinder implements Binder {
 
     DefaultBinder(DefaultInjector injector) {
         this.injector = injector;
+    }
+
+
+    @Override
+    public void bindScope(Class<? extends Annotation> scopeAnnotation, Scope scope) {
+        this.injector.putScope(scopeAnnotation, scope);
+
     }
 
     @Override
@@ -64,7 +74,19 @@ class DefaultBinder implements Binder {
                 (Class<Map<String, ?>>) mapClass,
                 bindingName), injector);
     }
-    
+
+    @Override
+    public <T> ConstantBindingBuilder<T> bindConstant(Class<T> type, String name) {
+        return new DefaultConstantBindingBuilder<T>(Key.get(type, name), injector);
+    }
+
+
+    @Override
+    public <T> ConstantBindingBuilder<T> bindConstant(Key<T> key) {
+        return new DefaultConstantBindingBuilder<T>(key, injector);
+    }
+
+
     @Override
     public <T> DecoratorBuilder<T> decorate(Class<T> interfaceType) {
         return new DefaultDecoratorBuilder<T>(Key.get(interfaceType), injector);

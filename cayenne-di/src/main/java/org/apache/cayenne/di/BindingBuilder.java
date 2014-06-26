@@ -18,12 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.di;
 
-import org.apache.cayenne.di.DIRuntimeException;
+import java.lang.annotation.Annotation;
+
+
 
 
 /**
  * A binding builder that helps with fluent binding creation.
- * 
+ *
  * @param <T> An interface type of the service being bound.
  * @since 3.1
  */
@@ -33,11 +35,18 @@ public interface BindingBuilder<T> {
 
     BindingBuilder<T> toInstance(T instance) throws DIRuntimeException;
 
-    BindingBuilder<T> toProvider(Class<? extends Provider<? extends T>> providerType)
+
+    BindingBuilder<T> toProvider(Class<? extends javax.inject.Provider<? extends T>> providerType)
             throws DIRuntimeException;
+
 
     BindingBuilder<T> toProviderInstance(Provider<? extends T> provider)
             throws DIRuntimeException;
+
+    BindingBuilder<T> toProviderInstance(javax.inject.Provider<? extends T> provider)
+            throws DIRuntimeException;
+
+    void in(Class<? extends Annotation> scopeAnnotation);
 
     /**
      * Sets the scope of a bound instance. This method is used to change the default scope

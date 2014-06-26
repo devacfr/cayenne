@@ -18,6 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.di;
 
+import java.lang.annotation.Annotation;
+
+
+
 /**
  * An object passed to a {@link Module} by the DI container during initialization, that
  * provides the API for the module to bind its services to the container. Note that the
@@ -28,6 +32,8 @@ package org.apache.cayenne.di;
  * @since 3.1
  */
 public interface Binder {
+
+    void bindScope(Class<? extends Annotation> scopeAnnotation, Scope scope);
 
     /**
      * Starts an unnamed binding of a specific interface. Binding should continue using
@@ -58,7 +64,13 @@ public interface Binder {
      * DI capabilities.
      */
     <T> ListBuilder<T> bindList(String bindingName);
-    
+
+
+    <T> ConstantBindingBuilder<T> bindConstant(Class<T> type, String name);
+
+    <T> ConstantBindingBuilder<T> bindConstant(Key<T> key);
+
+
     /**
      * @since 3.2
      */

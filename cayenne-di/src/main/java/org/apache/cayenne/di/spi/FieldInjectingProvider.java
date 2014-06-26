@@ -18,12 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
 import org.apache.cayenne.di.DIRuntimeException;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.di.spi.LifecycleProcessor.LifecycleMetadata;
 
 /**
  * @since 3.1
@@ -31,9 +32,9 @@ import org.apache.cayenne.di.Provider;
 class FieldInjectingProvider<T> implements Provider<T> {
 
     private DefaultInjector injector;
-    private Provider<T> delegate;
+    private javax.inject.Provider<T> delegate;
 
-    FieldInjectingProvider(Provider<T> delegate, DefaultInjector injector) {
+    FieldInjectingProvider(javax.inject.Provider<T> delegate, DefaultInjector injector) {
         this.delegate = delegate;
         this.injector = injector;
     }
@@ -41,7 +42,12 @@ class FieldInjectingProvider<T> implements Provider<T> {
     @Override
     public T get() throws DIRuntimeException {
         T object = delegate.get();
-        injectMembers(object, object.getClass());
+        Class<? extends T> type = (Class<? extends T>) object.getClass();
+        injectMembers(object, type);
+        // perform initialization method for all binding instance (no only for
+        // singleton)
+        LifecycleMetadata lifecycleMetadata = injector.findLifecycleMetadata(type);
+        lifecycleMetadata.invokeInitMethods(object);
         return object;
     }
 
@@ -53,10 +59,9 @@ class FieldInjectingProvider<T> implements Provider<T> {
         }
 
         for (Field field : type.getDeclaredFields()) {
-
-            Inject inject = field.getAnnotation(Inject.class);
-            if (inject != null) {
-                injectMember(object, field, inject.value());
+            Annotation annotation = DIUtil.getInjectAnnotation(field);
+            if (annotation != null) {
+                injectMember(object, field, DIUtil.determineBindingName(field));
             }
         }
 
@@ -76,7 +81,7 @@ class FieldInjectingProvider<T> implements Provider<T> {
             throw new DIRuntimeException(message, e);
         }
     }
-    
+
     /**
      * @since 3.2
      */
@@ -85,7 +90,7 @@ class FieldInjectingProvider<T> implements Provider<T> {
         Class<?> fieldType = field.getType();
         InjectionStack stack = injector.getInjectionStack();
 
-        if (Provider.class.equals(fieldType)) {
+        if (javax.inject.Provider.class.isAssignableFrom(fieldType)) {
 
             Class<?> objectClass = DIUtil.parameterClass(field.getGenericType());
 
@@ -95,7 +100,8 @@ class FieldInjectingProvider<T> implements Provider<T> {
                         field.getName(), fieldType.getName());
             }
 
-            return injector.getProvider(Key.get(objectClass, bindingName));
+            javax.inject.Provider<?> provider = injector.getProvider(Key.get(objectClass, bindingName));
+            return provider;
         } else {
 
             Key<?> key = Key.get(fieldType, bindingName);

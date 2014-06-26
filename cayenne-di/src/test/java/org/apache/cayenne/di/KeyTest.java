@@ -18,10 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.di;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.di.testing.TestCase;
+import org.junit.Test;
+
+
 
 public class KeyTest extends TestCase {
 
+    @Test
     public void testEquals() {
         Key<String> key1 = Key.get(String.class);
         Key<String> key2 = Key.get(String.class);
@@ -52,6 +56,7 @@ public class KeyTest extends TestCase {
         assertFalse(key7.equals(key4));
     }
 
+    @Test
     public void testHashCode() {
         Key<String> key1 = Key.get(String.class);
         Key<String> key2 = Key.get(String.class);
@@ -75,10 +80,12 @@ public class KeyTest extends TestCase {
         assertFalse(key7.hashCode() == key4.hashCode());
     }
 
+    @Test
     public void testToString() {
         assertEquals("<BindingKey: java.lang.String>", Key.get(String.class).toString());
         assertEquals("<BindingKey: java.lang.String, 'xyz'>", Key
                 .get(String.class, "xyz")
                 .toString());
     }
+    
 }

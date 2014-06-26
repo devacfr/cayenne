@@ -18,140 +18,90 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map.Entry;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ConcurrentMap;
 
 import org.apache.cayenne.di.BeforeScopeEnd;
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.di.Scope;
 
 /**
  * An implementation of a DI scopes with support scope events.
- * 
+ *
  * @since 3.1
  */
 public class DefaultScope implements Scope {
 
-    protected Collection<Class<? extends Annotation>> eventTypes;
-    protected ConcurrentMap<String, Collection<ScopeEventBinding>> listeners;
+    private Map<Key<?>, DefaultScopeProvider<?>> providers = new ConcurrentHashMap<Key<?>, DefaultScopeProvider<?>>();
 
-    private static final String SPECIAL_EVENT = AfterScopeEnd.class.getName();
+    /**
+     * not null for singleton scope
+     */
+    private final DefaultInjector injector;
 
-    public DefaultScope(Class<? extends Annotation>... customEventTypes) {
-        this.listeners = new ConcurrentHashMap<String, Collection<ScopeEventBinding>>();
-        this.eventTypes = new HashSet<Class<? extends Annotation>>();
+    /**
+     *
+     */
+    public DefaultScope(final DefaultInjector injector) {
+        this.injector = injector;
+    }
 
-        // initialize the event listener data structures in constructor to avoid
-        // synchronization concerns on everything but per-event lists.
+    /**
+     *
+     */
+    public DefaultScope() {
+        this(null);
+    }
 
-        // standard event types
-        eventTypes.add(BeforeScopeEnd.class);
-        eventTypes.add(AfterScopeEnd.class);
-
-        // custom event types
-        if (customEventTypes != null) {
-            for (Class<? extends Annotation> type : customEventTypes) {
-                eventTypes.add(type);
+    /**
+     *
+     */
+    public void reset() {
+        if (injector != null) {
+            for (DefaultScopeProvider<?> provider : this.providers.values()) {
+                provider.beforeEndScope(injector);
             }
-        }
-
-        for (Class<? extends Annotation> type : eventTypes) {
-            listeners.put(type.getName(), new ConcurrentLinkedQueue<ScopeEventBinding>());
+            for (DefaultScopeProvider<?> provider : this.providers.values()) {
+                provider.afterEndScope(injector);
+            }
         }
     }
 
     /**
-     * Shuts down this scope, posting {@link BeforeScopeEnd} and {@link AfterScopeEnd}
-     * events.
+     * Shuts down this scope, posting {@link BeforeScopeEnd} and
+     * {@link AfterScopeEnd} events.
      */
     public void shutdown() {
-        postScopeEvent(BeforeScopeEnd.class);
-
-        // this will notify providers that they should reset their state and unregister
-        // object event listeners that just went out of scope
-        postScopeEvent(AfterScopeEnd.class);
+        this.reset();
+        this.providers.clear();
+        this.providers = null;
     }
 
     /**
-     * Registers annotated methods of an arbitrary object for this scope lifecycle events.
+     * Removes the {@link javax.inject.Provider scoped provider} of this scope
+     * instance.
+     *
+     * @param scoped
+     *            the provider to remove of this scope (can be <tt>null</tt>).
      */
-    public void addScopeEventListener(Object object) {
-
-        // TODO: cache metadata for non-singletons scopes for performance
-
-        // 'getMethods' grabs public method from the class and its superclasses...
-        for (Method method : object.getClass().getMethods()) {
-
-            for (Class<? extends Annotation> annotationType : eventTypes) {
-
-                if (method.isAnnotationPresent(annotationType)) {
-                    String typeName = annotationType.getName();
-
-                    Collection<ScopeEventBinding> eventListeners = listeners
-                            .get(typeName);
-                    eventListeners.add(new ScopeEventBinding(object, method));
-                }
-            }
-        }
-    }
-
-    public void removeScopeEventListener(Object object) {
-
-        // TODO: 2 level-deep full scan will not be very efficient for short scopes. Right
-        // now this would only affect the unit test scope, but if we start creating the
-        // likes of HTTP request scope, we may need to create a faster listener
-        // removal algorithm.
-
-        for (Entry<String, Collection<ScopeEventBinding>> entry : listeners.entrySet()) {
-
-            if (SPECIAL_EVENT.equals(entry.getKey())) {
-                // no scanning and removal of Scope providers ...
-                // for faster scan skip those
-                continue;
-            }
-
-            Iterator<ScopeEventBinding> it = entry.getValue().iterator();
-            while (it.hasNext()) {
-                ScopeEventBinding binding = it.next();
-                if (binding.getObject() == object) {
-                    it.remove();
-                }
-            }
-        }
-    }
-
-    /**
-     * Posts a scope event to all registered listeners. There's no predetermined order of
-     * event dispatching. An exception thrown by any of the listeners stops further event
-     * processing and is rethrown.
-     */
-    public void postScopeEvent(
-            Class<? extends Annotation> type,
-            Object... eventParameters) {
-
-        Collection<ScopeEventBinding> eventListeners = listeners.get(type.getName());
-
-        if (eventListeners != null) {
-            Iterator<ScopeEventBinding> it = eventListeners.iterator();
-            while (it.hasNext()) {
-                ScopeEventBinding listener = it.next();
-                if (!listener.onScopeEvent(eventParameters)) {
-                    // remove listeners that were garbage collected
-                    it.remove();
-                }
-            }
+    public <T> void unScope(javax.inject.Provider<T> scoped) {
+        if (scoped == null)
+            return;
+        Key<T> key = ((DefaultScopeProvider<T>) scoped).getKey();
+        if (key != null) {
+            this.providers.remove(key);
         }
     }
 
     @Override
-    public <T> Provider<T> scope(Provider<T> unscoped) {
-        return new DefaultScopeProvider<T>(this, unscoped);
+    public <T> Provider<T> scope(Key<T> key, javax.inject.Provider<T> unscoped) {
+        if (this.providers.containsKey(key)) {
+            return (Provider<T>) this.providers.get(key);
+        }
+        DefaultScopeProvider<T> provider = new DefaultScopeProvider<T>(key, this, unscoped);
+        this.providers.put(key, provider);
+        return provider;
     }
+
 }

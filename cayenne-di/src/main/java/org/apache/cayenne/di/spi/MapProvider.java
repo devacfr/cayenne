@@ -22,8 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.inject.Provider;
+
 import org.apache.cayenne.di.DIRuntimeException;
-import org.apache.cayenne.di.Provider;
 
 /**
  * @since 3.1

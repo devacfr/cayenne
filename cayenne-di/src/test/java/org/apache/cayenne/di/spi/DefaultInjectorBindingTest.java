@@ -18,7 +18,7 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import junit.framework.TestCase;
+
 
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Key;
@@ -28,9 +28,13 @@ import org.apache.cayenne.di.mock.MockImplementation1Alt;
 import org.apache.cayenne.di.mock.MockImplementation1Alt2;
 import org.apache.cayenne.di.mock.MockInterface1;
 import org.apache.cayenne.di.mock.MockInterface1Provider;
+import org.apache.cayenne.di.mock.Mock_JSR330Implementation1;
+import org.apache.cayenne.di.testing.TestCase;
+import org.junit.Test;
 
 public class DefaultInjectorBindingTest extends TestCase {
 
+    @Test
     public void testClassBinding() {
 
         Module module = new Module() {
@@ -47,6 +51,7 @@ public class DefaultInjectorBindingTest extends TestCase {
         assertEquals("MyName", service.getName());
     }
 
+    @Test
     public void testClassNamedBinding() {
 
         Module module = new Module() {
@@ -78,7 +83,40 @@ public class DefaultInjectorBindingTest extends TestCase {
         assertNotNull(xyzObject);
         assertEquals("alt2", xyzObject.getName());
     }
+    
+    
+    @Test
+    public void testAnnotateClassNamedBinding() {
 
+        Module module = new Module() {
+
+            public void configure(Binder binder) {
+                binder.bind(MockInterface1.class).to(Mock_JSR330Implementation1.class);
+                binder.bind(Key.get(MockInterface1.class, "abc")).to(
+                    Mock_JSR330Implementation1.class);
+                binder.bind(Key.get(MockInterface1.class, "xyz")).to(
+                    Mock_JSR330Implementation1.class);
+            }
+        };
+
+        DefaultInjector injector = new DefaultInjector(module);
+
+        MockInterface1 defaultObject = injector.getInstance(Key.get(MockInterface1.class, "first"));
+        assertNotNull(defaultObject);
+        assertEquals("MyName", defaultObject.getName());
+
+        MockInterface1 abcObject = injector.getInstance(Key.get(
+                MockInterface1.class,
+                "abc"));
+        assertNotNull(abcObject);
+
+        MockInterface1 xyzObject = injector.getInstance(Key.get(
+                MockInterface1.class,
+                "xyz"));
+        assertNotNull(xyzObject);
+    }
+
+    @Test
     public void testProviderBinding() {
         Module module = new Module() {
 
@@ -96,6 +134,7 @@ public class DefaultInjectorBindingTest extends TestCase {
         assertEquals("MyName", service.getName());
     }
 
+    @Test
     public void testInstanceBinding() {
 
         final MockImplementation1 instance = new MockImplementation1();
@@ -114,6 +153,7 @@ public class DefaultInjectorBindingTest extends TestCase {
         assertSame(instance, service);
     }
 
+    @Test
     public void testClassReBinding() {
 
         Module module = new Module() {

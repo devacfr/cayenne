@@ -16,34 +16,35 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.unit.di;
+package org.apache.cayenne.di.mock;
 
-import junit.framework.TestCase;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.apache.cayenne.di.BeforeScopeEnd;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.di.spi.DefaultScope;
 
-public class DefaultUnitTestLifecycleManager implements UnitTestLifecycleManager {
+public class Mock_JSR330_Implementation1_JSR250_ScopeEvent extends
+        MockImplementation1_EventAnnotationsBase implements MockInterface1 {
 
-    @Inject
-    protected Injector injector;
 
-    protected DefaultScope scope;
-
-    public DefaultUnitTestLifecycleManager(DefaultScope scope) {
-        this.scope = scope;
-    }
 
     @Override
-    public <T extends TestCase> void setUp(T testCase) {
-        injector.injectMembers(testCase);
+	public String getName() {
+        return "XuI";
     }
 
-    @Override
+    @PostConstruct
+    public void initialize() {
+    	initialize1 = true;
+    }
+
+    @PreDestroy
+    public void onShutdown1() {
+        shutdown1 = true;
+    }
+
     @BeforeScopeEnd
-    public <T extends TestCase> void tearDown(T testCase) {
-        scope.shutdown();
+    public void onShutdown2() {
+        shutdown2 = true;
     }
 }

@@ -23,11 +23,15 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Type;
 
 import org.apache.cayenne.di.DIRuntimeException;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Provider;
 
 /**
+ * <P>
+ * Note: pick the first constructor with all injection-annotated parameters, or
+ * the default constructor; constructor with the longest parameter list is
+ * preferred if multiple matches are found
+ * 
  * @since 3.1
  */
 class ConstructorInjectingProvider<T> implements Provider<T> {
@@ -36,14 +40,12 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
     private DefaultInjector injector;
     private String[] bindingNames;
 
-    ConstructorInjectingProvider(Class<? extends T> implementation,
-            DefaultInjector injector) {
+    ConstructorInjectingProvider(Class<? extends T> implementation, DefaultInjector injector) {
 
         initConstructor(implementation);
 
         if (constructor == null) {
-            throw new DIRuntimeException(
-                    "Can't find approprate constructor for implementation class '%s'",
+            throw new DIRuntimeException("Can't find approprate constructor for implementation class '%s'",
                     implementation.getName());
         }
 
@@ -57,8 +59,10 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
         Constructor<?> lastMatch = null;
         int lastSize = -1;
 
-        // pick the first constructor with all injection-annotated parameters, or the
-        // default constructor; constructor with the longest parameter list is preferred
+        // pick the first constructor with all injection-annotated parameters,
+        // or the
+        // default constructor; constructor with the longest parameter list is
+        // preferred
         // if multiple matches are found
         for (Constructor<?> constructor : constructors) {
 
@@ -78,7 +82,7 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
 
                 boolean parameterInjectable = false;
                 for (Annotation annotation : annotations) {
-                    if (annotation.annotationType().equals(Inject.class)) {
+                    if (DIUtil.isInjectedAnnotation(annotation)) {
                         parameterInjectable = true;
                         break;
                     }
@@ -97,28 +101,19 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
         }
 
         if (lastMatch == null) {
-            throw new DIRuntimeException(
-                    "No applicable constructor is found for constructor injection in class '%s'",
+            throw new DIRuntimeException("No applicable constructor is found for constructor injection in class '%s'",
                     implementation.getName());
         }
 
         // the cast is lame, but Class.getDeclaredConstructors() is not using
-        // generics in Java 5 and using <?> in Java 6, creating compilation problems.
+        // generics in Java 5 and using <?> in Java 6, creating compilation
+        // problems.
         this.constructor = (Constructor<? extends T>) lastMatch;
 
         Annotation[][] annotations = lastMatch.getParameterAnnotations();
         this.bindingNames = new String[annotations.length];
         for (int i = 0; i < annotations.length; i++) {
-
-            Annotation[] parameterAnnotations = annotations[i];
-            for (int j = 0; j < parameterAnnotations.length; j++) {
-                Annotation annotation = parameterAnnotations[j];
-                if (annotation.annotationType().equals(Inject.class)) {
-                    Inject inject = (Inject) annotation;
-                    bindingNames[i] = inject.value();
-                    break;
-                }
-            }
+            bindingNames[i] = DIUtil.determineBindingName(annotations[i]);
         }
     }
 
@@ -136,15 +131,11 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
 
         try {
             return constructor.newInstance(args);
-        }
-        catch (Exception e) {
-            throw new DIRuntimeException(
-                    "Error instantiating class '%s'",
-                    e,
-                    constructor.getDeclaringClass().getName());
+        } catch (Exception e) {
+            throw new DIRuntimeException("Error instantiating class '%s'", e, constructor.getDeclaringClass().getName());
         }
     }
-    
+
     protected Object value(Class<?> parameter, Type genericType, String bindingName, InjectionStack stack) {
 
         if (Provider.class.equals(parameter)) {

@@ -18,7 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import org.apache.cayenne.di.Provider;
+
+import javax.inject.Provider;
+
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Scope;
 
 /**
@@ -29,7 +32,8 @@ final class NoScope implements Scope {
     static final Scope INSTANCE = new NoScope();
 
     @Override
-    public <T> Provider<T> scope(Provider<T> unscoped) {
+    public <T> Provider<T> scope(Key<T> key, Provider<T> unscoped) {
         return unscoped;
     }
+
 }

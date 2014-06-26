@@ -24,7 +24,6 @@ import java.util.List;
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.ListBuilder;
-import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.di.Scope;
 
 /**
@@ -54,8 +53,8 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
     @Override
     public ListBuilder<T> add(T value) throws DIRuntimeException {
 
-        Provider<T> provider0 = new InstanceProvider<T>(value);
-        Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
+        javax.inject.Provider<T> provider0 = new InstanceProvider<T>(value);
+        javax.inject.Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
 
         getListProvider().add(provider1);
         return this;
@@ -67,8 +66,8 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
         ListProvider listProvider = getListProvider();
 
         for (T value : values) {
-            Provider<T> provider0 = new InstanceProvider<T>(value);
-            Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
+            javax.inject.Provider<T> provider0 = new InstanceProvider<T>(value);
+            javax.inject.Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
 
             listProvider.add(provider1);
         }
@@ -83,7 +82,7 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
         Binding<List<?>> binding = injector.getBinding(bindingKey);
         if (binding == null) {
             provider = new ListProvider();
-            injector.putBinding(bindingKey, provider);
+            injector.putBinding(bindingKey, provider, List.class);
         }
         else {
             provider = (ListProvider) binding.getOriginal();
@@ -94,6 +93,6 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
 
     @Override
     public void in(Scope scope) {
-        injector.changeBindingScope(bindingKey, scope);
+        injector.applyBindingScope(bindingKey, scope);
     }
 }
