@@ -22,11 +22,11 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.testing.TestCase;
 import org.junit.Test;
-
 
 public class DefaultConstantBindingTest extends TestCase {
 
@@ -50,8 +50,20 @@ public class DefaultConstantBindingTest extends TestCase {
         assertEquals("aCayenneInjectedValue", obj.cayenneValue);
     }
 
+    @Test(expected = DIRuntimeException.class)
+    public void wrongInjectedConstantType() {
+        Module module = new Module() {
 
+            @Override
+            public void configure(Binder binder) {
+                binder.bind(ClassA.class).to(ClassA.class);
+                binder.bindConstant(Key.get(String.class, "jsr330.value")).to(20);
+            }
+        };
 
+        DefaultInjector injector = new DefaultInjector(module);
+        injector.getInstance(ClassA.class);
+    }
 
     public static class ClassA {
 
@@ -62,6 +74,5 @@ public class DefaultConstantBindingTest extends TestCase {
         @org.apache.cayenne.di.Inject("cayenne.value")
         public String cayenneValue;
     }
-
 
 }

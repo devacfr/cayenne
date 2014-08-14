@@ -228,6 +228,10 @@ public class DefaultInjector implements Injector {
         for (Binding<?> binding : this.bindings.values()) {
             if (!binding.hasScope()) {
                 binding.applyScope(singletonScope);
+                // TODO [devacfr] Here add eager singleton -> difference
+                // between(eager/lazy).
+                // Current implementation is lazy but other DI and JSR-330
+                // specification is inverse.
             }
         }
     }
