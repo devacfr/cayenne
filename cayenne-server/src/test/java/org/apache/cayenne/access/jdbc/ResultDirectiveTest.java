@@ -26,11 +26,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.sql.DataSource;
+
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.conn.support.DataSources;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.CapsStrategy;
@@ -153,13 +156,13 @@ public class ResultDirectiveTest extends ServerCase {
         
         SQLTemplateAction action = new SQLTemplateAction(template, node);
 
-        Connection c = runtime
+        DataSource dataSource = runtime
                 .getDataDomain()
                 .getDataNodes()
                 .iterator()
                 .next()
-                .getDataSource()
-                .getConnection();
+                .getDataSource();
+        Connection c = DataSources.getConnection( dataSource);
         try {
             MockOperationObserver observer = new MockOperationObserver();
             action.performAction(c, observer);
@@ -170,7 +173,7 @@ public class ResultDirectiveTest extends ServerCase {
             assertEquals(1, batches[0]);
         }
         finally {
-            c.close();
+            DataSources.releaseConnection(c, dataSource);
         }
 
         MockOperationObserver observer = new MockOperationObserver();

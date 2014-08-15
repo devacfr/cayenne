@@ -40,7 +40,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.reflect.ClassDescriptor;
-import org.apache.cayenne.tx.BaseTransaction;
+import org.apache.cayenne.tx.TransactionStatus;
 
 /**
  * A stateful commit handler used by DataContext to perform commit operation.
@@ -118,7 +118,7 @@ class DataDomainFlushAction {
         flattenedBucket.addFlattenedDelete(flattenedEntity, flattenedDeleteInfo);
     }
 
-    GraphDiff flush(DataContext context, GraphDiff changes) {
+    GraphDiff flush(DataContext context, GraphDiff changes, TransactionStatus transactionStatus) {
 
         if (changes == null) {
             return new CompoundDiff();
@@ -152,7 +152,7 @@ class DataDomainFlushAction {
         this.resultDeletedIds = new ArrayList<ObjectId>();
         this.resultModifiedSnapshots = new HashMap<ObjectId, DataRow>();
 
-        runQueries();
+        runQueries(transactionStatus);
 
         postprocess(context);
         return resultDiff;
@@ -193,7 +193,7 @@ class DataDomainFlushAction {
         deleteBucket.appendQueries(queries);
     }
 
-    private void runQueries() {
+    private void runQueries(TransactionStatus transactionStatus) {
         DataDomainFlushObserver observer = new DataDomainFlushObserver(
                 domain.getJdbcEventLogger());
 
@@ -234,7 +234,7 @@ class DataDomainFlushAction {
             lastNode.performQueries(queries.subList(rangeStart, len), observer);
         }
         catch (Throwable th) {
-            BaseTransaction.getThreadTransaction().setRollbackOnly();
+            transactionStatus.setRollbackOnly();
             throw new CayenneRuntimeException("Transaction was rolledback.", th);
         }
     }

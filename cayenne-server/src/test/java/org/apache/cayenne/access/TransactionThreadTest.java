@@ -21,14 +21,19 @@ package org.apache.cayenne.access;
 
 import java.sql.Connection;
 
+import org.apache.cayenne.conn.support.ConnectionHolder;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
-import org.apache.cayenne.tx.BaseTransaction;
-import org.apache.cayenne.tx.CayenneTransaction;
-import org.apache.cayenne.tx.Transaction;
+import org.apache.cayenne.tx.Synchronization;
+import org.apache.cayenne.tx.TransactionDefinition;
+import org.apache.cayenne.tx.TransactionStatus;
+import org.apache.cayenne.tx.support.TransactionManager;
+import org.apache.cayenne.tx.support.TransactionSynchronizationSupport;
+import org.apache.cayenne.tx.support.TransactionSynchronizerAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
@@ -40,7 +45,7 @@ public class TransactionThreadTest extends ServerCase {
 
     @Inject
     protected DBHelper dbHelper;
-
+    
     @Inject
     private JdbcEventLogger logger;
 
@@ -54,65 +59,51 @@ public class TransactionThreadTest extends ServerCase {
     }
 
     public void testThreadConnectionReuseOnSelect() throws Exception {
-
-        ConnectionCounterTx t = new ConnectionCounterTx(new CayenneTransaction(logger));
-        BaseTransaction.bindThreadTransaction(t);
-
+    	TransactionManager transactionManager = context.getTransactionManager();
+        TransactionStatus transactionStatus = transactionManager.getTransaction(TransactionDefinition.DEFAULT);
         try {
 
-            SelectQuery q1 = new SelectQuery(Artist.class);
+            SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
             context.performQuery(q1);
-            assertEquals(1, t.connectionCount);
-
+            
+            ConnectionHolder holder1 = (ConnectionHolder) TransactionSynchronizationSupport.getResource(context.getTransactionManager());
+            Connection  conn1 = holder1.getConnection();
+            
             // delegate will fail if the second query opens a new connection
-            SelectQuery q2 = new SelectQuery(Artist.class);
+            SelectQuery<Artist> q2 = new SelectQuery<Artist>(Artist.class);
             context.performQuery(q2);
-
-        } finally {
-            BaseTransaction.bindThreadTransaction(null);
-            t.commit();
         }
     }
 
-    class ConnectionCounterTx implements Transaction {
+    public void testThreadConnectionReuseOnQueryFromWillCommit() throws Exception {
 
-        private Transaction delegate;
-        int connectionCount;
+        Artist a = context.newObject(Artist.class);
+        a.setArtistName("aaa");
 
-        ConnectionCounterTx(Transaction delegate) {
-            this.delegate = delegate;
+        Synchronization.registerSynchronization(new TransactionSynchronizerAdapter() {
+			
+			@Override
+			public void beforeCommit(boolean readOnly) {
+				SQLTemplate template = new SQLTemplate(
+                        Artist.class,
+                        "insert into ARTIST (ARTIST_ID, ARTIST_NAME) values (1, 'bbb')");
+                context.performNonSelectingQuery(template);
+			}
+			
+
+		});
+
+
+        try {
+            a.getObjectContext().commitChanges();
         }
+        finally {
+        	Synchronization.clearSynchronization();
+        }        
 
-        public void begin() {
-            delegate.begin();
-        }
-
-        public void commit() {
-            delegate.commit();
-        }
-
-        public void rollback() {
-            delegate.rollback();
-        }
-
-        public void setRollbackOnly() {
-            delegate.setRollbackOnly();
-        }
-
-        public boolean isRollbackOnly() {
-            return delegate.isRollbackOnly();
-        }
-
-        public Connection getConnection(String name) {
-            return delegate.getConnection(name);
-        }
-
-        public void addConnection(String name, Connection connection) {
-            if (connectionCount++ > 0) {
-                fail("Invalid attempt to add connection");
-            }
-
-            delegate.addConnection(name, connection);
-        }
+        assertEquals(2, context.performQuery(new SelectQuery<Artist>(Artist.class)).size());
+        
+        
     }
+
 }

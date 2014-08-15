@@ -50,6 +50,7 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.MapLoader;
 import org.apache.cayenne.map.Procedure;
 import org.apache.cayenne.testdo.testmap.StringET1ExtendedType;
+import org.apache.cayenne.tx.TransactionManagerFactory;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -83,13 +84,18 @@ public class SchemaBuilder {
     private DbAdapter dbAdapter;
     private DataDomain domain;
     private JdbcEventLogger jdbcEventLogger;
+    private TransactionManagerFactory transactionManagerFactory;
+
+    private DefaultEventManager defaultEventManager;
 
     public SchemaBuilder(@Inject ServerCaseDataSourceFactory dataSourceFactory, @Inject UnitDbAdapter unitDbAdapter,
-            @Inject DbAdapter dbAdapter, @Inject JdbcEventLogger jdbcEventLogger) {
+            @Inject DbAdapter dbAdapter, @Inject JdbcEventLogger jdbcEventLogger,
+            @Inject TransactionManagerFactory transactionManagerFactory) {
         this.dataSourceFactory = dataSourceFactory;
         this.unitDbAdapter = unitDbAdapter;
         this.dbAdapter = dbAdapter;
         this.jdbcEventLogger = jdbcEventLogger;
+        this.transactionManagerFactory = transactionManagerFactory;
     }
 
     /**
@@ -115,9 +121,14 @@ public class SchemaBuilder {
             in.setSystemId(MAPS_REQUIRING_SCHEMA_SETUP[i]);
             maps[i] = new MapLoader().loadDataMap(in);
         }
+        if (defaultEventManager != null
+                && !defaultEventManager.isStopped()) {
+            defaultEventManager.shutdown();
+        }
+        defaultEventManager = new DefaultEventManager(2);
 
         this.domain = new DataDomain("temp");
-        domain.setEventManager(new DefaultEventManager(2));
+        domain.setEventManager(defaultEventManager);
         domain.setEntitySorter(new AshwoodEntitySorter());
         domain.setQueryCache(new MapQueryCache(50));
 
@@ -141,6 +152,7 @@ public class SchemaBuilder {
         node.setJdbcEventLogger(jdbcEventLogger);
         node.setAdapter(dbAdapter);
         node.setDataSource(dataSourceFactory.getSharedDataSource());
+        node.setTransactionManagerFactory(transactionManagerFactory);
 
         // setup test extended types
         node.getAdapter().getExtendedTypes().registerType(new StringET1ExtendedType());

@@ -19,15 +19,11 @@
 
 package org.apache.cayenne.access;
 
-import java.io.PrintWriter;
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.SQLFeatureNotSupportedException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
@@ -40,6 +36,7 @@ import org.apache.cayenne.access.jdbc.reader.RowReader;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.access.translator.batch.BatchTranslator;
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
+import org.apache.cayenne.conn.support.DataSources;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
@@ -49,8 +46,11 @@ import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.BatchQuery;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryMetadata;
-import org.apache.cayenne.tx.BaseTransaction;
-import org.apache.cayenne.tx.Transaction;
+import org.apache.cayenne.tx.Synchronization;
+import org.apache.cayenne.tx.TransactionDefinition;
+import org.apache.cayenne.tx.TransactionManagerFactory;
+import org.apache.cayenne.tx.TransactionStatus;
+import org.apache.cayenne.tx.support.TransactionManager;
 import org.apache.cayenne.util.ToStringBuilder;
 
 /**
@@ -74,7 +74,7 @@ public class DataNode implements QueryEngine {
     private RowReaderFactory rowReaderFactory;
     private BatchTranslatorFactory batchTranslatorFactory;
 
-    TransactionDataSource readThroughDataSource;
+    protected TransactionManagerFactory transactionManagerFactory;
 
     /**
      * Creates a new unnamed DataNode.
@@ -90,7 +90,6 @@ public class DataNode implements QueryEngine {
 
         this.name = name;
         this.dataMaps = new HashMap<String, DataMap>();
-        this.readThroughDataSource = new TransactionDataSource();
 
         // make sure logger is not null
         this.jdbcEventLogger = NoopJdbcEventLogger.getInstance();
@@ -111,6 +110,21 @@ public class DataNode implements QueryEngine {
      */
     public void setSchemaUpdateStrategyName(String schemaUpdateStrategyName) {
         this.schemaUpdateStrategyName = schemaUpdateStrategyName;
+    }
+
+    /**
+     * @param transactionManagerFactory
+     *            the transactionManagerFactory to set
+     */
+    public void setTransactionManagerFactory(TransactionManagerFactory transactionManagerFactory) {
+        this.transactionManagerFactory = transactionManagerFactory;
+    }
+
+    /**
+     * @return the transactionManager
+     */
+    public TransactionManager getTransactionManager() {
+        return transactionManagerFactory.getTransactionManager(getDataSource());
     }
 
     /**
@@ -216,7 +230,7 @@ public class DataNode implements QueryEngine {
      * Returns DataSource used by this DataNode to obtain connections.
      */
     public DataSource getDataSource() {
-        return dataSource != null ? readThroughDataSource : null;
+        return dataSource;
     }
 
     public void setDataSource(DataSource dataSource) {
@@ -269,50 +283,42 @@ public class DataNode implements QueryEngine {
         // upper limit.
         getAdapter().getExtendedTypes();
 
+        TransactionManager transactionManager = this.getTransactionManager();
+        TransactionStatus transactionStatus = null;
+
+        if (Synchronization.isActualTransactionActive()) {
+            transactionStatus = transactionManager.getTransaction(TransactionDefinition.SUPPORTS);
+        }
+
         Connection connection = null;
 
         try {
-            connection = this.getDataSource().getConnection();
+            connection = DataSources.getConnection(getDataSource());
+
+            DataNodeQueryAction queryRunner = new DataNodeQueryAction(this, callback);
+
+            for (Query nextQuery : queries) {
+                queryRunner.runQuery(connection, nextQuery);
+            }
+            if (transactionStatus != null) {
+                // do nothing if transaction is not new
+                transactionManager.commit(transactionStatus);
+            }
         } catch (Exception globalEx) {
             jdbcEventLogger.logQueryError(globalEx);
-
-            Transaction transaction = BaseTransaction.getThreadTransaction();
-            if (transaction != null) {
-                transaction.setRollbackOnly();
+            if (transactionStatus != null) {
+                transactionManager.rollback(transactionStatus);
+            } else {
+                // Release Connection early, to avoid potential connection pool
+                // deadlock.
+                DataSources.releaseConnection(connection, getDataSource());
+                connection = null;
             }
 
             callback.nextGlobalException(globalEx);
             return;
-        }
-
-        try {
-            DataNodeQueryAction queryRunner = new DataNodeQueryAction(this, callback);
-
-            for (Query nextQuery : queries) {
-
-                // catch exceptions for each individual query
-                try {
-                    queryRunner.runQuery(connection, nextQuery);
-                } catch (Exception queryEx) {
-                    jdbcEventLogger.logQueryError(queryEx);
-
-                    // notify consumer of the exception,
-                    // stop running further queries
-                    callback.nextQueryException(nextQuery, queryEx);
-
-                    Transaction transaction = BaseTransaction.getThreadTransaction();
-                    if (transaction != null) {
-                        transaction.setRollbackOnly();
-                    }
-                    break;
-                }
-            }
         } finally {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                // ignore closing exceptions...
-            }
+            DataSources.releaseConnection(connection, getDataSource());
         }
     }
 
@@ -338,112 +344,6 @@ public class DataNode implements QueryEngine {
     @Override
     public String toString() {
         return new ToStringBuilder(this).append("name", getName()).toString();
-    }
-
-    // a read-through DataSource that ensures returning the same connection
-    // within
-    // transaction.
-    final class TransactionDataSource implements DataSource {
-
-        final String CONNECTION_RESOURCE_PREFIX = "DataNode.Connection.";
-
-        public Connection getConnection() throws SQLException {
-            if (schemaUpdateStrategy != null) {
-                schemaUpdateStrategy.updateSchema(DataNode.this);
-            }
-            Transaction t = BaseTransaction.getThreadTransaction();
-
-            if (t != null) {
-                String key = CONNECTION_RESOURCE_PREFIX + name;
-                Connection c = t.getConnection(key);
-
-                if (c == null || c.isClosed()) {
-                    c = dataSource.getConnection();
-                    t.addConnection(key, c);
-                }
-
-                // wrap transaction-attached connections in a decorator that
-                // prevents them
-                // from being closed by callers, as transaction should take care
-                // of them
-                // on commit or rollback.
-                return new TransactionConnectionDecorator(c);
-            }
-
-            return dataSource.getConnection();
-        }
-
-        public Connection getConnection(String username, String password) throws SQLException {
-            if (schemaUpdateStrategy != null) {
-                schemaUpdateStrategy.updateSchema(DataNode.this);
-            }
-            Transaction t = BaseTransaction.getThreadTransaction();
-            if (t != null) {
-                String key = CONNECTION_RESOURCE_PREFIX + name;
-                Connection c = t.getConnection(key);
-
-                if (c == null || c.isClosed()) {
-                    c = dataSource.getConnection();
-                    t.addConnection(key, c);
-                }
-
-                // wrap transaction-attached connections in a decorator that
-                // prevents them
-                // from being closed by callers, as transaction should take care
-                // of them
-                // on commit or rollback.
-                return new TransactionConnectionDecorator(c);
-            }
-
-            return dataSource.getConnection(username, password);
-        }
-
-        public int getLoginTimeout() throws SQLException {
-            return dataSource.getLoginTimeout();
-        }
-
-        public PrintWriter getLogWriter() throws SQLException {
-            return dataSource.getLogWriter();
-        }
-
-        public void setLoginTimeout(int seconds) throws SQLException {
-            dataSource.setLoginTimeout(seconds);
-        }
-
-        public void setLogWriter(PrintWriter out) throws SQLException {
-            dataSource.setLogWriter(out);
-        }
-
-        /**
-         * @since 3.0
-         */
-        // JDBC 4 compatibility under Java 1.5
-        public boolean isWrapperFor(Class<?> iface) throws SQLException {
-            return iface.isAssignableFrom(dataSource.getClass());
-        }
-
-        /**
-         * @since 3.0
-         */
-        // JDBC 4 compatibility under Java 1.5
-        public <T> T unwrap(Class<T> iface) throws SQLException {
-            try {
-                return iface.cast(dataSource);
-            } catch (ClassCastException e) {
-                throw new SQLException("Not a DataSource: " + e.getMessage());
-            }
-        }
-
-        /**
-         * @since 3.1
-         * 
-         *        JDBC 4.1 compatibility under Java 1.5
-         */
-        public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-            // don't throw SQLFeatureNotSupported - this will break JDK 1.5
-            // runtime
-            throw new UnsupportedOperationException();
-        }
     }
 
     /**

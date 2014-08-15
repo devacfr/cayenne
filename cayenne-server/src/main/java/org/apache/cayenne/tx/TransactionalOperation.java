@@ -24,9 +24,16 @@ package org.apache.cayenne.tx;
 public interface TransactionalOperation<T> {
 
     /**
-     * A callback method that {@link TransactionManager} invokes,
-     * {@link TransactionManager} will wrap this method call in a single
+     *
+     * @return
+     */
+    // T perform();
+
+    /**
+     * A callback method that {@link TransactionOperations} invokes,
+     * {@link TransactionOperations} will wrap this method call in a single
      * thread-bound transaction.
      */
-    T perform();
+    T execute(TransactionStatus transactionStatus) throws Exception;
+
 }

@@ -43,6 +43,7 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;
+import org.apache.cayenne.tx.TransactionManagerFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -123,6 +124,7 @@ public class DataDomainProvider implements Provider<DataDomain> {
         dataDomain.setQueryCache(new NestedQueryCache(queryCache));
         dataDomain.setEntitySorter(injector.getInstance(EntitySorter.class));
         dataDomain.setEventManager(injector.getInstance(EventManager.class));
+        dataDomain.setTransactionManagerFactory(injector.getInstance(TransactionManagerFactory.class));
 
         dataDomain.initWithProperties(descriptor.getProperties());
 

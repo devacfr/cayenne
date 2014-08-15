@@ -16,21 +16,43 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.tx;
+package org.apache.cayenne.tx.exception;
 
 /**
- * An optional utility service that simplifies wrapping multiple operations in
- * transactions. Users only rarely need to invoke it directly, as all standard
- * Cayenne operations are managing their own transactions internally.
- * 
+ * Exception thrown when an invalid timeout is specified, that is, the specified
+ * timeout valid is out of range or the transaction manager implementation
+ * doesn't support timeouts.
+ *
+ * @author devacfr<christophefriederich@mac.com>
  * @since 3.2
  */
-public interface TransactionManager {
+public class InvalidTimeoutException extends TransactionUsageException {
 
     /**
-     * Starts a new transaction (or joins an existing one) calling
-     * {@link org.apache.cayenne.tx.TransactionalOperation#perform()}, and then
-     * committing or rolling back the transaction. Frees the user
+     * default serial version
      */
-    <T> T performInTransaction(TransactionalOperation<T> op);
+    private static final long serialVersionUID = 1L;
+
+    private int timeout;
+
+    /**
+     * Constructor for InvalidTimeoutException.
+     * 
+     * @param msg
+     *            the detail message
+     * @param timeout
+     *            the invalid timeout value
+     */
+    public InvalidTimeoutException(String msg, int timeout) {
+        super(msg);
+        this.timeout = timeout;
+    }
+
+    /**
+     * Gets the invalid timeout value.
+     */
+    public int getTimeout() {
+        return timeout;
+    }
+
 }

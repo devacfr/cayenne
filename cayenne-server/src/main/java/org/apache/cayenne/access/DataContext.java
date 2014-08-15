@@ -42,7 +42,6 @@ import org.apache.cayenne.Persistent;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.util.IteratedSelectObserver;
-import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.ChildDiffLoader;
 import org.apache.cayenne.graph.CompoundDiff;
@@ -62,9 +61,10 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
-import org.apache.cayenne.tx.BaseTransaction;
-import org.apache.cayenne.tx.Transaction;
-import org.apache.cayenne.tx.TransactionFactory;
+import org.apache.cayenne.tx.Synchronization;
+import org.apache.cayenne.tx.TransactionStatus;
+import org.apache.cayenne.tx.TransactionalOperation;
+import org.apache.cayenne.tx.support.TransactionManager;
 import org.apache.cayenne.util.EventUtil;
 import org.apache.cayenne.util.GenericResponse;
 import org.apache.cayenne.util.ResultIteratorIterator;
@@ -81,13 +81,6 @@ public class DataContext extends BaseContext {
     private DataContextDelegate delegate;
     protected boolean usingSharedSnaphsotCache;
     protected ObjectStore objectStore;
-
-    /**
-     * @deprecated since 3.2 used in a method that itself should be deprecated,
-     *             so this is a temp code
-     */
-    @Deprecated
-    protected transient TransactionFactory transactionFactory;
 
     protected transient DataContextMergeHandler mergeHandler;
 
@@ -120,12 +113,6 @@ public class DataContext extends BaseContext {
             this.usingSharedSnaphsotCache = domain != null
                     && objectStore.getDataRowCache() == domain.getSharedSnapshotCache();
         }
-    }
-
-    @Override
-    protected void attachToRuntime(Injector injector) {
-        super.attachToRuntime(injector);
-        this.transactionFactory = injector.getInstance(TransactionFactory.class);
     }
 
     /**
@@ -189,6 +176,11 @@ public class DataContext extends BaseContext {
         }
 
         return null;
+    }
+
+    public TransactionManager getTransactionManager() {
+        TransactionManager transactionManager = getParentDataDomain().getTransactionManager();
+        return transactionManager;
     }
 
     /**
@@ -875,41 +867,18 @@ public class DataContext extends BaseContext {
     // TODO: deprecate once all selecting queries start implementing Select<T>
     // interface
     @SuppressWarnings({ "rawtypes" })
-    public ResultIterator performIteratedQuery(Query query) {
-        // TODO: use 3.2 TransactionManager
-        if (BaseTransaction.getThreadTransaction() != null) {
-            return internalPerformIteratedQuery(query);
+    public ResultIterator performIteratedQuery(final Query query) {
+        if (!Synchronization.isActualTransactionActive()) {
+            return getParentDataDomain().performInTransaction(
+                    new TransactionalOperation<ResultIterator<?>>() {
+
+                        @Override
+                        public ResultIterator<?> execute(TransactionStatus transactionStatus) {
+                            return internalPerformIteratedQuery(query);
+                        }
+                    });
         } else {
-
-            // manually manage a transaction, so that a ResultIterator wrapper
-            // could close
-            // it when it is done.
-            Transaction tx = getTransactionFactory().createTransaction();
-            BaseTransaction.bindThreadTransaction(tx);
-
-            ResultIterator result;
-            try {
-                result = internalPerformIteratedQuery(query);
-            } catch (Exception e) {
-                BaseTransaction.bindThreadTransaction(null);
-                tx.setRollbackOnly();
-                throw new CayenneRuntimeException(e);
-            } finally {
-                // note: we are keeping the transaction bound to the current
-                // thread on
-                // success - iterator will unbind it. Unsetting a transaction
-                // here would
-                // result in some strangeness, at least on Ingres
-
-                if (tx.isRollbackOnly()) {
-                    try {
-                        tx.rollback();
-                    } catch (Exception rollbackEx) {
-                    }
-                }
-            }
-
-            return new TransactionResultIteratorDecorator(result, tx);
+            return internalPerformIteratedQuery(query);
         }
     }
 
@@ -1198,20 +1167,4 @@ public class DataContext extends BaseContext {
     protected void fireDataChannelChanged(Object postedBy, GraphDiff changes) {
         super.fireDataChannelChanged(postedBy, changes);
     }
-
-    private TransactionFactory getTransactionFactory() {
-        attachToRuntimeIfNeeded();
-        return transactionFactory;
-    }
-
-    /**
-     * @since 3.2
-     * @deprecated since 3.2 avoid using thsi directly. Transaction management
-     *             at this level will be eventually removed
-     */
-    @Deprecated
-    public void setTransactionFactory(TransactionFactory transactionFactory) {
-        this.transactionFactory = transactionFactory;
-    }
-
 }

@@ -22,6 +22,7 @@ package org.apache.cayenne.dba.sybase;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,8 +31,6 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.JdbcPkGenerator;
 import org.apache.cayenne.map.DbEntity;
-import org.apache.cayenne.tx.BaseTransaction;
-import org.apache.cayenne.tx.Transaction;
 
 /**
  * Primary key generator implementation for Sybase. Uses a lookup table named
@@ -40,183 +39,173 @@ import org.apache.cayenne.tx.Transaction;
  */
 public class SybasePkGenerator extends JdbcPkGenerator {
 
-    protected SybasePkGenerator(JdbcAdapter adapter) {
-        super(adapter);
-    }
+	protected SybasePkGenerator(JdbcAdapter adapter) {
+		super(adapter);
+	}
 
-    @Override
-    protected String pkTableCreateString() {
-        StringBuilder buf = new StringBuilder();
+	@Override
+	protected String pkTableCreateString() {
+		StringBuilder buf = new StringBuilder();
         buf
                 .append("CREATE TABLE AUTO_PK_SUPPORT (")
                 .append("  TABLE_NAME CHAR(100) NOT NULL,")
                 .append("  NEXT_ID DECIMAL(19,0) NOT NULL,")
                 .append("  PRIMARY KEY(TABLE_NAME)")
-                .append(")");
+				.append(")");
 
-        return buf.toString();
-    }
+		return buf.toString();
+	}
 
-    /**
+	/**
      * Generates database objects to provide automatic primary key support. Method will
      * execute the following SQL statements:
-     * <p>
-     * 1. Executed only if a corresponding table does not exist in the database.
-     * </p>
-     * 
-     * <pre>
-     *    CREATE TABLE AUTO_PK_SUPPORT (
-     *       TABLE_NAME VARCHAR(32) NOT NULL,
-     *       NEXT_ID DECIMAL(19,0) NOT NULL
-     *    )
-     * </pre>
-     * <p>
-     * 2. Executed under any circumstances.
-     * </p>
-     * 
-     * <pre>
-     * if exists (SELECT * FROM sysobjects WHERE name = 'auto_pk_for_table')
-     * BEGIN
-     *    DROP PROCEDURE auto_pk_for_table 
-     * END
-     * </pre>
-     * <p>
-     * 3. Executed under any circumstances.
-     * </p>
-     * CREATE PROCEDURE auto_pk_for_table
-     * 
-     * <pre>
-     * &#064;tname VARCHAR(32),
-     * &#064;pkbatchsize INT AS BEGIN BEGIN TRANSACTION UPDATE AUTO_PK_SUPPORT set NEXT_ID =
-     *              NEXT_ID +
-     * &#064;pkbatchsize WHERE TABLE_NAME =
-     * &#064;tname SELECT NEXT_ID from AUTO_PK_SUPPORT where NEXT_ID =
-     * &#064;tname COMMIT END
-     * </pre>
-     * 
+	 * <p>
+	 * 1. Executed only if a corresponding table does not exist in the database.
+	 * </p>
+	 *
+	 * <pre>
+	 *    CREATE TABLE AUTO_PK_SUPPORT (
+	 *       TABLE_NAME VARCHAR(32) NOT NULL,
+	 *       NEXT_ID DECIMAL(19,0) NOT NULL
+	 *    )
+	 * </pre>
+	 * <p>
+	 * 2. Executed under any circumstances.
+	 * </p>
+	 *
+	 * <pre>
+	 * if exists (SELECT * FROM sysobjects WHERE name = 'auto_pk_for_table')
+	 * BEGIN
+	 *    DROP PROCEDURE auto_pk_for_table
+	 * END
+	 * </pre>
+	 * <p>
+	 * 3. Executed under any circumstances.
+	 * </p>
+	 * CREATE PROCEDURE auto_pk_for_table
+	 *
+	 * <pre>
+	 * &#064;tname VARCHAR(32),
+	 * &#064;pkbatchsize INT AS BEGIN BEGIN TRANSACTION UPDATE AUTO_PK_SUPPORT set NEXT_ID =
+	 *              NEXT_ID +
+	 * &#064;pkbatchsize WHERE TABLE_NAME =
+	 * &#064;tname SELECT NEXT_ID from AUTO_PK_SUPPORT where NEXT_ID =
+	 * &#064;tname COMMIT END
+	 * </pre>
+	 *
      * @param node node that provides access to a DataSource.
-     */
-    @Override
-    public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
-        super.createAutoPk(node, dbEntities);
-        super.runUpdate(node, safePkProcDrop());
-        super.runUpdate(node, unsafePkProcCreate());
-    }
+	 */
+	@Override
+	public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
+		super.createAutoPk(node, dbEntities);
+		super.runUpdate(node, safePkProcDrop());
+		super.runUpdate(node, unsafePkProcCreate());
+	}
 
-    @Override
-    public List<String> createAutoPkStatements(List<DbEntity> dbEntities) {
-        List<String> list = super.createAutoPkStatements(dbEntities);
+	@Override
+	public List<String> createAutoPkStatements(List<DbEntity> dbEntities) {
+		List<String> list = super.createAutoPkStatements(dbEntities);
 
-        // add stored procedure drop code
-        list.add(safePkProcDrop());
+		// add stored procedure drop code
+		list.add(safePkProcDrop());
 
-        // add stored procedure creation code
-        list.add(unsafePkProcCreate());
+		// add stored procedure creation code
+		list.add(unsafePkProcCreate());
 
-        return list;
-    }
+		return list;
+	}
 
-    /**
+	/**
      * Drops database objects related to automatic primary key support. Method will
      * execute the following SQL statements:
-     * 
-     * <pre>
-     * if exists (SELECT * FROM sysobjects WHERE name = 'AUTO_PK_SUPPORT')
-     * BEGIN
-     *    DROP TABLE AUTO_PK_SUPPORT
-     * END
-     * 
-     * 
-     * if exists (SELECT * FROM sysobjects WHERE name = 'auto_pk_for_table')
-     * BEGIN
-     *    DROP PROCEDURE auto_pk_for_table 
-     * END
-     * </pre>
-     * 
+	 *
+	 * <pre>
+	 * if exists (SELECT * FROM sysobjects WHERE name = 'AUTO_PK_SUPPORT')
+	 * BEGIN
+	 *    DROP TABLE AUTO_PK_SUPPORT
+	 * END
+	 * 
+	 * 
+	 * if exists (SELECT * FROM sysobjects WHERE name = 'auto_pk_for_table')
+	 * BEGIN
+	 *    DROP PROCEDURE auto_pk_for_table
+	 * END
+	 * </pre>
+	 *
      * @param node node that provides access to a DataSource.
-     */
-    @Override
-    public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
-        super.runUpdate(node, safePkProcDrop());
-        super.runUpdate(node, safePkTableDrop());
-    }
+	 */
+	@Override
+	public void dropAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {
+		super.runUpdate(node, safePkProcDrop());
+		super.runUpdate(node, safePkTableDrop());
+	}
 
-    @Override
-    public List<String> dropAutoPkStatements(List<DbEntity> dbEntities) {
-        List<String> list = new ArrayList<String>();
-        list.add(safePkProcDrop());
-        list.add(safePkTableDrop());
-        return list;
-    }
+	@Override
+	public List<String> dropAutoPkStatements(List<DbEntity> dbEntities) {
+		List<String> list = new ArrayList<String>();
+		list.add(safePkProcDrop());
+		list.add(safePkTableDrop());
+		return list;
+	}
 
-    /**
-     * @since 3.0
-     */
-    @Override
-    protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
-        // handle CAY-588 - get connection that is separate from the connection in the
-        // current transaction.
+	/**
+	 * @since 3.0
+	 */
+	@Override
+	protected long doGetLongPkFromDatabase(final DataNode node, final DbEntity entity, Connection connection) throws Exception {
+		// handle CAY-588 - get connection that is separate from the connection
+		// in the
+		// current transaction.
 
-        // TODO (andrus, 7/6/2006) Note that this will still work in a pool with a single
-        // connection, as PK generator is invoked early in the transaction, before the
-        // connection is grabbed for commit... So maybe promote this to other adapters in
-        // 3.0?
+		// TODO (andrus, 7/6/2006) Note that this will still work in a pool with
+		// a single
+		// connection, as PK generator is invoked early in the transaction,
+		// before the
+		// connection is grabbed for commit... So maybe promote this to other
+		// adapters in
+		// 3.0?
 
-        Transaction transaction = BaseTransaction.getThreadTransaction();
-        BaseTransaction.bindThreadTransaction(null);
+		CallableStatement statement = null;
+		try {
+			statement = connection.prepareCall("{call auto_pk_for_table(?, ?)}");
+			statement.setString(1, entity.getName());
+			statement.setInt(2, getPkCacheSize());
 
-        try {
+			// can't use "executeQuery"
+			// per http://jtds.sourceforge.net/faq.html#expectingResultSet
+			statement.execute();
+			if (statement.getMoreResults()) {
+				ResultSet rs = statement.getResultSet();
 
-            Connection connection = node.getDataSource().getConnection();
-            try {
-                CallableStatement statement = connection
-                        .prepareCall("{call auto_pk_for_table(?, ?)}");
-                try {
-                    statement.setString(1, entity.getName());
-                    statement.setInt(2, super.getPkCacheSize());
+				try {
+					if (rs.next()) {
+						return rs.getLong(1);
+					} else {
+						throw new CayenneRuntimeException("Error generating pk for DbEntity "
+								+ entity.getName());
+					}
+				} finally {
+					rs.close();
+				}
+			} else {
+				throw new CayenneRuntimeException("Error generating pk for DbEntity " + entity.getName()
+						+ ", no result set from stored procedure.");
+			}
 
-                    // can't use "executeQuery"
-                    // per http://jtds.sourceforge.net/faq.html#expectingResultSet
-                    statement.execute();
-                    if (statement.getMoreResults()) {
-                        ResultSet rs = statement.getResultSet();
+		} finally {
+			if (statement != null) {
+				try {
+					statement.close();
+				} catch (SQLException ex) {
 
-                        try {
-                            if (rs.next()) {
-                                return rs.getLong(1);
-                            }
-                            else {
-                                throw new CayenneRuntimeException(
-                                        "Error generating pk for DbEntity "
-                                                + entity.getName());
-                            }
-                        }
-                        finally {
-                            rs.close();
-                        }
-                    }
-                    else {
-                        throw new CayenneRuntimeException(
-                                "Error generating pk for DbEntity "
-                                        + entity.getName()
-                                        + ", no result set from stored procedure.");
-                    }
-                }
-                finally {
-                    statement.close();
-                }
-            }
-            finally {
-                connection.close();
-            }
-        }
-        finally {
-            BaseTransaction.bindThreadTransaction(transaction);
-        }
-    }
+				}
+			}
+		}
+			
+	}
 
-    private String safePkTableDrop() {
-        StringBuilder buf = new StringBuilder();
+	private String safePkTableDrop() {
+		StringBuilder buf = new StringBuilder();
         buf
                 .append(
                         "if exists (SELECT * FROM sysobjects WHERE name = 'AUTO_PK_SUPPORT')")
@@ -224,33 +213,33 @@ public class SybasePkGenerator extends JdbcPkGenerator {
                 .append(" DROP TABLE AUTO_PK_SUPPORT")
                 .append(" END");
 
-        return buf.toString();
-    }
+		return buf.toString();
+	}
 
-    private String unsafePkProcCreate() {
-        StringBuilder buf = new StringBuilder();
+	private String unsafePkProcCreate() {
+		StringBuilder buf = new StringBuilder();
         buf
                 .append(
                         " CREATE PROCEDURE auto_pk_for_table @tname VARCHAR(32), @pkbatchsize INT AS")
                 .append(" BEGIN")
                 .append(" BEGIN TRANSACTION")
-                .append(" UPDATE AUTO_PK_SUPPORT set NEXT_ID = NEXT_ID + @pkbatchsize")
-                .append(" WHERE TABLE_NAME = @tname")
-                .append(" SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = @tname")
+				.append(" UPDATE AUTO_PK_SUPPORT set NEXT_ID = NEXT_ID + @pkbatchsize")
+				.append(" WHERE TABLE_NAME = @tname")
+				.append(" SELECT NEXT_ID FROM AUTO_PK_SUPPORT WHERE TABLE_NAME = @tname")
                 .append(" COMMIT")
                 .append(" END");
-        return buf.toString();
-    }
+		return buf.toString();
+	}
 
-    private String safePkProcDrop() {
-        StringBuilder buf = new StringBuilder();
+	private String safePkProcDrop() {
+		StringBuilder buf = new StringBuilder();
         buf
                 .append(
                         "if exists (SELECT * FROM sysobjects WHERE name = 'auto_pk_for_table')")
                 .append(" BEGIN")
                 .append(" DROP PROCEDURE auto_pk_for_table")
                 .append(" END");
-        return buf.toString();
-    }
+		return buf.toString();
+	}
 
 }

@@ -18,30 +18,60 @@
  ****************************************************************/
 package org.apache.cayenne.tx;
 
-import java.sql.Connection;
+import org.apache.cayenne.tx.exception.TransactionException;
+import org.apache.cayenne.tx.support.SavepointAccessor;
 
 /**
- * A Cayenne Transaction interface.
- * 
- * @since 3.2
+ * @author devacfr<christophefriederich@mac.com>
+ *
  */
-public interface Transaction {
+public interface Transaction extends SavepointAccessor {
 
     /**
-     * Starts a Transaction. If Transaction is not started explicitly, it will
-     * be started when the first connection is added.
+	 *
+	 */
+    void commitChanges();
+
+    void begin(TransactionDefinition definition) throws TransactionException;
+
+    /**
+     * @return
      */
-    void begin();
+    boolean hasTransaction();
 
-    void commit();
+    /**
+     * @return
+     */
+    Object suspend();
 
-    void rollback();
+    /**
+     *
+     * @param suspendedResources
+     * @throws TransactionException
+     */
+    void resume(Object suspendedResources) throws TransactionException;
 
+    void commit() throws TransactionException;
+
+    /**
+	 *
+	 */
     void setRollbackOnly();
 
+    /**
+     *
+     * @return
+     */
     boolean isRollbackOnly();
 
-    Connection getConnection(String name);
+    /**
+	 *
+	 */
+    public void rollback();
 
-    void addConnection(String name, Connection connection);
+    /**
+	 *
+	 */
+    public void close();
+
 }

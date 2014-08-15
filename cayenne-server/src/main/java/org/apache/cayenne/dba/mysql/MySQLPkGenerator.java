@@ -50,7 +50,7 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
      * @since 3.0
      */
     @Override
-    protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
+    protected long doGetLongPkFromDatabase(DataNode node, DbEntity entity, Connection connection) throws Exception {
 
         // must work directly with JDBC connection, since we
         // must unlock the AUTO_PK_SUPPORT table in case of
@@ -60,28 +60,14 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
         SQLException exception = null;
         long pk = -1l;
 
-        Connection con = node.getDataSource().getConnection();
         try {
 
-            if (con.getAutoCommit()) {
-                con.setAutoCommit(false);
-            }
-
-            Statement st = con.createStatement();
+            Statement st = connection.createStatement();
 
             try {
                 pk = getLongPrimaryKey(st, entity.getName());
-                con.commit();
             }
             catch (SQLException pkEx) {
-
-                try {
-                    con.rollback();
-                }
-                catch (SQLException e) {
-
-                }
-
                 exception = processSQLException(pkEx, exception);
             }
             finally {
@@ -110,15 +96,6 @@ public class MySQLPkGenerator extends JdbcPkGenerator {
         catch (SQLException otherEx) {
             exception = processSQLException(otherEx, exception);
         }
-        finally {
-            try {
-                con.close();
-            }
-            catch (SQLException closingEx) {
-                // ignoring
-            }
-        }
-
         // check errors
         if (exception != null) {
             throw exception;

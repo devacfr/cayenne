@@ -49,33 +49,30 @@ public class DB2PkGenerator extends JdbcPkGenerator {
      * @since 3.0
      */
     @Override
-    protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
+	protected long doGetLongPkFromDatabase(DataNode node, DbEntity entity, Connection connection)
+			throws Exception {
 
-        String pkGeneratingSequenceName = sequenceName(entity);
+		String pkGeneratingSequenceName = sequenceName(entity);
 
-        Connection con = node.getDataSource().getConnection();
-        try {
-            Statement st = con.createStatement();
-            try {
-                String sql = "SELECT NEXTVAL FOR " + pkGeneratingSequenceName + " FROM SYSIBM.SYSDUMMY1";
-                adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
-                ResultSet rs = st.executeQuery(sql);
-                try {
-                    // Object pk = null;
-                    if (!rs.next()) {
-                        throw new CayenneRuntimeException("Error generating pk for DbEntity " + entity.getName());
-                    }
-                    return rs.getLong(1);
-                } finally {
-                    rs.close();
-                }
-            } finally {
-                st.close();
-            }
-        } finally {
-            con.close();
-        }
-    }
+		Statement st = connection.createStatement();
+		try {
+			String sql = "SELECT NEXTVAL FOR " + pkGeneratingSequenceName + " FROM SYSIBM.SYSDUMMY1";
+			adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
+			ResultSet rs = st.executeQuery(sql);
+			try {
+				// Object pk = null;
+				if (!rs.next()) {
+					throw new CayenneRuntimeException("Error generating pk for DbEntity " + entity.getName());
+				}
+				return rs.getLong(1);
+			} finally {
+				rs.close();
+			}
+		} finally {
+			st.close();
+		}
+
+	}
 
     @Override
     public void createAutoPk(DataNode node, List<DbEntity> dbEntities) throws Exception {

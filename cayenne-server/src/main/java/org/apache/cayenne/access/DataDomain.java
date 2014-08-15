@@ -48,10 +48,12 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.EntitySorter;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.QueryChain;
-import org.apache.cayenne.tx.BaseTransaction;
-import org.apache.cayenne.tx.Transaction;
-import org.apache.cayenne.tx.TransactionManager;
-import org.apache.cayenne.tx.TransactionalOperation;
+import org.apache.cayenne.tx.TransactionDefinition;
+import org.apache.cayenne.tx.TransactionManagerFactory;
+import org.apache.cayenne.tx.TransactionOperations;
+import org.apache.cayenne.tx.TransactionStatus;
+import org.apache.cayenne.tx.support.TransactionManager;
+import org.apache.cayenne.tx.support.TransactionTemplate;
 import org.apache.cayenne.util.ToStringBuilder;
 
 /**
@@ -60,7 +62,7 @@ import org.apache.cayenne.util.ToStringBuilder;
  * user. When a child DataContext sends a query to the DataDomain, it is
  * transparently routed to an appropriate DataNode.
  */
-public class DataDomain implements QueryEngine, DataChannel {
+public class DataDomain implements QueryEngine, DataChannel, TransactionOperations {
 
     public static final String SHARED_CACHE_ENABLED_PROPERTY = "cayenne.DataDomain.sharedCache";
     public static final boolean SHARED_CACHE_ENABLED_DEFAULT = true;
@@ -121,6 +123,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      */
     protected EventManager eventManager;
 
+    private TransactionManagerFactory transactionManagerFactory;
     /**
      * @since 1.2
      */
@@ -138,7 +141,7 @@ public class DataDomain implements QueryEngine, DataChannel {
 
     /**
      * Creates new DataDomain.
-     * 
+     *
      * @param name
      *            DataDomain name. Domain can be located using its name in the
      *            Configuration object.
@@ -177,6 +180,10 @@ public class DataDomain implements QueryEngine, DataChannel {
             throw new DomainStoppedException("Domain " + name
                     + " was shutdown and can no longer be used to access the database");
         }
+    }
+
+    public TransactionManager getTransactionManager() {
+        return transactionManagerFactory.getTransactionManager(defaultNode.getDataSource());
     }
 
     /**
@@ -247,6 +254,14 @@ public class DataDomain implements QueryEngine, DataChannel {
         if (sharedSnapshotCache != null) {
             sharedSnapshotCache.setEventManager(eventManager);
         }
+    }
+
+    /**
+     * @param transactionManagerFactory
+     *            the transactionManagerFactory to set
+     */
+    public void setTransactionManagerFactory(TransactionManagerFactory transactionManagerFactory) {
+        this.transactionManagerFactory = transactionManagerFactory;
     }
 
     /**
@@ -527,11 +542,12 @@ public class DataDomain implements QueryEngine, DataChannel {
     /**
      * Routes queries to appropriate DataNodes for execution.
      */
+    @Override
     public void performQueries(final Collection<? extends Query> queries, final OperationObserver callback) {
 
-        transactionManager.performInTransaction(new TransactionalOperation<Object>() {
+        performInTransaction(new TransactionalOperation<Void>() {
             @Override
-            public Object perform() {
+            public Void execute(TransactionStatus transactionStatus) {
                 new DataDomainLegacyQueryAction(DataDomain.this, new QueryChain(queries), callback).execute();
                 return null;
             }
@@ -602,10 +618,11 @@ public class DataDomain implements QueryEngine, DataChannel {
         // including transaction handling logic
         case DataChannel.FLUSH_NOCASCADE_SYNC:
         case DataChannel.FLUSH_CASCADE_SYNC:
-            result = transactionManager.performInTransaction(new TransactionalOperation<GraphDiff>() {
+            result = performInTransaction(new TransactionalOperation<GraphDiff>() {
+
                 @Override
-                public GraphDiff perform() {
-                    return onSyncFlush(originatingContext, changes);
+                public GraphDiff execute(TransactionStatus transactionStatus) {
+                    return onSyncFlush(originatingContext, changes, transactionStatus);
                 }
             });
 
@@ -619,17 +636,10 @@ public class DataDomain implements QueryEngine, DataChannel {
     }
 
     GraphDiff onSyncRollback(ObjectContext originatingContext) {
-        // if there is a transaction in progress, roll it back
-
-        Transaction transaction = BaseTransaction.getThreadTransaction();
-        if (transaction != null) {
-            transaction.setRollbackOnly();
-        }
-
         return new CompoundDiff();
     }
 
-    GraphDiff onSyncFlush(ObjectContext originatingContext, GraphDiff childChanges) {
+    GraphDiff onSyncFlush(ObjectContext originatingContext, GraphDiff childChanges, TransactionStatus transactionStatus) {
 
         if (!(originatingContext instanceof DataContext)) {
             throw new CayenneRuntimeException(
@@ -640,7 +650,35 @@ public class DataDomain implements QueryEngine, DataChannel {
         DataDomainFlushAction action = new DataDomainFlushAction(this);
         action.setJdbcEventLogger(jdbcEventLogger);
 
-        return action.flush((DataContext) originatingContext, childChanges);
+        return action.flush((DataContext) originatingContext, childChanges, transactionStatus);
+    }
+
+    /**
+     * Executes callback operation in a transaction with the defaut data source
+     * (data source of default node).
+     * <p>
+     * The Transaction is executed with default definition (see
+     * {@link TransactionDefinition#DEFAULT}))
+     * 
+     * @see #setDefaultNode(DataNode)
+     */
+    @Override
+    public <T> T performInTransaction(TransactionalOperation<T> operation) {
+        return performInTransaction(TransactionDefinition.DEFAULT, operation);
+    }
+
+    /**
+     * Executes callback operation in a transaction with the defaut data source
+     * (data source of default node).
+     * <p>
+     * The Transaction is executed with specified transaction definition.
+     * 
+     * @see #setDefaultNode(DataNode)
+     */
+    @Override
+    public <T> T performInTransaction(TransactionDefinition definition, TransactionalOperation<T> operation) {
+        TransactionTemplate template = new TransactionTemplate(getTransactionManager(), definition);
+        return template.performInTransaction(operation);
     }
 
     @Override

@@ -28,6 +28,7 @@ import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.tx.TransactionManagerFactory;
 
 /**
  * @since 3.2
@@ -42,6 +43,9 @@ public class DefaultDataNodeFactory implements DataNodeFactory {
 
     @Inject
     protected DataSourceFactory dataSourceFactory;
+    
+    @Inject
+    protected TransactionManagerFactory transactionManagerFactory;
 
     @Inject
     protected BatchTranslatorFactory batchTranslatorFactory;
@@ -83,7 +87,7 @@ public class DefaultDataNodeFactory implements DataNodeFactory {
             dataNode.setSchemaUpdateStrategyName(schemaUpdateStrategyType);
             dataNode.setSchemaUpdateStrategy(strategy);
         }
-
+        dataNode.setTransactionManagerFactory(transactionManagerFactory);
         // DbAdapter
         dataNode.setAdapter(adapterFactory.createAdapter(nodeDescriptor, dataSource));
 

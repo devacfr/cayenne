@@ -32,17 +32,25 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import javax.sql.DataSource;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.ResultIterator;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.OperationObserver;
+import org.apache.cayenne.conn.support.DataSources;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.tx.TransactionDefinition;
+import org.apache.cayenne.tx.TransactionStatus;
+import org.apache.cayenne.tx.TransactionalOperation;
+import org.apache.cayenne.tx.support.TransactionManager;
+import org.apache.cayenne.tx.support.TransactionTemplate;
 import org.apache.cayenne.util.IDUtil;
 
 /**
@@ -298,7 +306,39 @@ public class JdbcPkGenerator implements PkGenerator {
      * 
      * @since 3.0
      */
-    protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
+    protected final long longPkFromDatabase(final DataNode node, final DbEntity entity) throws Exception {
+    	final TransactionManager transactionManager = node.getTransactionManager();
+		final DataSource dataSource = transactionManager.getDataSource();
+		TransactionTemplate template = new TransactionTemplate(transactionManager,
+				TransactionDefinition.builder().name("longPkFromDatabase")
+						.propagationRequiresNew()
+						.isolationReadCommitted()
+						.build());
+
+		return template.performInTransaction(new TransactionalOperation<Long>() {
+
+			@Override
+			public Long execute(TransactionStatus transactionStatus) throws Exception {
+				Connection connection = DataSources.getConnection(dataSource);
+				try {
+					Long value = doGetLongPkFromDatabase(node, entity, connection);
+					connection.commit();
+					return value;
+				} catch(Exception ex) {
+					DataSources.releaseConnection(connection, dataSource);
+					connection = null;
+					throw ex;
+				} finally {
+					DataSources.releaseConnection(connection, dataSource);
+				}
+			}
+			
+		});
+        
+    }
+    
+    
+    protected long doGetLongPkFromDatabase(DataNode node, DbEntity entity, Connection connection) throws Exception {
         String select = "SELECT #result('NEXT_ID' 'long' 'NEXT_ID') "
                 + "FROM AUTO_PK_SUPPORT "
                 + "WHERE TABLE_NAME = '"

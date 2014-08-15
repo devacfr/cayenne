@@ -32,6 +32,7 @@ import java.util.Map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.MockOperationObserver;
+import org.apache.cayenne.conn.support.DataSources;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -320,7 +321,7 @@ public class SchemaUpdateStrategyTest extends ServerCase {
         Connection con = null;
         Map<String, Boolean> nameTables = new HashMap<String, Boolean>();
         try {
-            con = dataNode.getDataSource().getConnection();
+            con = DataSources.getConnection(dataNode.getDataSource());
             ResultSet rs = con.getMetaData().getTables(null, null, "%", new String[] {
                 tableLabel
             });
@@ -334,12 +335,7 @@ public class SchemaUpdateStrategyTest extends ServerCase {
             throw new CayenneRuntimeException(e);
         }
         finally {
-            try {
-                con.close();
-            }
-            catch (SQLException e) {
-                throw new CayenneRuntimeException(e);
-            }
+            DataSources.releaseConnection(con, dataNode.getDataSource());
         }
         return nameTables;
     }

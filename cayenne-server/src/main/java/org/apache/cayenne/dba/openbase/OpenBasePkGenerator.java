@@ -89,37 +89,27 @@ public class OpenBasePkGenerator extends JdbcPkGenerator {
      * @since 3.0
      */
     @Override
-    protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
+    protected long doGetLongPkFromDatabase(DataNode node, DbEntity entity, Connection connection) throws Exception {
 
         String sql = newIDString(entity);
-        adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
+		adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
 
-        Connection con = node.getDataSource().getConnection();
-        try {
-            Statement st = con.createStatement();
-            try {
+		Statement st = connection.createStatement();
+		try {
 
-                ResultSet rs = st.executeQuery(sql);
-                try {
-                    // Object pk = null;
-                    if (!rs.next()) {
-                        throw new CayenneRuntimeException(
-                                "Error generating pk for DbEntity " + entity.getName());
-                    }
-                    return rs.getLong(1);
-                }
-                finally {
-                    rs.close();
-                }
-            }
-            finally {
-                st.close();
-            }
-        }
-        finally {
-            con.close();
-        }
-
+			ResultSet rs = st.executeQuery(sql);
+			try {
+				// Object pk = null;
+				if (!rs.next()) {
+					throw new CayenneRuntimeException("Error generating pk for DbEntity " + entity.getName());
+				}
+				return rs.getLong(1);
+			} finally {
+				rs.close();
+			}
+		} finally {
+			st.close();
+		}
     }
 
     /**

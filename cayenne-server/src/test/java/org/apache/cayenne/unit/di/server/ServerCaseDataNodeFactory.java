@@ -27,6 +27,7 @@ import org.apache.cayenne.configuration.server.DataNodeFactory;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.tx.TransactionManagerFactory;
 
 public class ServerCaseDataNodeFactory implements DataNodeFactory {
 
@@ -44,6 +45,9 @@ public class ServerCaseDataNodeFactory implements DataNodeFactory {
 
     @Inject
     private DbAdapter adapter;
+    
+    @Inject
+    private TransactionManagerFactory  transactionManagerFactory;
 
     @Override
     public DataNode createDataNode(DataNodeDescriptor nodeDescriptor) throws Exception {
@@ -57,6 +61,7 @@ public class ServerCaseDataNodeFactory implements DataNodeFactory {
         dataNode.setDataSource(dataSourceFactory.getDataSource(nodeDescriptor.getName()));
         dataNode.setAdapter(adapter);
         dataNode.setSchemaUpdateStrategy(new SkipSchemaUpdateStrategy());
+        dataNode.setTransactionManagerFactory(transactionManagerFactory);
 
         return dataNode;
     }

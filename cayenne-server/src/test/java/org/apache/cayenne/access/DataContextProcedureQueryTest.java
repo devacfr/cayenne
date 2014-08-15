@@ -36,8 +36,9 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
-import org.apache.cayenne.tx.BaseTransaction;
-import org.apache.cayenne.tx.ExternalTransaction;
+import org.apache.cayenne.tx.TransactionStatus;
+import org.apache.cayenne.tx.TransactionalOperation;
+import org.apache.cayenne.tx.support.TransactionTemplate;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.UseServerRuntime;
@@ -83,24 +84,25 @@ public class DataContextProcedureQueryTest extends ServerCase {
         // create an artist with painting in the database
         createArtist(1000.0);
 
-        ProcedureQuery q = new ProcedureQuery(UPDATE_STORED_PROCEDURE);
+        final ProcedureQuery q = new ProcedureQuery(UPDATE_STORED_PROCEDURE);
         q.addParameter("paintingPrice", new Integer(3000));
 
         // since stored procedure commits its stuff, we must use an explicit
         // non-committing transaction
 
-        BaseTransaction t = new ExternalTransaction(jdbcEventLogger);
-        BaseTransaction.bindThreadTransaction(t);
+        TransactionTemplate template = new TransactionTemplate(context.getTransactionManager());
 
-        try {
-            context.performGenericQuery(q);
-        } finally {
-            BaseTransaction.bindThreadTransaction(null);
-            t.commit();
-        }
+        template.performInTransaction(new TransactionalOperation<Void>() {
+
+            @Override
+            public Void execute(TransactionStatus transactionStatus) throws Exception {
+                context.performGenericQuery(q);
+                return null;
+            }
+        });
 
         // check that price have doubled
-        SelectQuery select = new SelectQuery(Artist.class);
+        SelectQuery<Artist> select = new SelectQuery<Artist>(Artist.class);
         select.addPrefetch("paintingArray");
 
         List<?> artists = context.performQuery(select);
@@ -119,23 +121,23 @@ public class DataContextProcedureQueryTest extends ServerCase {
         // create an artist with painting in the database
         createArtist(1000.0);
 
-        ProcedureQuery q = new ProcedureQuery(UPDATE_STORED_PROCEDURE_NOPARAM);
+        final ProcedureQuery q = new ProcedureQuery(UPDATE_STORED_PROCEDURE_NOPARAM);
 
         // since stored procedure commits its stuff, we must use an explicit
         // non-committing transaction
+        TransactionTemplate template = new TransactionTemplate(context.getTransactionManager());
 
-        BaseTransaction t = new ExternalTransaction(jdbcEventLogger);
-        BaseTransaction.bindThreadTransaction(t);
+        template.performInTransaction(new TransactionalOperation<Void>() {
 
-        try {
-            context.performGenericQuery(q);
-        } finally {
-            BaseTransaction.bindThreadTransaction(null);
-            t.commit();
-        }
+            @Override
+            public Void execute(TransactionStatus transactionStatus) throws Exception {
+                context.performGenericQuery(q);
+                return null;
+            }
+        });
 
         // check that price have doubled
-        SelectQuery select = new SelectQuery(Artist.class);
+        SelectQuery<Artist> select = new SelectQuery<Artist>(Artist.class);
         select.addPrefetch("paintingArray");
 
         List<?> artists = context.performQuery(select);

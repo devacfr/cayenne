@@ -19,6 +19,7 @@
 
 package org.apache.cayenne.dba.frontbase;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -110,7 +111,7 @@ public class FrontBasePkGenerator extends JdbcPkGenerator {
      * @since 3.0
      */
     @Override
-    protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
+    protected long doGetLongPkFromDatabase(DataNode node, DbEntity entity, Connection connection) throws Exception {
 
         String template = "SELECT #result('UNIQUE' 'long') FROM " + entity.getName();
 

@@ -28,6 +28,7 @@ import java.util.List;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
+import org.apache.cayenne.conn.support.DataSources;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,7 +52,7 @@ public class ThrowOnPartialSchemaStrategy extends BaseSchemaUpdateStrategy {
         DatabaseMetaData md = null;
         Connection connection = null;
         try {
-            connection = dataNode.getDataSource().getConnection();
+            connection = DataSources.getConnection(dataNode.getDataSource());
             
             try {
                 md = connection.getMetaData();
@@ -68,7 +69,7 @@ public class ThrowOnPartialSchemaStrategy extends BaseSchemaUpdateStrategy {
                 }
             }
             finally {
-                connection.close();
+                DataSources.releaseConnection(connection, dataNode.getDataSource());
             }
             analyzer.analyzeSchemas(schemas, md);
         }

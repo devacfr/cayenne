@@ -26,7 +26,7 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.tx.TransactionManager;
+import org.apache.cayenne.tx.TransactionOperations;
 import org.apache.cayenne.tx.TransactionalOperation;
 
 /**
@@ -67,7 +67,7 @@ public class ServerRuntime extends CayenneRuntime {
 
     /**
      * Runs provided operation wrapped in a single transaction. Transaction
-     * handling delegated to the internal {@link TransactionManager}. Nested
+     * handling delegated to the internal {@link TransactionOperations}. Nested
      * calls to 'performInTransaction' are safe and attached to the same
      * in-progress transaction. TransactionalOperation can be some arbitrary
      * user code, which most often than not will consist of multiple Cayenne
@@ -76,7 +76,7 @@ public class ServerRuntime extends CayenneRuntime {
      * @since 3.2
      */
     public <T> T performInTransaction(TransactionalOperation<T> op) {
-        TransactionManager tm = injector.getInstance(TransactionManager.class);
+        TransactionOperations tm = injector.getInstance(TransactionOperations.class);
         return tm.performInTransaction(op);
     }
 

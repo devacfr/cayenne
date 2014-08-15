@@ -37,6 +37,7 @@ import javax.sql.DataSource;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.conn.DriverDataSource;
+import org.apache.cayenne.conn.support.DataSources;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.PkGenerator;
 import org.apache.cayenne.dba.TypesMapping;
@@ -272,7 +273,7 @@ public class DbGenerator {
     public void runGenerator(DataSource ds) throws Exception {
         this.failures = null;
 
-        Connection connection = ds.getConnection();
+        Connection connection = DataSources.getConnection(ds);
 
         try {
 
@@ -336,7 +337,7 @@ public class DbGenerator {
             new DbGeneratorPostprocessor().execute(connection, getAdapter());
         }
         finally {
-            connection.close();
+            DataSources.releaseConnection(connection, ds);
         }
     }
 

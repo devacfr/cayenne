@@ -46,7 +46,7 @@ public class IngresPkGenerator extends OraclePkGenerator {
     }
 
     @Override
-    protected long longPkFromDatabase(DataNode node, DbEntity entity) throws Exception {
+    protected long doGetLongPkFromDatabase(DataNode node, DbEntity entity, Connection connection) throws Exception {
 
         DbKeyGenerator pkGenerator = entity.getPrimaryKeyGenerator();
         String pkGeneratingSequenceName;
@@ -54,35 +54,27 @@ public class IngresPkGenerator extends OraclePkGenerator {
                 && DbKeyGenerator.ORACLE_TYPE.equals(pkGenerator.getGeneratorType())
                 && pkGenerator.getGeneratorName() != null)
             pkGeneratingSequenceName = pkGenerator.getGeneratorName();
-        else
-            pkGeneratingSequenceName = sequenceName(entity);
+		else
+			pkGeneratingSequenceName = sequenceName(entity);
 
-        Connection con = node.getDataSource().getConnection();
-        try {
-            Statement st = con.createStatement();
-            try {
-                String sql = "SELECT " + pkGeneratingSequenceName + ".nextval";
-                adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
-                ResultSet rs = st.executeQuery(sql);
-                try {
-                    // Object pk = null;
-                    if (!rs.next()) {
-                        throw new CayenneRuntimeException(
-                                "Error generating pk for DbEntity " + entity.getName());
-                    }
-                    return rs.getLong(1);
-                }
-                finally {
-                    rs.close();
-                }
-            }
-            finally {
-                st.close();
-            }
-        }
-        finally {
-            con.close();
-        }
+		Statement st = connection.createStatement();
+		try {
+			String sql = "SELECT " + pkGeneratingSequenceName + ".nextval";
+			adapter.getJdbcEventLogger().logQuery(sql, Collections.EMPTY_LIST);
+			ResultSet rs = st.executeQuery(sql);
+			try {
+				// Object pk = null;
+				if (!rs.next()) {
+					throw new CayenneRuntimeException("Error generating pk for DbEntity " + entity.getName());
+				}
+				return rs.getLong(1);
+			} finally {
+				rs.close();
+			}
+		} finally {
+			st.close();
+		}
+
     }
 
     @Override

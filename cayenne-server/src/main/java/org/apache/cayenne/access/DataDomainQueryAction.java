@@ -56,6 +56,7 @@ import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.RelationshipQuery;
 import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
+import org.apache.cayenne.tx.TransactionStatus;
 import org.apache.cayenne.tx.TransactionalOperation;
 import org.apache.cayenne.util.GenericResponse;
 import org.apache.cayenne.util.ListResponse;
@@ -292,11 +293,9 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
                             Collections.EMPTY_MAP, Collections.EMPTY_LIST, ids, Collections.EMPTY_LIST);
                 } else {
                     // remove snapshots from local ObjectStore only
-                    context.getObjectStore()
-                            .getDataRowCache()
-                            .processSnapshotChanges(context.getObjectStore(), Collections.EMPTY_MAP,
-                                    Collections.EMPTY_LIST, ids, Collections.EMPTY_LIST);
-                }
+                    context.getObjectStore().getDataRowCache().processSnapshotChanges(context.getObjectStore(),
+                            Collections.EMPTY_MAP, Collections.EMPTY_LIST, ids, Collections.EMPTY_LIST);
+		}
 
                 GenericResponse response = new GenericResponse();
                 response.addUpdateCount(1);
@@ -406,9 +405,10 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
      */
     void runQueryInTransaction() {
 
-        domain.getTransactionManager().performInTransaction(new TransactionalOperation<Object>() {
+        domain.performInTransaction(new TransactionalOperation<Void>() {
+
             @Override
-            public Object perform() {
+            public Void execute(TransactionStatus transactionStatus) {
                 runQuery();
                 return null;
             }
@@ -515,7 +515,7 @@ class DataDomainQueryAction implements QueryRouter, OperationObserver {
 
         return node;
     }
-
+    
     /**
      * @since 3.2
      */

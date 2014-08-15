@@ -29,6 +29,7 @@ import java.util.Map;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbGenerator;
+import org.apache.cayenne.conn.support.DataSources;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.commons.logging.Log;
@@ -58,8 +59,7 @@ public class CreateIfNoSchemaStrategy extends BaseSchemaUpdateStrategy {
         if (generate) {
             logger.info("No schema detected, will create mapped tables");
             generate(dataNode);
-        }
-        else {
+        } else {
             logger.info("Full or partial schema detected, skipping tables creation");
         }
     }
@@ -68,8 +68,7 @@ public class CreateIfNoSchemaStrategy extends BaseSchemaUpdateStrategy {
         Collection<DataMap> map = dataNode.getDataMaps();
         Iterator<DataMap> iterator = map.iterator();
         while (iterator.hasNext()) {
-            DbGenerator gen = new DbGenerator(dataNode.getAdapter(), iterator.next(), 
-                    dataNode.getJdbcEventLogger());
+            DbGenerator gen = new DbGenerator(dataNode.getAdapter(), iterator.next(), dataNode.getJdbcEventLogger());
             gen.setShouldCreateTables(true);
             gen.setShouldDropTables(false);
             gen.setShouldCreateFKConstraints(true);
@@ -77,8 +76,7 @@ public class CreateIfNoSchemaStrategy extends BaseSchemaUpdateStrategy {
             gen.setShouldDropPKSupport(false);
             try {
                 gen.runGenerator(dataNode.getDataSource());
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 throw new CayenneRuntimeException(e);
             }
         }
@@ -89,17 +87,13 @@ public class CreateIfNoSchemaStrategy extends BaseSchemaUpdateStrategy {
      * 
      * @throws SQLException
      */
-    protected Map<String, Boolean> getNameTablesInDB(DataNode dataNode)
-            throws SQLException {
+    protected Map<String, Boolean> getNameTablesInDB(DataNode dataNode) throws SQLException {
         String tableLabel = dataNode.getAdapter().tableTypeForTable();
-        Connection con = null;
+        Connection con = DataSources.getConnection(dataNode.getDataSource());
         Map<String, Boolean> nameTables = new HashMap<String, Boolean>();
-        con = dataNode.getDataSource().getConnection();
-
+        
         try {
-            ResultSet rs = con.getMetaData().getTables(null, null, "%", new String[] {
-                tableLabel
-            });
+            ResultSet rs = con.getMetaData().getTables(null, null, "%", new String[] { tableLabel });
 
             try {
 
@@ -107,15 +101,12 @@ public class CreateIfNoSchemaStrategy extends BaseSchemaUpdateStrategy {
                     String name = rs.getString("TABLE_NAME");
                     nameTables.put(name, false);
                 }
-            }
-            finally {
+            } finally {
                 rs.close();
             }
 
-        }
-        finally {
-
-            con.close();
+        } finally {
+            DataSources.releaseConnection(con, dataNode.getDataSource());
         }
         return nameTables;
     }

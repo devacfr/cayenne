@@ -262,8 +262,7 @@ public class ServerModule implements Module {
 
         // a default ObjectStoreFactory used to create ObjectStores for contexts
         binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
-        
-        binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
+
         binder.bind(RowReaderFactory.class).to(DefaultRowReaderFactory.class);
     }
 }

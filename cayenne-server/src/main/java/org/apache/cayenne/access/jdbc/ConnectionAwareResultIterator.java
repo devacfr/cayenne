@@ -68,6 +68,7 @@ public class ConnectionAwareResultIterator<T> implements ResultIterator<T> {
         }
 
         try {
+            //TODO [devacfr] to verify better
             connection.close();
         } catch (SQLException e2) {
             if (errors == null) {

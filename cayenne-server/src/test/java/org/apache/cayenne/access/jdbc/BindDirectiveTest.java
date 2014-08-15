@@ -36,6 +36,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
+import org.apache.cayenne.conn.support.DataSources;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.di.Inject;
@@ -243,7 +244,7 @@ public class BindDirectiveTest extends ServerCase {
         node.setAdapter(adapter);
         SQLTemplateAction action = new SQLTemplateAction(template, node);
 
-        Connection c = dataSourceFactory.getSharedDataSource().getConnection();
+        Connection c = DataSources.getConnection(dataSourceFactory.getSharedDataSource());
         try {
             MockOperationObserver observer = new MockOperationObserver();
             action.performAction(c, observer);
@@ -254,10 +255,10 @@ public class BindDirectiveTest extends ServerCase {
             assertEquals(1, batches[0]);
         }
         finally {
-            c.close();
+            DataSources.releaseConnection(c, dataSourceFactory.getSharedDataSource());
         }
 
-        SelectQuery query = new SelectQuery(Artist.class);
+        SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
         query.setFetchingDataRows(true);
 
         List<DataRow> data = context.performQuery(query);
