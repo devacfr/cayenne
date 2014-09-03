@@ -44,6 +44,7 @@
 	<modules>
 		<module>build-tools</module>
 		<module>cayenne-di</module>
+        <module>cayenne-testing</module>
 		<module>cayenne-server</module>
 		<module>cayenne-client</module>
 		<module>cayenne-tools</module>
