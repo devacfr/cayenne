@@ -27,14 +27,15 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.EventUtil;
+import org.junit.Test;
 
 /**
  * Tests that DataContext sends DataChannel events.
  */
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextDataChannelEventsTest extends ServerCase {
 
     @Inject
@@ -46,6 +47,7 @@ public class DataContextDataChannelEventsTest extends ServerCase {
     @Inject
     private ServerRuntime runtime;
 
+    @Test
     public void testCommitEvent() throws Exception {
         Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
@@ -69,6 +71,7 @@ public class DataContextDataChannelEventsTest extends ServerCase {
 
     }
 
+    @Test
     public void testRollbackEvent() throws Exception {
         Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
@@ -91,6 +94,7 @@ public class DataContextDataChannelEventsTest extends ServerCase {
         }.runTest(10000);
     }
 
+    @Test
     public void testChangeEventOnChildChange() throws Exception {
         Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
@@ -117,6 +121,7 @@ public class DataContextDataChannelEventsTest extends ServerCase {
         }.runTest(10000);
     }
 
+    @Test
     public void testChangeEventOnPeerChange() throws Exception {
         Artist a = context.newObject(Artist.class);
         a.setArtistName("X");
@@ -141,6 +146,7 @@ public class DataContextDataChannelEventsTest extends ServerCase {
         }.runTest(10000);
     }
 
+    @Test
     public void testChangeEventOnPeerChangeSecondNestingLevel() throws Exception {
         ObjectContext childPeer1 = runtime.newContext(context);
 

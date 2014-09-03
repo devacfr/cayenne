@@ -24,10 +24,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
+
 
 public class SnapshotEventTest extends TestCase {
 
+	@Test
     public void testRootEvent() {
         Object source = new Object();
         Collection<?> deleted = new ArrayList<Object>();

@@ -20,12 +20,14 @@
 package org.apache.cayenne.access.util;
 
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DefaultOperationObserverTest extends ServerCase {
 
+	@Test
     public void testHasExceptions1() throws Exception {
         DefaultOperationObserver observer = new DefaultOperationObserver();
         assertFalse(observer.hasExceptions());
@@ -33,6 +35,7 @@ public class DefaultOperationObserverTest extends ServerCase {
         assertTrue(observer.hasExceptions());
     }
 
+	@Test
     public void testHasExceptions2() throws Exception {
         DefaultOperationObserver observer = new DefaultOperationObserver();
         assertFalse(observer.hasExceptions());

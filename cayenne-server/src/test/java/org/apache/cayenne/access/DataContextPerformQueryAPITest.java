@@ -34,6 +34,7 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.ExternalTransaction;
 import org.apache.cayenne.tx.Transaction;
@@ -41,9 +42,9 @@ import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextPerformQueryAPITest extends ServerCase {
 
     @Inject
@@ -60,7 +61,7 @@ public class DataContextPerformQueryAPITest extends ServerCase {
 
     @Inject
     private DataChannelInterceptor queryInterceptor;
-    
+
     @Inject
     private JdbcEventLogger jdbcEventLogger;
 
@@ -97,6 +98,7 @@ public class DataContextPerformQueryAPITest extends ServerCase {
         tPainting.insert(7, 11, "p_artist2", 2000);
     }
 
+    @Test
     public void testObjectQueryStringBoolean() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
 
@@ -105,6 +107,7 @@ public class DataContextPerformQueryAPITest extends ServerCase {
         assertEquals(2, paintings.size());
     }
 
+    @Test
     public void testObjectQueryStringMapBoolean() throws Exception {
         createTwoArtistsAndTwoPaintingsDataSet();
 
@@ -116,6 +119,7 @@ public class DataContextPerformQueryAPITest extends ServerCase {
         assertEquals(1, paintings.size());
     }
 
+    @Test
     public void testProcedureQueryStringMapBoolean() throws Exception {
 
         if (!accessStackAdapter.supportsStoredProcedures()) {
@@ -151,6 +155,7 @@ public class DataContextPerformQueryAPITest extends ServerCase {
         assertEquals(11, ((Number) artist.getObjectId().getIdSnapshot().get(Artist.ARTIST_ID_PK_COLUMN)).intValue());
     }
 
+    @Test
     public void testNonSelectingQueryString() throws Exception {
 
         int[] counts = context.performNonSelectingQuery("NonSelectingQuery");
@@ -163,6 +168,7 @@ public class DataContextPerformQueryAPITest extends ServerCase {
         assertEquals("No Painting Like This", p.getPaintingTitle());
     }
 
+    @Test
     public void testNonSelectingQueryStringMap() throws Exception {
 
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -180,6 +186,7 @@ public class DataContextPerformQueryAPITest extends ServerCase {
         assertEquals("Go Figure", p.getPaintingTitle());
     }
 
+    @Test
     public void testPerfomQueryNonSelecting() throws Exception {
 
         Artist a = context.newObject(Artist.class);
@@ -196,6 +203,7 @@ public class DataContextPerformQueryAPITest extends ServerCase {
         assertEquals(0, result.size());
     }
 
+    @Test
     public void testObjectQueryWithLocalCache() throws Exception {
         createTwoArtists();
 
@@ -204,6 +212,7 @@ public class DataContextPerformQueryAPITest extends ServerCase {
 
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
+            @Override
             public void execute() {
                 List<?> artists1 = context.performQuery("QueryWithLocalCache", false);
                 assertEquals(2, artists1.size());
@@ -211,6 +220,7 @@ public class DataContextPerformQueryAPITest extends ServerCase {
         });
     }
 
+    @Test
     public void testObjectQueryWithSharedCache() throws Exception {
         createTwoArtists();
 
@@ -219,6 +229,7 @@ public class DataContextPerformQueryAPITest extends ServerCase {
 
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
+            @Override
             public void execute() {
                 List<?> artists1 = context2.performQuery("QueryWithSharedCache", false);
                 assertEquals(2, artists1.size());

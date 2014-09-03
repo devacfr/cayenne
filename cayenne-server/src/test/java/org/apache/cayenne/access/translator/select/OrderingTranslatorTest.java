@@ -23,16 +23,16 @@ import java.sql.Connection;
 
 import org.apache.cayenne.TranslationCase;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.translator.select.OrderingTranslator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class OrderingTranslatorTest extends ServerCase {
 
     @Inject
@@ -43,21 +43,25 @@ public class OrderingTranslatorTest extends ServerCase {
 
     private Connection connection;
 
+
     @Override
-    protected void setUpAfterInjection() throws Exception {
-        this.connection = dataSourceFactory.getSharedDataSource().getConnection();
+    public void setUp() throws Exception {
+    	super.setUp();
+    	this.connection = dataSourceFactory.getSharedDataSource().getConnection();
     }
 
     @Override
-    protected void tearDownBeforeInjection() throws Exception {
-        connection.close();
+    public void tearDown() throws Exception {
+    	super.tearDown();
+    	connection.close();
     }
 
     /**
      * Tests ascending ordering on string attribute.
      */
+    @Test
     public void testDoTranslation1() throws Exception {
-        SelectQuery q = new SelectQuery(Artist.class);
+        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
         q.addOrdering("artistName", SortOrder.ASCENDING);
 
         TstQueryAssembler qa = new TstQueryAssembler(q, node, connection);
@@ -74,8 +78,9 @@ public class OrderingTranslatorTest extends ServerCase {
     /**
      * Tests descending ordering on string attribute.
      */
+    @Test
     public void testDoTranslation2() throws Exception {
-        SelectQuery q = new SelectQuery(Artist.class);
+        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
         q.addOrdering("artistName", SortOrder.DESCENDING);
 
         TstQueryAssembler qa = new TstQueryAssembler(q, node, connection);
@@ -92,8 +97,9 @@ public class OrderingTranslatorTest extends ServerCase {
     /**
      * Tests ascending case-insensitive ordering on string attribute.
      */
+    @Test
     public void testDoTranslation4() throws Exception {
-        SelectQuery q = new SelectQuery(Artist.class);
+        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
         q.addOrdering("artistName", SortOrder.ASCENDING_INSENSITIVE);
 
         TstQueryAssembler qa = new TstQueryAssembler(q, node, connection);
@@ -109,8 +115,9 @@ public class OrderingTranslatorTest extends ServerCase {
         tstCase.assertTranslatedWell(orderBySql);
     }
 
+    @Test
     public void testDoTranslation5() throws Exception {
-        SelectQuery q = new SelectQuery(Artist.class);
+        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
         q.addOrdering("artistName", SortOrder.DESCENDING_INSENSITIVE);
         q.addOrdering("paintingArray.estimatedPrice", SortOrder.ASCENDING);
 
@@ -133,8 +140,9 @@ public class OrderingTranslatorTest extends ServerCase {
         tstCase.assertTranslatedWell(orderBySql);
     }
 
+    @Test
     public void testDoTranslation6() throws Exception {
-        SelectQuery q = new SelectQuery(Artist.class);
+        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
         q.addOrdering("artistName", SortOrder.ASCENDING_INSENSITIVE);
         q.addOrdering("paintingArray.estimatedPrice", SortOrder.ASCENDING_INSENSITIVE);
 
@@ -159,8 +167,9 @@ public class OrderingTranslatorTest extends ServerCase {
         tstCase.assertTranslatedWell(orderBySql);
     }
 
+    @Test
     public void testDoTranslation3() throws Exception {
-        SelectQuery q = new SelectQuery(Artist.class);
+        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
 
         q.addOrdering("artistName", SortOrder.DESCENDING);
         q.addOrdering("paintingArray.estimatedPrice", SortOrder.ASCENDING);

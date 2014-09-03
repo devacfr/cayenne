@@ -18,7 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
+
 import org.apache.cayenne.ConfigurationException;
+import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
@@ -28,9 +30,10 @@ public class ServerCaseEntityResolverProvider implements Provider<EntityResolver
 
     @Inject
     // injecting provider to make this provider independent from scoping of ServerRuntime
-    protected Provider<ServerRuntime> serverRuntimeProvider;
+    protected Provider<CayenneRuntime> serverRuntimeProvider;
 
     public EntityResolver get() throws ConfigurationException {
-        return serverRuntimeProvider.get().getDataDomain().getEntityResolver();
+    	ServerRuntime serverRuntime = (ServerRuntime)serverRuntimeProvider.get();
+        return serverRuntime.getDataDomain().getEntityResolver();
     }
 }

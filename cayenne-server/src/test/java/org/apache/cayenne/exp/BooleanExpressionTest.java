@@ -18,11 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.exp;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.testdo.testmap.BooleanTestEntity;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 public class BooleanExpressionTest extends TestCase {
+
+    @Test
     public void testCAY1185() {
         Expression expTrue = Expression.fromString("booleanColumn = true");
         Expression expFalse = Expression.fromString("booleanColumn = false");

@@ -22,10 +22,13 @@ package org.apache.cayenne.access.types;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
+
 
 public class ExtendedTypeMapTest extends TestCase {
 
+	@Test
     public void testRegisterType() throws Exception {
         ExtendedTypeMap map = new ExtendedTypeMap();
         ExtendedType tstType = new MockExtendedType();
@@ -39,6 +42,7 @@ public class ExtendedTypeMapTest extends TestCase {
         assertSame(map.getDefaultType(), map.getRegisteredType(tstType.getClassName()));
     }
 
+	@Test
     public void testRegisterTypeSubclasses() throws Exception {
         ExtendedTypeMap map = new ExtendedTypeMap();
         ExtendedType tstType1 = new MockExtendedType(List.class);
@@ -75,6 +79,7 @@ public class ExtendedTypeMapTest extends TestCase {
         
     }
     
+	@Test
     public void testRegisterArrayType() throws Exception {
         ExtendedTypeMap map = new ExtendedTypeMap();
         ByteArrayType tstType = new ByteArrayType(false, true);
@@ -93,6 +98,7 @@ public class ExtendedTypeMapTest extends TestCase {
                 .indexOf("SerializableTypeFactory") > 0);
     }
 
+	@Test
     public void testRegisteredTypeName() throws Exception {
         ExtendedTypeMap map = new ExtendedTypeMap();
         ExtendedType tstType = new MockExtendedType();

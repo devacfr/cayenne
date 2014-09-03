@@ -21,8 +21,6 @@ package org.apache.cayenne.configuration.rop.server;
 import java.util.Arrays;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.server.ServerModule;
@@ -33,17 +31,19 @@ import org.apache.cayenne.configuration.web.RequestHandler;
 import org.apache.cayenne.configuration.web.WebUtil;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.remote.RemoteService;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 import com.mockrunner.mock.web.MockServletConfig;
 import com.mockrunner.mock.web.MockServletContext;
 
 public class ROPHessianServletTest extends TestCase {
 
+    @Test
     public void testInitWithServletName() throws Exception {
 
         MockServletConfig config = new MockServletConfig();
-        config
-                .setServletName("cayenne-org.apache.cayenne.configuration.rop.server.test-config");
+        config.setServletName("cayenne-org.apache.cayenne.configuration.rop.server.test-config");
 
         MockServletContext context = new MockServletContext();
         config.setServletContext(context);
@@ -58,12 +58,10 @@ public class ROPHessianServletTest extends TestCase {
 
         List<?> locations = runtime.getInjector().getInstance(
                 Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
-        assertEquals(
-                Arrays
-                        .asList("cayenne-org.apache.cayenne.configuration.rop.server.test-config.xml"),
-                locations);
+        assertEquals(Arrays.asList("cayenne-org.apache.cayenne.configuration.rop.server.test-config.xml"), locations);
     }
 
+    @Test
     public void testInitWithLocation() throws Exception {
 
         String location = "cayenne-org.apache.cayenne.configuration.rop.server.test-config.xml";
@@ -85,6 +83,7 @@ public class ROPHessianServletTest extends TestCase {
         assertEquals(Arrays.asList(location), locations);
     }
 
+    @Test
     public void testInitWithStandardModules() throws Exception {
 
         String name = "cayenne-org.apache.cayenne.configuration.rop.server.test-config";
@@ -112,15 +111,14 @@ public class ROPHessianServletTest extends TestCase {
         assertTrue(RemoteService.class.equals(servlet.getAPIClass()));
     }
 
+    @Test
     public void testInitWithExtraModules() throws Exception {
 
         String name = "cayenne-org.apache.cayenne.configuration.rop.server.test-config";
 
         MockServletConfig config = new MockServletConfig();
         config.setServletName(name);
-        config.setInitParameter("extra-modules", MockModule1.class.getName()
-                + ","
-                + MockModule2.class.getName());
+        config.setInitParameter("extra-modules", MockModule1.class.getName() + "," + MockModule2.class.getName());
 
         MockServletContext context = new MockServletContext();
         config.setServletContext(context);
@@ -142,6 +140,7 @@ public class ROPHessianServletTest extends TestCase {
         assertTrue(handler instanceof MockRequestHandler);
     }
 
+    @Test
     public void testInitHessianService() throws Exception {
 
         MockServletConfig config = new MockServletConfig();
@@ -149,8 +148,7 @@ public class ROPHessianServletTest extends TestCase {
 
         MockServletContext context = new MockServletContext();
         config.setServletContext(context);
-        config.setInitParameter("extra-modules", ROPHessianServlet_ConfigModule.class
-                .getName());
+        config.setInitParameter("extra-modules", ROPHessianServlet_ConfigModule.class.getName());
 
         ROPHessianServlet servlet = new ROPHessianServlet();
 
@@ -160,6 +158,7 @@ public class ROPHessianServletTest extends TestCase {
 
         assertTrue(RemoteService.class.equals(servlet.getAPIClass()));
 
-        // TODO: mock servlet request to check that the right service instance is invoked
+        // TODO: mock servlet request to check that the right service instance
+        // is invoked
     }
 }

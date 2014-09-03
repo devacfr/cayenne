@@ -18,11 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.access.types;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
+
 
 
 public class CharTypeTest extends TestCase {
     
+	@Test
     public void testRightTrim() {
         CharType charType = new CharType(true, false);
         String trimmedStr = charType.rtrim("  text    ");

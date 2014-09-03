@@ -18,15 +18,28 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
-import org.apache.cayenne.di.DIBootstrap;
-import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.di.spi.DefaultScope;
+import org.apache.cayenne.testing.CayenneBlockJUnit4ClassRunner;
+import org.apache.cayenne.testing.ClassMode;
+import org.apache.cayenne.testing.Modules;
+import org.apache.cayenne.testing.TestExecutionListeners;
+import org.apache.cayenne.testing.support.DependencyInjectionTestExecutionListener;
+import org.apache.cayenne.testing.support.DirtiesRuntimeTestExecutionListener;
+import org.apache.cayenne.testing.support.InjectMode;
 import org.apache.cayenne.unit.di.DICase;
+import org.junit.runner.RunWith;
 
-public class ServerCase extends DICase {
+@RunWith(CayenneBlockJUnit4ClassRunner.class)
+@TestExecutionListeners(listeners = { DirtiesRuntimeTestExecutionListener.class,
+        DependencyInjectionTestExecutionListener.class, SchemaBuilderExecutionListener.class })
+@Modules({ ServerCaseModule.class })
+@InjectMode(classMode = ClassMode.AfterTestMethod)
+// after each method
+public abstract class ServerCase extends DICase {
 
-    // known runtimes... unit tests may reuse these with @UseServerRuntime annotation or
-    // can define their own on the fly (TODO: how would that work with the global schema
+    // known runtimes... unit tests may reuse these with @UseServerRuntime
+    // annotation or
+    // can define their own on the fly (TODO: how would that work with the
+    // global schema
     // setup?)
     public static final String INHERTITANCE_SINGLE_TABLE1_PROJECT = "cayenne-inheritance-single-table1.xml";
     public static final String INHERTITANCE_VERTICAL_PROJECT = "cayenne-inheritance-vertical.xml";
@@ -40,16 +53,4 @@ public class ServerCase extends DICase {
     public static final String ONEWAY_PROJECT = "cayenne-oneway-rels.xml";
     public static final String MULTI_TIER_PROJECT = "cayenne-multi-tier.xml";
 
-    private static final Injector injector;
-
-    static {
-        DefaultScope testScope = new DefaultScope();
-        injector = DIBootstrap.createInjector(new ServerCaseModule(testScope));
-        injector.getInstance(SchemaBuilder.class).rebuildSchema();
-    }
-
-    @Override
-    protected Injector getUnitTestInjector() {
-        return injector;
-    }
 }

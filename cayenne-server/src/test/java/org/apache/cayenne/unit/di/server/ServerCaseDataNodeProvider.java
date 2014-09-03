@@ -18,18 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
+
+
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.configuration.server.ServerRuntime;
+import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Provider;
+
 
 public class ServerCaseDataNodeProvider implements Provider<DataNode> {
 
     @Inject
     // injecting provider to make this provider independent from scoping of ServerRuntime
-    protected Provider<ServerRuntime> serverRuntimeProvider;
+    protected Provider<CayenneRuntime> serverRuntimeProvider;
 
     public DataNode get() throws ConfigurationException {
         DataDomain channel = (DataDomain) serverRuntimeProvider.get().getChannel();

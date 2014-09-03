@@ -29,14 +29,15 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 /**
  * Tests various DataContextDelegate methods invocation and consequences on DataContext
  * behavior.
  */
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextDelegateTest extends ServerCase {
 
     @Inject
@@ -67,6 +68,7 @@ public class DataContextDelegateTest extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testWillPerformGenericQuery() throws Exception {
 
         final List<Query> queriesPerformed = new ArrayList<Query>(1);
@@ -90,6 +92,7 @@ public class DataContextDelegateTest extends ServerCase {
         assertTrue("Delegate unexpectedly blocked the query.", query.isRouteCalled());
     }
 
+    @Test
     public void testWillPerformGenericQueryBlocked() throws Exception {
 
         final List<Query> queriesPerformed = new ArrayList<Query>(1);
@@ -112,6 +115,7 @@ public class DataContextDelegateTest extends ServerCase {
         assertFalse("Delegate couldn't block the query.", query.isRouteCalled());
     }
 
+    @Test
     public void testWillPerformQuery() throws Exception {
 
         final List<Query> queriesPerformed = new ArrayList<Query>(1);
@@ -135,6 +139,7 @@ public class DataContextDelegateTest extends ServerCase {
         assertNotNull(results);
     }
 
+    @Test
     public void testWillPerformQueryBlocked() throws Exception {
 
         final List<Query> queriesPerformed = new ArrayList<Query>(1);

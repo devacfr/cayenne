@@ -41,10 +41,12 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.CharPkTestEntity;
 import org.apache.cayenne.testdo.testmap.CompoundPkTestEntity;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class CayenneTest extends ServerCase {
 
     @Inject
@@ -58,8 +60,10 @@ public class CayenneTest extends ServerCase {
     protected TableHelper tCompoundPKTest;
     protected TableHelper tCharPKTest;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
+
+	@Override
+	public void setUp() throws Exception {		
+		super.setUp();
         dbHelper.deleteAll("PAINTING_INFO");
         dbHelper.deleteAll("PAINTING");
         dbHelper.deleteAll("ARTIST_EXHIBIT");
@@ -80,8 +84,9 @@ public class CayenneTest extends ServerCase {
 
         tCharPKTest = new TableHelper(dbHelper, "CHAR_PK_TEST");
         tCharPKTest.setColumns("PK_COL", "OTHER_COL");
-    }
-
+	}
+    
+    
     private void createOneCompoundPK() throws Exception {
         tCompoundPKTest.insert("PK1", "PK2", "BBB");
     }
@@ -99,6 +104,7 @@ public class CayenneTest extends ServerCase {
         tArtist.insert(33002, "artist2");
     }
 
+    @Test
     public void testReadNestedProperty_ToMany() throws Exception {
 
         tArtist.insert(1, "a");
@@ -118,6 +124,7 @@ public class CayenneTest extends ServerCase {
         assertEquals(2, size);
     }
 
+    @Test
     public void testScalarObjectForQuery() throws Exception {
         createTwoArtists();
 
@@ -143,6 +150,7 @@ public class CayenneTest extends ServerCase {
         assertEquals(2, ((Number) object).intValue());
     }
 
+    @Test
     public void testScalarObjectForQuery2() throws Exception {
         createTwoArtists();
 
@@ -156,12 +164,14 @@ public class CayenneTest extends ServerCase {
         assertEquals(2, ((Number) object).intValue());
     }
     
+    @Test
     public void testMakePath() {
         assertEquals("", Cayenne.makePath());
         assertEquals("a", Cayenne.makePath("a"));
         assertEquals("a.b", Cayenne.makePath("a", "b"));
     }
 
+    @Test
     public void testObjectForQuery() throws Exception {
         createOneArtist();
 
@@ -177,6 +187,7 @@ public class CayenneTest extends ServerCase {
         assertEquals("artist2", ((Artist) object).getArtistName());
     }
 
+    @Test
     public void testObjectForSelect() throws Exception {
         createOneArtist();
 
@@ -189,6 +200,7 @@ public class CayenneTest extends ServerCase {
         assertEquals("artist2", ((Artist) object).getArtistName());
     }
     
+    @Test
     public void testObjectForQueryNoObject() throws Exception {
 
         ObjectId id = new ObjectId("Artist", Artist.ARTIST_ID_PK_COLUMN, new Integer(
@@ -198,6 +210,7 @@ public class CayenneTest extends ServerCase {
         assertNull(object);
     }
 
+    @Test
     public void testNoObjectForPK() throws Exception {
         createOneArtist();
 
@@ -206,6 +219,7 @@ public class CayenneTest extends ServerCase {
         assertNull(object);
     }
 
+    @Test
     public void testObjectForPKTemporary() throws Exception {
 
         Persistent o1 = context.newObject(Artist.class);
@@ -218,6 +232,7 @@ public class CayenneTest extends ServerCase {
         })));
     }
 
+    @Test
     public void testObjectForPKObjectId() throws Exception {
         createOneArtist();
 
@@ -231,6 +246,7 @@ public class CayenneTest extends ServerCase {
         assertEquals("artist2", ((Artist) object).getArtistName());
     }
 
+    @Test
     public void testObjectForPKClassInt() throws Exception {
         createOneArtist();
 
@@ -241,6 +257,7 @@ public class CayenneTest extends ServerCase {
         assertEquals("artist2", ((Artist) object).getArtistName());
     }
 
+    @Test
     public void testObjectForPKEntityInt() throws Exception {
         createOneArtist();
 
@@ -251,6 +268,7 @@ public class CayenneTest extends ServerCase {
         assertEquals("artist2", ((Artist) object).getArtistName());
     }
 
+    @Test
     public void testObjectForPKClassMap() throws Exception {
         createOneArtist();
 
@@ -264,6 +282,7 @@ public class CayenneTest extends ServerCase {
         assertEquals("artist2", ((Artist) object).getArtistName());
     }
 
+    @Test
     public void testObjectForPKEntityMapCompound() throws Exception {
         createOneCompoundPK();
 
@@ -277,6 +296,7 @@ public class CayenneTest extends ServerCase {
         assertEquals("BBB", ((CompoundPkTestEntity) object).getName());
     }
 
+    @Test
     public void testCompoundPKForObject() throws Exception {
         createOneCompoundPK();
 
@@ -292,6 +312,7 @@ public class CayenneTest extends ServerCase {
         assertEquals("PK2", pk.get(CompoundPkTestEntity.KEY2_PK_COLUMN));
     }
 
+    @Test
     public void testIntPKForObjectFailureForCompound() throws Exception {
         createOneCompoundPK();
 
@@ -309,6 +330,7 @@ public class CayenneTest extends ServerCase {
         }
     }
 
+    @Test
     public void testIntPKForObjectFailureForNonNumeric() throws Exception {
         createOneCharPK();
 
@@ -325,6 +347,7 @@ public class CayenneTest extends ServerCase {
         }
     }
 
+    @Test
     public void testPKForObjectFailureForCompound() throws Exception {
         createOneCompoundPK();
 
@@ -342,6 +365,7 @@ public class CayenneTest extends ServerCase {
         }
     }
 
+    @Test
     public void testIntPKForObject() throws Exception {
         createOneArtist();
 
@@ -352,6 +376,7 @@ public class CayenneTest extends ServerCase {
         assertEquals(33002, Cayenne.intPKForObject(object));
     }
 
+    @Test
     public void testPKForObject() throws Exception {
         createOneArtist();
 
@@ -362,6 +387,7 @@ public class CayenneTest extends ServerCase {
         assertEquals(new Long(33002), Cayenne.pkForObject(object));
     }
 
+    @Test
     public void testIntPKForObjectNonNumeric() throws Exception {
         createOneCharPK();
 

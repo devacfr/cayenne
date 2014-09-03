@@ -21,15 +21,17 @@ package org.apache.cayenne.query;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class QueryChainTest extends ServerCase {
 
     @Inject
     private ServerRuntime runtime;
 
+    @Test
     public void testSelectQuery() {
 
         QueryChain chain = new QueryChain();
@@ -43,6 +45,7 @@ public class QueryChainTest extends ServerCase {
         assertNull(md.getObjEntity());
     }
 
+    @Test
     public void testSelectQueryDataRows() {
 
         QueryChain chain = new QueryChain();

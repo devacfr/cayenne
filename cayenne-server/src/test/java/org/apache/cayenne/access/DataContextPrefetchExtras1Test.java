@@ -28,13 +28,14 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 /**
  * A test case for CAY-788.
  */
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextPrefetchExtras1Test extends ServerCase {
 
     @Inject
@@ -66,6 +67,7 @@ public class DataContextPrefetchExtras1Test extends ServerCase {
         }
     }
 
+    @Test
     public void testPrefetchToOne() throws Exception {
         createDataSet();
 

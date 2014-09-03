@@ -22,12 +22,14 @@ package org.apache.cayenne.access;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class NestedDataContextParentEventsTest extends ServerCase {
 
     @Inject
@@ -36,6 +38,18 @@ public class NestedDataContextParentEventsTest extends ServerCase {
     @Inject
     private DataContext context;
 
+    @Inject
+    private DBHelper dbHelper;
+
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        // [devacfr] To resolve conflict (Something wrong depending the order execution)
+        // between cached primary key and the real primary keys in database
+        dbHelper.deleteAll("ARTIST");
+    }
+
+    
+    @Test
     public void testParentUpdatedId() throws Exception {
         ObjectContext child1 = runtime.newContext(context);
 

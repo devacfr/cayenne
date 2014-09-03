@@ -27,11 +27,12 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.qualified.Qualified1;
 import org.apache.cayenne.testdo.qualified.Qualified2;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.DEFAULT_PROJECT)
+@CayenneConfiguration(ServerCase.DEFAULT_PROJECT)
 public class CDOQualifiedEntitiesTest extends ServerCase {
 
     @Inject
@@ -85,6 +86,7 @@ public class CDOQualifiedEntitiesTest extends ServerCase {
         tQualified2.insert(1, "OY1", null, 2);
     }
 
+    @Test
     public void testReadToMany() throws Exception {
         if (accessStackAdapter.supportsNullBoolean()) {
 
@@ -107,6 +109,7 @@ public class CDOQualifiedEntitiesTest extends ServerCase {
         }
     }
 
+    @Test
     public void testReadToOne() throws Exception {
         if (accessStackAdapter.supportsNullBoolean()) {
 

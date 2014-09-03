@@ -24,16 +24,18 @@ import java.util.List;
 import org.apache.cayenne.access.ToManyList;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.Util;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataObjectSerializationTest extends ServerCase {
 
     @Inject
     private ObjectContext context;
 
+    @Test
     public void testSerializeTransient() throws Exception {
         Artist artist = new Artist();
         artist.setArtistName("artist1");
@@ -46,6 +48,7 @@ public class DataObjectSerializationTest extends ServerCase {
         assertEquals("artist1", deserialized.getArtistName());
     }
 
+    @Test
     public void testSerializeNew() throws Exception {
         Artist artist = context.newObject(Artist.class);
         artist.setArtistName("artist1");
@@ -68,6 +71,7 @@ public class DataObjectSerializationTest extends ServerCase {
         assertEquals(0, paintings.size());
     }
 
+    @Test
     public void testSerializeNewWithFaults() throws Exception {
         Artist artist = context.newObject(Artist.class);
         artist.setArtistName("artist1");
@@ -88,6 +92,7 @@ public class DataObjectSerializationTest extends ServerCase {
         assertFalse(list.isFault());
     }
 
+    @Test
     public void testSerializeCommitted() throws Exception {
 
         Artist artist = context.newObject(Artist.class);

@@ -29,10 +29,11 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inherit.CustomerRepresentative;
 import org.apache.cayenne.testdo.inherit.Employee;
 import org.apache.cayenne.testdo.inherit.Manager;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.PEOPLE_PROJECT)
+@CayenneConfiguration(ServerCase.PEOPLE_PROJECT)
 public class DataContextEJBQLInheritanceTest extends ServerCase {
 
     @Inject
@@ -64,6 +65,7 @@ public class DataContextEJBQLInheritanceTest extends ServerCase {
         person.insert(6, "e", "C", null);
     }
 
+    @Test
     public void testSelect() throws Exception {
 
         EJBQLQuery superclass = new EJBQLQuery("select p from AbstractPerson p ORDER BY p.name");

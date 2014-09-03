@@ -26,7 +26,6 @@ import java.util.List;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.jdbc.ColumnDescriptor;
-import org.apache.cayenne.access.translator.select.SelectTranslator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionException;
@@ -42,12 +41,13 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
 import org.apache.cayenne.testdo.testmap.CompoundPainting;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class SelectTranslatorTest extends ServerCase {
 
     @Inject
@@ -71,7 +71,8 @@ public class SelectTranslatorTest extends ServerCase {
     private Connection connection;
 
     @Override
-    protected void setUpAfterInjection() throws Exception {
+    public void setUp() throws Exception {
+    	super.setUp();
         dbHelper.deleteAll("PAINTING_INFO");
         dbHelper.deleteAll("PAINTING");
         dbHelper.deleteAll("ARTIST_EXHIBIT");
@@ -82,13 +83,15 @@ public class SelectTranslatorTest extends ServerCase {
     }
 
     @Override
-    protected void tearDownBeforeInjection() throws Exception {
+    public void tearDown() throws Exception {
+    	super.tearDown();
         connection.close();
     }
 
     /**
      * Tests query creation with qualifier and ordering.
      */
+    @Test
     public void testCreateSqlString1() throws Exception {
         // query with qualifier and ordering
         SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class, ExpressionFactory.likeExp("artistName", "a%"));
@@ -107,6 +110,7 @@ public class SelectTranslatorTest extends ServerCase {
     /**
      * Tests query creation with qualifier and ordering.
      */
+    @Test
     public void testDbEntityQualifier() throws Exception {
 
         SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
@@ -139,9 +143,10 @@ public class SelectTranslatorTest extends ServerCase {
         }
     }
 
+    @Test
     public void testDbEntityQualifier_OuterJoin() throws Exception {
 
-        SelectQuery q = new SelectQuery(Painting.class);
+        SelectQuery<Painting> q = new SelectQuery<Painting>(Painting.class);
         q.addOrdering("toArtist+.artistName", SortOrder.ASCENDING);
 
         final DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
@@ -174,6 +179,7 @@ public class SelectTranslatorTest extends ServerCase {
         }
     }
 
+    @Test
     public void testDbEntityQualifier_FlattenedRel() throws Exception {
 
         SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class, ExpressionFactory.matchExp("groupArray.name",
@@ -209,6 +215,7 @@ public class SelectTranslatorTest extends ServerCase {
         }
     }
 
+    @Test
     public void testDbEntityQualifier_RelatedMatch() throws Exception {
 
         SelectQuery<Artist> q = new SelectQuery(Painting.class,
@@ -247,9 +254,10 @@ public class SelectTranslatorTest extends ServerCase {
     /**
      * Tests query creation with "distinct" specified.
      */
+    @Test
     public void testCreateSqlString2() throws Exception {
         // query with "distinct" set
-        SelectQuery q = new SelectQuery(Artist.class);
+        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
         q.setDistinct(true);
 
         String generatedSql = new SelectTranslator(q, dataNode, connection).createSqlString();
@@ -264,9 +272,10 @@ public class SelectTranslatorTest extends ServerCase {
      * translation of relationship path "ArtistExhibit.toArtist.artistName" and
      * "ArtistExhibit.toExhibit.toGallery.paintingArray.toArtist.artistName".
      */
+    @Test
     public void testCreateSqlString5() throws Exception {
         // query with qualifier and ordering
-        SelectQuery q = new SelectQuery(ArtistExhibit.class);
+        SelectQuery<ArtistExhibit> q = new SelectQuery<ArtistExhibit>(ArtistExhibit.class);
         q.setQualifier(ExpressionFactory.likeExp("toArtist.artistName", "a%"));
         q.andQualifier(ExpressionFactory.likeExp("toExhibit.toGallery.paintingArray.toArtist.artistName", "a%"));
 
@@ -294,9 +303,10 @@ public class SelectTranslatorTest extends ServerCase {
      * translation of relationship path "ArtistExhibit.toArtist.artistName" and
      * "ArtistExhibit.toArtist.paintingArray.paintingTitle".
      */
+    @Test
     public void testCreateSqlString6() throws Exception {
         // query with qualifier and ordering
-        SelectQuery q = new SelectQuery(ArtistExhibit.class);
+        SelectQuery<ArtistExhibit> q = new SelectQuery<ArtistExhibit>(ArtistExhibit.class);
         q.setQualifier(ExpressionFactory.likeExp("toArtist.artistName", "a%"));
         q.andQualifier(ExpressionFactory.likeExp("toArtist.paintingArray.paintingTitle", "p%"));
 
@@ -321,8 +331,9 @@ public class SelectTranslatorTest extends ServerCase {
      * Test query when qualifying on the same attribute more than once. Check
      * translation "Artist.dateOfBirth > ? AND Artist.dateOfBirth < ?".
      */
+    @Test
     public void testCreateSqlString7() throws Exception {
-        SelectQuery q = new SelectQuery(Artist.class);
+        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
         q.setQualifier(ExpressionFactory.greaterExp("dateOfBirth", new Date()));
         q.andQualifier(ExpressionFactory.lessExp("dateOfBirth", new Date()));
 
@@ -352,8 +363,9 @@ public class SelectTranslatorTest extends ServerCase {
      * "Painting.toArtist.dateOfBirth > ? AND Painting.toArtist.dateOfBirth <
      * ?".
      */
+    @Test
     public void testCreateSqlString8() throws Exception {
-        SelectQuery q = new SelectQuery();
+        SelectQuery<Artist> q = new SelectQuery<Artist>();
         q.setRoot(Painting.class);
         q.setQualifier(ExpressionFactory.greaterExp("toArtist.dateOfBirth", new Date()));
         q.andQualifier(ExpressionFactory.lessExp("toArtist.dateOfBirth", new Date()));
@@ -377,9 +389,11 @@ public class SelectTranslatorTest extends ServerCase {
         assertTrue("No second DOB comparison: " + i4 + ", " + i3, i4 > i3);
     }
 
+    @Test
     public void testCreateSqlString9() throws Exception {
         // query for a compound ObjEntity with qualifier
-        SelectQuery q = new SelectQuery(CompoundPainting.class, ExpressionFactory.likeExp("artistName", "a%"));
+        SelectQuery<CompoundPainting> q = new SelectQuery<CompoundPainting>(CompoundPainting.class,
+        		ExpressionFactory.likeExp("artistName", "a%"));
 
         String sql = new SelectTranslator(q, dataNode, connection).createSqlString();
 
@@ -428,9 +442,10 @@ public class SelectTranslatorTest extends ServerCase {
 
     }
 
+    @Test
     public void testCreateSqlString10() throws Exception {
         // query with to-many joint prefetches
-        SelectQuery q = new SelectQuery(Artist.class);
+        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
         q.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
         SelectTranslator transl = new SelectTranslator(q, dataNode, connection);
@@ -450,9 +465,10 @@ public class SelectTranslatorTest extends ServerCase {
         assertEquals(1, transl.joinStack.size());
     }
 
+    @Test
     public void testCreateSqlString11() throws Exception {
         // query with joint prefetches and other joins
-        SelectQuery q = new SelectQuery(Artist.class, Expression.fromString("paintingArray.paintingTitle = 'a'"));
+        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class, Expression.fromString("paintingArray.paintingTitle = 'a'"));
         q.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
         SelectTranslator transl = new SelectTranslator(q, dataNode, connection);
@@ -463,9 +479,10 @@ public class SelectTranslatorTest extends ServerCase {
         assertEquals(2, transl.joinStack.size());
     }
 
+    @Test
     public void testCreateSqlString12() throws Exception {
         // query with to-one joint prefetches
-        SelectQuery q = new SelectQuery(Painting.class);
+        SelectQuery<Painting> q = new SelectQuery<Painting>(Painting.class);
         q.addPrefetch(Painting.TO_ARTIST_PROPERTY).setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
         SelectTranslator transl = new SelectTranslator(q, dataNode, connection);
@@ -486,9 +503,10 @@ public class SelectTranslatorTest extends ServerCase {
         assertEquals(1, transl.joinStack.size());
     }
 
+    @Test
     public void testCreateSqlString13() throws Exception {
         // query with invalid joint prefetches
-        SelectQuery q = new SelectQuery(Painting.class);
+        SelectQuery<Painting> q = new SelectQuery<Painting>(Painting.class);
         q.addPrefetch("invalid.invalid").setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
         try {
@@ -499,10 +517,11 @@ public class SelectTranslatorTest extends ServerCase {
         }
     }
 
+    @Test
     public void testCreateSqlStringWithQuoteSqlIdentifiers() throws Exception {
 
         try {
-            SelectQuery q = new SelectQuery(Artist.class);
+            SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
             DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
             entity.getDataMap().setQuotingSQLIdentifiers(true);
             q.addOrdering("dateOfBirth", SortOrder.ASCENDING);
@@ -535,10 +554,11 @@ public class SelectTranslatorTest extends ServerCase {
 
     }
 
+    @Test
     public void testCreateSqlStringWithQuoteSqlIdentifiers2() throws Exception {
 
         try {
-            SelectQuery q = new SelectQuery(Artist.class);
+            SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
             DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
             entity.getDataMap().setQuotingSQLIdentifiers(true);
             q.setQualifier(ExpressionFactory.greaterExp("dateOfBirth", new Date()));
@@ -579,12 +599,13 @@ public class SelectTranslatorTest extends ServerCase {
         }
     }
 
+    @Test
     public void testCreateSqlStringWithQuoteSqlIdentifiers3() throws Exception {
 
         // query with joint prefetches and other joins
         // and with QuoteSqlIdentifiers = true
         try {
-            SelectQuery q = new SelectQuery(Artist.class, Expression.fromString("paintingArray.paintingTitle = 'a'"));
+            SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class, Expression.fromString("paintingArray.paintingTitle = 'a'"));
             q.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
             DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
@@ -657,12 +678,13 @@ public class SelectTranslatorTest extends ServerCase {
         }
     }
 
+    @Test
     public void testCreateSqlStringWithQuoteSqlIdentifiers4() throws Exception {
 
         // query with to-one joint prefetches
         // and with QuoteSqlIdentifiers = true
         try {
-            SelectQuery q = new SelectQuery(Painting.class);
+            SelectQuery<Painting> q = new SelectQuery<Painting>(Painting.class);
             q.addPrefetch(Painting.TO_ARTIST_PROPERTY).setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
             DbEntity entity = context.getEntityResolver().getDbEntity("PAINTING");
@@ -722,8 +744,9 @@ public class SelectTranslatorTest extends ServerCase {
     /**
      * Tests columns generated for a simple object query.
      */
+    @Test
     public void testBuildResultColumns1() throws Exception {
-        SelectQuery q = new SelectQuery(Painting.class);
+        SelectQuery<Painting> q = new SelectQuery<Painting>(Painting.class);
         SelectTranslator tr = new SelectTranslator(q, dataNode, connection);
 
         List<?> columns = tr.buildResultColumns();
@@ -739,8 +762,9 @@ public class SelectTranslatorTest extends ServerCase {
     /**
      * Tests columns generated for an object query with joint prefetch.
      */
+    @Test
     public void testBuildResultColumns2() throws Exception {
-        SelectQuery q = new SelectQuery(Painting.class);
+        SelectQuery<Painting> q = new SelectQuery<Painting>(Painting.class);
         q.addPrefetch(Painting.TO_ARTIST_PROPERTY).setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
         SelectTranslator tr = new SelectTranslator(q, dataNode, connection);
 

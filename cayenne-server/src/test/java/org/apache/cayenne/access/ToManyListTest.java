@@ -28,11 +28,12 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.PersistentObjectList;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class ToManyListTest extends ServerCase {
 
     @Inject
@@ -62,6 +63,7 @@ public class ToManyListTest extends ServerCase {
         return new ToManyList(artist, Artist.PAINTING_ARRAY_PROPERTY);
     }
 
+    @Test
     public void testNewAddRemove() throws Exception {
         ToManyList list = createForNewArtist();
         assertFalse("Expected resolved list when created with a new object", list
@@ -80,6 +82,7 @@ public class ToManyListTest extends ServerCase {
         assertEquals(1, list.size());
     }
 
+    @Test
     public void testSavedUnresolvedAddRemove() throws Exception {
         ToManyList list = createForExistingArtist();
 
@@ -110,6 +113,7 @@ public class ToManyListTest extends ServerCase {
         assertTrue(getValue(list).contains(p2));
     }
 
+    @Test
     public void testSavedUnresolvedMerge() throws Exception {
         ToManyList list = createForExistingArtist();
 
@@ -144,6 +148,7 @@ public class ToManyListTest extends ServerCase {
         assertTrue(getValue(list).contains(p1));
     }
 
+    @Test
     public void testThrowOutDeleted() throws Exception {
         ToManyList list = createForExistingArtist();
 
@@ -191,6 +196,7 @@ public class ToManyListTest extends ServerCase {
                 .contains(p2));
     }
 
+    @Test
     public void testRealRelationship() throws Exception {
         Artist artist = context.newObject(Artist.class);
         artist.setArtistName("aaa");
@@ -222,6 +228,7 @@ public class ToManyListTest extends ServerCase {
         assertEquals(2, size);
     }
 
+    @Test
     public void testRealRelationshipRollback() throws Exception {
         Artist artist = context.newObject(Artist.class);
         artist.setArtistName("aaa");

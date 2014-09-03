@@ -35,10 +35,11 @@ import org.apache.cayenne.query.UpdateBatchQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.quotemap.QuoteAdress;
 import org.apache.cayenne.testdo.quotemap.Quote_Person;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.QUOTED_IDENTIFIERS_PROJECT)
+@CayenneConfiguration(ServerCase.QUOTED_IDENTIFIERS_PROJECT)
 public class QuotedIdentifiersTest extends ServerCase {
 
     @Inject
@@ -85,6 +86,7 @@ public class QuotedIdentifiersTest extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testPrefetchQuote() throws Exception {
         DbEntity entity = context.getEntityResolver().getObjEntity(QuoteAdress.class).getDbEntity();
         List idAttributes = Collections.singletonList(entity.getAttribute("City"));
@@ -129,6 +131,7 @@ public class QuotedIdentifiersTest extends ServerCase {
         assertEquals(1, objects10.size());
     }
 
+    @Test
     public void testQuotedEJBQLQuery() throws Exception {
         String ejbql = "select a from QuoteAdress a where a.group = '324'";
         EJBQLQuery queryEJBQL = new EJBQLQuery(ejbql);
@@ -136,6 +139,7 @@ public class QuotedIdentifiersTest extends ServerCase {
         assertEquals(1, objects11.size());
     }
 
+    @Test
     public void testQuotedEJBQLQueryWithJoin() throws Exception {
         String ejbql = "select p from Quote_Person p join p.address_Rel a where p.name = 'Arcadi'";
         EJBQLQuery queryEJBQL = new EJBQLQuery(ejbql);
@@ -143,6 +147,7 @@ public class QuotedIdentifiersTest extends ServerCase {
         assertEquals(1, resultList.size());
     }
 
+    @Test
     public void testQuotedEJBQLQueryWithOrderBy() throws Exception {
         EJBQLQuery query = new EJBQLQuery("select p from Quote_Person p order by p.name");
 

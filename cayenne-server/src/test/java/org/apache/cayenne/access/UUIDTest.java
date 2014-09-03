@@ -28,10 +28,11 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.UuidPkEntity;
 import org.apache.cayenne.testdo.testmap.UuidTestEntity;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class UUIDTest extends ServerCase {
 
     @Inject
@@ -50,6 +51,7 @@ public class UUIDTest extends ServerCase {
         uuidPkEntity = new TableHelper(dbHelper, "UUID_PK_ENTITY", "ID");
     }
 
+    @Test
     public void testUUID() throws Exception {
 
         UuidTestEntity test = context.newObject(UuidTestEntity.class);
@@ -67,6 +69,7 @@ public class UUIDTest extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testUUIDMeaningfulPkInsert() throws Exception {
         UUID id = UUID.randomUUID();
 
@@ -79,6 +82,7 @@ public class UUIDTest extends ServerCase {
         assertEquals(id, UUID.fromString(fetched));
     }
 
+    @Test
     public void testUUIDMeaningfulPkSelect() throws Exception {
         UUID id = UUID.randomUUID();
 

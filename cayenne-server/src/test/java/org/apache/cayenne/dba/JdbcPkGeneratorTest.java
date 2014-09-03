@@ -26,11 +26,12 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.SchemaBuilder;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class JdbcPkGeneratorTest extends ServerCase {
 
     @Inject
@@ -61,6 +62,7 @@ public class JdbcPkGeneratorTest extends ServerCase {
         }
     }
 
+    @Test
     public void testLongPk() throws Exception {
 
         if (!JdbcPkGenerator.class.isAssignableFrom(adapter.getPkGenerator().getClass())) {

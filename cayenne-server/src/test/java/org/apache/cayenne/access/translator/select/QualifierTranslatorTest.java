@@ -24,7 +24,6 @@ import java.sql.Connection;
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.translator.select.QualifierTranslator;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.exp.ExpressionFactory;
@@ -37,11 +36,12 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.MockQuery;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Gallery;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class QualifierTranslatorTest extends ServerCase {
 
     @Inject
@@ -53,15 +53,18 @@ public class QualifierTranslatorTest extends ServerCase {
     private Connection connection;
 
     @Override
-    protected void setUpAfterInjection() throws Exception {
+    public void setUp() throws Exception {
+    	super.setUp();
         this.connection = dataSourceFactory.getSharedDataSource().getConnection();
     }
 
     @Override
-    protected void tearDownBeforeInjection() throws Exception {
+    public void tearDown() throws Exception {
+    	super.tearDown();
         connection.close();
     }
 
+    @Test
     public void testNonQualifiedQuery() throws Exception {
         TstQueryAssembler qa = new TstQueryAssembler(new MockQuery(), node, connection);
 
@@ -73,6 +76,7 @@ public class QualifierTranslatorTest extends ServerCase {
         }
     }
 
+    @Test
     public void testNullQualifier() throws Exception {
         TstQueryAssembler qa = new TstQueryAssembler(new SelectQuery<Object>(), node, connection);
 
@@ -81,18 +85,22 @@ public class QualifierTranslatorTest extends ServerCase {
         assertEquals(0, out.length());
     }
 
+    @Test
     public void testUnary() throws Exception {
         doExpressionTest(new TstUnaryExpSuite());
     }
 
+    @Test
     public void testBinary() throws Exception {
         doExpressionTest(new TstBinaryExpSuite());
     }
 
+    @Test
     public void testTernary() throws Exception {
         doExpressionTest(new TstTernaryExpSuite());
     }
 
+    @Test
     public void testExtras() throws Exception {
         ObjectId oid1 = new ObjectId("Gallery", "GALLERY_ID", 1);
         ObjectId oid2 = new ObjectId("Gallery", "GALLERY_ID", 2);
@@ -123,7 +131,7 @@ public class QualifierTranslatorTest extends ServerCase {
 
                 ObjEntity entity = node.getEntityResolver().getObjEntity(cases[i].getRootEntity());
                 assertNotNull(entity);
-                SelectQuery q = new SelectQuery(entity);
+                SelectQuery<?> q = new SelectQuery<Object>(entity);
                 q.setQualifier(cases[i].getCayenneExp());
 
                 TstQueryAssembler qa = new TstQueryAssembler(q, node, connection);

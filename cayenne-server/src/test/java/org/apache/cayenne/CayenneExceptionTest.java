@@ -19,30 +19,34 @@
 
 package org.apache.cayenne;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 public class CayenneExceptionTest extends TestCase {
 
+    @Test
     public void testConstructor1() throws Exception {
         CayenneException ex = new CayenneException();
         assertNull(ex.getCause());
         assertTrue(ex.getMessage().startsWith(CayenneException.getExceptionLabel()));
     }
 
+    @Test
     public void testConstructor2() throws Exception {
         CayenneException ex = new CayenneException("abc");
         assertNull(ex.getCause());
         assertEquals(CayenneException.getExceptionLabel() + "abc", ex.getMessage());
     }
 
+    @Test
     public void testConstructor3() throws Exception {
         Throwable cause = new Throwable();
         CayenneException ex = new CayenneException(cause);
         assertSame(cause, ex.getCause());
-        assertEquals(CayenneException.getExceptionLabel() + cause.toString(), ex
-                .getMessage());
+        assertEquals(CayenneException.getExceptionLabel() + cause.toString(), ex.getMessage());
     }
 
+    @Test
     public void testConstructor4() throws Exception {
         Throwable cause = new Throwable();
         CayenneException ex = new CayenneException("abc", cause);
@@ -50,11 +54,13 @@ public class CayenneExceptionTest extends TestCase {
         assertEquals(CayenneException.getExceptionLabel() + "abc", ex.getMessage());
     }
 
+    @Test
     public void testMessageFormatting1() throws Exception {
         CayenneException ex = new CayenneException("x%sx%sx", "a", "b");
         assertEquals("xaxbx", ex.getUnlabeledMessage());
     }
 
+    @Test
     public void testMessageFormatting2() throws Exception {
         Throwable cause = new Throwable();
         CayenneException ex = new CayenneException("x%sx%sx", cause, "a", "b");

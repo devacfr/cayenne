@@ -37,10 +37,11 @@ import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.CompoundPainting;
 import org.apache.cayenne.testdo.testmap.CompoundPaintingLongNames;
 import org.apache.cayenne.testdo.testmap.Gallery;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextFlattenedAttributesTest extends ServerCase {
 
     @Inject
@@ -112,6 +113,7 @@ public class DataContextFlattenedAttributesTest extends ServerCase {
 
     }
 
+    @Test
     public void testSelectCompound1() throws Exception {
         createTestDataSet();
         SelectQuery query = new SelectQuery(CompoundPainting.class);
@@ -162,6 +164,7 @@ public class DataContextFlattenedAttributesTest extends ServerCase {
     // attributes, while
     // EJBQLQuery does an OUTER JOIN... which seems like a better idea...
     // 14/01/2010 now it uses LEFT JOIN
+    @Test
     public void testSelectCompound2() throws Exception {
         createTestDataSet();
         SelectQuery query = new SelectQuery(
@@ -196,6 +199,7 @@ public class DataContextFlattenedAttributesTest extends ServerCase {
      * {@link PersistentDescriptor}[105] That forced an error during the building of the
      * SelectQuery statement, CAY-1484
      */
+    @Test
     public void testSelectCompoundLongNames() throws Exception {
         createTestDataSet();
         SelectQuery query = new SelectQuery(CompoundPaintingLongNames.class);
@@ -222,6 +226,7 @@ public class DataContextFlattenedAttributesTest extends ServerCase {
         }
     }
 
+    @Test
     public void testSelectEJQBQLCollectionTheta() throws Exception {
         createTestDataSet();
         EJBQLQuery query = new EJBQLQuery(
@@ -241,6 +246,7 @@ public class DataContextFlattenedAttributesTest extends ServerCase {
         }
     }
 
+    @Test
     public void testSelectEJQBQLLike() throws Exception {
         createTestDataSet();
         EJBQLQuery query = new EJBQLQuery(
@@ -260,6 +266,7 @@ public class DataContextFlattenedAttributesTest extends ServerCase {
         }
     }
 
+    @Test
     public void testSelectEJQBQLBetween() throws Exception {
         createTestDataSet();
         EJBQLQuery query = new EJBQLQuery("SELECT a FROM CompoundPainting a "
@@ -279,6 +286,7 @@ public class DataContextFlattenedAttributesTest extends ServerCase {
         }
     }
 
+    @Test
     public void testSelectEJQBQLSubquery() throws Exception {
         createTestDataSet();
         EJBQLQuery query = new EJBQLQuery(
@@ -294,6 +302,7 @@ public class DataContextFlattenedAttributesTest extends ServerCase {
 
     }
 
+    @Test
     public void testSelectEJQBQLHaving() throws Exception {
         createTestDataSet();
         EJBQLQuery query = new EJBQLQuery(
@@ -311,6 +320,7 @@ public class DataContextFlattenedAttributesTest extends ServerCase {
         assertEquals(3L, galleryItem[1]);
     }
 
+    @Test
     public void testInsert() {
         CompoundPainting o1 = context.newObject(CompoundPainting.class);
         o1.setArtistName("A1");
@@ -333,6 +343,7 @@ public class DataContextFlattenedAttributesTest extends ServerCase {
         assertEquals(1, galleryCount.intValue());
     }
 
+    @Test
     public void testDelete() throws Exception {
         // throw in a bit of random overlapping data, to make sure FK/PK correspondence is
         // not purely coincidental
@@ -364,6 +375,7 @@ public class DataContextFlattenedAttributesTest extends ServerCase {
         assertEquals(0, galleryCount.intValue());
     }
 
+    @Test
     public void testUpdate() {
         CompoundPainting o1 = context.newObject(CompoundPainting.class);
         o1.setArtistName("A1");

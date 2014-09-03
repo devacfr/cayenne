@@ -25,13 +25,14 @@ import java.sql.SQLException;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.unit.UnitDbAdapter;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.SQLServerUnitDbAdapter;
+import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class SQLServerSnifferTest extends ServerCase {
 
     @Inject
@@ -43,6 +44,7 @@ public class SQLServerSnifferTest extends ServerCase {
     @Inject
     private AdhocObjectFactory objectFactory;
 
+    @Test
     public void testCreateAdapter() throws Exception {
 
         SQLServerSniffer sniffer = new SQLServerSniffer(objectFactory);

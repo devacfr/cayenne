@@ -25,15 +25,17 @@ import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class HSQLDBAdapterTest extends ServerCase {
     
     @Inject
     private AdhocObjectFactory objectFactory;
 
+    @Test
     public void testCreateTableIgnoresDoublePrecision() {
         HSQLDBAdapter adapter = objectFactory.newInstance(
                 HSQLDBAdapter.class, 
@@ -52,6 +54,7 @@ public class HSQLDBAdapterTest extends ServerCase {
         assertEquals(-1, sql.indexOf("DOUBLE(22)"));
     }
     
+    @Test
     public void testCreateTableAddsCachedKeyword() {
         HSQLDBAdapter adapter = objectFactory.newInstance(
                 HSQLDBAdapter.class, 

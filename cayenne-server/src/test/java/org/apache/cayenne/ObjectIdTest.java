@@ -23,13 +23,14 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
+import org.apache.cayenne.testing.TestCase;
 import org.apache.cayenne.util.Util;
 import org.apache.commons.collections.map.LinkedMap;
+import org.junit.Test;
 
 public class ObjectIdTest extends TestCase {
 
+    @Test
     public void testConstructor() {
         ObjectId temp1 = new ObjectId("e");
         assertEquals("e", temp1.getEntityName());
@@ -43,15 +44,17 @@ public class ObjectIdTest extends TestCase {
         assertSame(key, temp2.getKey());
     }
 
+    @Test
     public void testSerializabilityTemp() throws Exception {
         ObjectId temp1 = new ObjectId("e");
-        ObjectId temp2 = (ObjectId) Util.cloneViaSerialization(temp1);
+        ObjectId temp2 = Util.cloneViaSerialization(temp1);
 
         assertTrue(temp1.isTemporary());
         assertNotSame(temp1, temp2);
         assertEquals(temp1, temp2);
     }
 
+    @Test
     public void testSerializabilityPerm() throws Exception {
         ObjectId perm1 = new ObjectId("e", "a", "b");
 
@@ -60,7 +63,7 @@ public class ObjectIdTest extends TestCase {
         assertEquals(h, perm1.hashCode);
         assertTrue(perm1.hashCode != 0);
 
-        ObjectId perm2 = (ObjectId) Util.cloneViaSerialization(perm1);
+        ObjectId perm2 = Util.cloneViaSerialization(perm1);
 
         // make sure hashCode is reset to 0
         assertTrue(perm2.hashCode == 0);
@@ -70,12 +73,14 @@ public class ObjectIdTest extends TestCase {
         assertEquals(perm1, perm2);
     }
 
+    @Test
     public void testEquals0() {
         ObjectId oid1 = new ObjectId("TE");
         assertEquals(oid1, oid1);
         assertEquals(oid1.hashCode(), oid1.hashCode());
     }
 
+    @Test
     public void testEquals1() {
         ObjectId oid1 = new ObjectId("T", "a", "b");
         ObjectId oid2 = new ObjectId("T", "a", "b");
@@ -83,6 +88,7 @@ public class ObjectIdTest extends TestCase {
         assertEquals(oid1.hashCode(), oid2.hashCode());
     }
 
+    @Test
     public void testEquals2() {
         Map hm = new HashMap();
         ObjectId oid1 = new ObjectId("T", hm);
@@ -91,6 +97,7 @@ public class ObjectIdTest extends TestCase {
         assertEquals(oid1.hashCode(), oid2.hashCode());
     }
 
+    @Test
     public void testEquals3() {
         String pknm = "xyzabc";
 
@@ -109,6 +116,7 @@ public class ObjectIdTest extends TestCase {
     /**
      * This is a test case reproducing conditions for the bug "8458963".
      */
+    @Test
     public void testEquals5() {
 
         Map hm1 = new HashMap();
@@ -127,6 +135,7 @@ public class ObjectIdTest extends TestCase {
     /**
      * Multiple key objectId
      */
+    @Test
     public void testEquals6() {
 
         Map hm1 = new HashMap();
@@ -147,6 +156,7 @@ public class ObjectIdTest extends TestCase {
      * Checks that hashCode works even if keys are inserted in the map in a
      * different order...
      */
+    @Test
     public void testEquals7() {
 
         // create maps with guaranteed iteration order
@@ -166,6 +176,7 @@ public class ObjectIdTest extends TestCase {
         assertEquals(ref.hashCode(), oid.hashCode());
     }
 
+    @Test
     public void testEqualsBinaryKey() {
 
         Map hm1 = new HashMap();
@@ -180,11 +191,13 @@ public class ObjectIdTest extends TestCase {
         assertTrue(ref.equals(oid));
     }
 
+    @Test
     public void testEqualsNull() {
         ObjectId o = new ObjectId("T", "ARTIST_ID", new Integer(42));
         assertFalse(o.equals(null));
     }
 
+    @Test
     public void testIdAsMapKey() {
         Map map = new HashMap();
         Object o1 = new Object();
@@ -204,6 +217,7 @@ public class ObjectIdTest extends TestCase {
         assertSame(o1, map.get(oid2));
     }
 
+    @Test
     public void testNotEqual1() {
 
         ObjectId oid1 = new ObjectId("T1");
@@ -211,6 +225,7 @@ public class ObjectIdTest extends TestCase {
         assertFalse(oid1.equals(oid2));
     }
 
+    @Test
     public void testNotEqual2() {
 
         Map hm1 = new HashMap();
@@ -227,6 +242,7 @@ public class ObjectIdTest extends TestCase {
     /**
      * Test different numeric types.
      */
+    @Test
     public void testEquals8() {
 
         // create maps with guaranteed iteration order
@@ -246,6 +262,7 @@ public class ObjectIdTest extends TestCase {
         assertEquals(ref.hashCode(), oid.hashCode());
     }
 
+    @Test
     public void testToString() {
         Map m1 = new HashMap();
         m1.put("a", "1");

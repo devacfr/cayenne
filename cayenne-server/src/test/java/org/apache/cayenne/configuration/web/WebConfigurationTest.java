@@ -22,16 +22,17 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 import com.mockrunner.mock.web.MockFilterConfig;
 import com.mockrunner.mock.web.MockServletConfig;
 
 public class WebConfigurationTest extends TestCase {
 
+    @Test
     public void testFilterCreateModules_Standard() throws Exception {
 
         MockFilterConfig config = new MockFilterConfig();
@@ -39,12 +40,14 @@ public class WebConfigurationTest extends TestCase {
 
         Module m1 = new Module() {
 
+            @Override
             public void configure(Binder binder) {
             }
         };
 
         Module m2 = new Module() {
 
+            @Override
             public void configure(Binder binder) {
             }
         };
@@ -57,25 +60,25 @@ public class WebConfigurationTest extends TestCase {
         assertSame(m2, it.next());
     }
 
+    @Test
     public void testFilterCreateModules_Extra() throws Exception {
 
         MockFilterConfig config = new MockFilterConfig();
-        String exra = String.format(
-                "%s, \n%s",
-                MockModule1.class.getName(),
-                MockModule2.class.getName());
+        String exra = String.format("%s, \n%s", MockModule1.class.getName(), MockModule2.class.getName());
         config.setInitParameter(WebConfiguration.EXTRA_MODULES_PARAMETER, exra);
 
         WebConfiguration configuration = new WebConfiguration(config);
 
         Module m1 = new Module() {
 
+            @Override
             public void configure(Binder binder) {
             }
         };
 
         Module m2 = new Module() {
 
+            @Override
             public void configure(Binder binder) {
             }
         };
@@ -90,25 +93,25 @@ public class WebConfigurationTest extends TestCase {
         assertTrue(it.next() instanceof MockModule2);
     }
 
+    @Test
     public void testServletCreateModules_Extra() throws Exception {
 
         MockServletConfig config = new MockServletConfig();
-        String exra = String.format(
-                "%s, \n%s",
-                MockModule1.class.getName(),
-                MockModule2.class.getName());
+        String exra = String.format("%s, \n%s", MockModule1.class.getName(), MockModule2.class.getName());
         config.setInitParameter(WebConfiguration.EXTRA_MODULES_PARAMETER, exra);
 
         WebConfiguration configuration = new WebConfiguration(config);
 
         Module m1 = new Module() {
 
+            @Override
             public void configure(Binder binder) {
             }
         };
 
         Module m2 = new Module() {
 
+            @Override
             public void configure(Binder binder) {
             }
         };
@@ -123,6 +126,7 @@ public class WebConfigurationTest extends TestCase {
         assertTrue(it.next() instanceof MockModule2);
     }
 
+    @Test
     public void testFilterConfigurationLocation_Name() {
         MockFilterConfig config1 = new MockFilterConfig();
         config1.setFilterName("cayenne-x");
@@ -143,6 +147,7 @@ public class WebConfigurationTest extends TestCase {
         assertEquals("a/b/c/cayenne-z.xml", configuration3.getConfigurationLocation());
     }
 
+    @Test
     public void testServletConfigurationLocation_Name() {
         MockServletConfig config1 = new MockServletConfig();
         config1.setServletName("cayenne-x");
@@ -163,34 +168,31 @@ public class WebConfigurationTest extends TestCase {
         assertEquals("a/b/c/cayenne-z.xml", configuration3.getConfigurationLocation());
     }
 
+    @Test
     public void testFilterConfigurationLocation_Parameter() {
         MockFilterConfig config1 = new MockFilterConfig();
         config1.setFilterName("cayenne-x");
-        config1.setInitParameter(
-                WebConfiguration.CONFIGURATION_LOCATION_PARAMETER,
-                "cayenne-y.xml");
+        config1.setInitParameter(WebConfiguration.CONFIGURATION_LOCATION_PARAMETER, "cayenne-y.xml");
 
         WebConfiguration configuration1 = new WebConfiguration(config1);
         assertEquals("cayenne-y.xml", configuration1.getConfigurationLocation());
     }
 
+    @Test
     public void testServletConfigurationLocation_Parameter() {
         MockServletConfig config1 = new MockServletConfig();
         config1.setServletName("cayenne-x");
-        config1.setInitParameter(
-                WebConfiguration.CONFIGURATION_LOCATION_PARAMETER,
-                "cayenne-y.xml");
+        config1.setInitParameter(WebConfiguration.CONFIGURATION_LOCATION_PARAMETER, "cayenne-y.xml");
 
         WebConfiguration configuration1 = new WebConfiguration(config1);
         assertEquals("cayenne-y.xml", configuration1.getConfigurationLocation());
     }
 
+    @Test
     public void testFilterParameters() {
         MockFilterConfig config1 = new MockFilterConfig();
         config1.setFilterName("cayenne-x");
-        config1.setInitParameter(
-                WebConfiguration.CONFIGURATION_LOCATION_PARAMETER,
-                "cayenne-y.xml");
+        config1.setInitParameter(WebConfiguration.CONFIGURATION_LOCATION_PARAMETER, "cayenne-y.xml");
         config1.setInitParameter("test", "xxx");
 
         WebConfiguration configuration1 = new WebConfiguration(config1);
@@ -199,17 +201,15 @@ public class WebConfigurationTest extends TestCase {
         assertEquals(parameters, configuration1.getParameters());
 
         assertEquals(2, parameters.size());
-        assertEquals("cayenne-y.xml", parameters
-                .get(WebConfiguration.CONFIGURATION_LOCATION_PARAMETER));
+        assertEquals("cayenne-y.xml", parameters.get(WebConfiguration.CONFIGURATION_LOCATION_PARAMETER));
         assertEquals("xxx", parameters.get("test"));
     }
 
+    @Test
     public void testFilterOtherParameters() {
         MockFilterConfig config1 = new MockFilterConfig();
         config1.setFilterName("cayenne-x");
-        config1.setInitParameter(
-                WebConfiguration.CONFIGURATION_LOCATION_PARAMETER,
-                "cayenne-y.xml");
+        config1.setInitParameter(WebConfiguration.CONFIGURATION_LOCATION_PARAMETER, "cayenne-y.xml");
         config1.setInitParameter(WebConfiguration.EXTRA_MODULES_PARAMETER, "M1,M2");
         config1.setInitParameter("test", "xxx");
 

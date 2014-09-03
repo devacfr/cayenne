@@ -26,12 +26,15 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.inherit.Department;
 import org.apache.cayenne.testdo.inherit.Employee;
 import org.apache.cayenne.testdo.inherit.Manager;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.PEOPLE_PROJECT)
+
+
+@CayenneConfiguration(ServerCase.PEOPLE_PROJECT)
 public class DeepMergeOperationInheritanceTest extends ServerCase {
 
     @Inject
@@ -43,6 +46,7 @@ public class DeepMergeOperationInheritanceTest extends ServerCase {
     @Inject
     protected DataChannelInterceptor queryInterceptor;
 
+    @Test
     public void testDeepMergeExistingSubclass() {
 
         final Department d1 = context.newObject(Department.class);
@@ -69,7 +73,7 @@ public class DeepMergeOperationInheritanceTest extends ServerCase {
         d1.getEmployees().size();
 
         // resolve Employees
-        context1.performQuery(new SelectQuery(Employee.class));
+        context1.performQuery(new SelectQuery<Employee>(Employee.class));
 
         final DeepMergeOperation op = new DeepMergeOperation(context1);
 

@@ -25,11 +25,12 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.BinaryPKTest1;
 import org.apache.cayenne.testdo.testmap.BinaryPKTest2;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextBinaryPKTest extends ServerCase {
 
     @Inject
@@ -45,13 +46,15 @@ public class DataContextBinaryPKTest extends ServerCase {
     private DBHelper dbHelper;
 
     @Override
-    protected void setUpAfterInjection() throws Exception {
+    public void setUp() throws Exception {
+    	super.setUp();
         if (accessStackAdapter.supportsBinaryPK()) {
             dbHelper.deleteAll("BINARY_PK_TEST2");
             dbHelper.deleteAll("BINARY_PK_TEST1");
         }
     }
 
+    @Test
     public void testInsertBinaryPK() throws Exception {
         if (accessStackAdapter.supportsBinaryPK()) {
 
@@ -67,6 +70,7 @@ public class DataContextBinaryPKTest extends ServerCase {
         }
     }
 
+    @Test
     public void testFetchRelationshipBinaryPK() throws Exception {
         if (accessStackAdapter.supportsBinaryPK()) {
 
@@ -82,7 +86,7 @@ public class DataContextBinaryPKTest extends ServerCase {
             context.invalidateObjects(master, detail);
 
             BinaryPKTest2 fetchedDetail = (BinaryPKTest2) context1.performQuery(
-                    new SelectQuery(BinaryPKTest2.class)).get(0);
+                    new SelectQuery<BinaryPKTest2>(BinaryPKTest2.class)).get(0);
 
             assertNotNull(fetchedDetail.readPropertyDirectly("toBinaryPKMaster"));
 

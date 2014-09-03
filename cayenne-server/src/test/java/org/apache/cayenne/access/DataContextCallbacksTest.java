@@ -26,10 +26,11 @@ import org.apache.cayenne.reflect.LifecycleCallbackRegistry;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextCallbacksTest extends ServerCase {
 
     @Inject
@@ -42,7 +43,8 @@ public class DataContextCallbacksTest extends ServerCase {
     private DBHelper dbHelper;
 
     @Override
-    protected void setUpAfterInjection() throws Exception {
+    public void setUp() throws Exception {
+    	super.setUp();
         dbHelper.deleteAll("PAINTING_INFO");
         dbHelper.deleteAll("PAINTING");
         dbHelper.deleteAll("ARTIST_EXHIBIT");
@@ -51,11 +53,13 @@ public class DataContextCallbacksTest extends ServerCase {
     }
 
     @Override
-    protected void tearDownBeforeInjection() throws Exception {
+    public void tearDown() throws Exception {
+    	super.tearDown();
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         resolver.getCallbackRegistry().clear();
     }
 
+    @Test
     public void testPostAddCallbacks() {
         LifecycleCallbackRegistry registry = runtime
                 .getDataDomain()
@@ -92,6 +96,7 @@ public class DataContextCallbacksTest extends ServerCase {
         assertSame(a3, listener2.getPublicCalledbackEntity());
     }
 
+    @Test
     public void testPrePersistCallbacks() {
         LifecycleCallbackRegistry registry = runtime
                 .getDataDomain()
@@ -130,6 +135,7 @@ public class DataContextCallbacksTest extends ServerCase {
         assertSame(a3, listener2.getPublicCalledbackEntity());
     }
 
+    @Test
     public void testPreRemoveCallbacks() {
         LifecycleCallbackRegistry registry = runtime
                 .getDataDomain()

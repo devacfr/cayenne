@@ -35,10 +35,12 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class ValueForNullTest extends MergeCase {
 
     private static final String DEFAULT_VALUE_STRING = "DEFSTRING";
@@ -46,6 +48,7 @@ public class ValueForNullTest extends MergeCase {
     @Inject
     private DataContext context;
 
+    @Test
     public void test() throws Exception {
         DbEntity dbEntity = map.getDbEntity("PAINTING");
         assertNotNull(dbEntity);
@@ -91,7 +94,7 @@ public class ValueForNullTest extends MergeCase {
         Expression qual = ExpressionFactory.matchExp(
                 objAttr.getName(),
                 DEFAULT_VALUE_STRING);
-        SelectQuery query = new SelectQuery("Painting", qual);
+        SelectQuery<Painting> query = new SelectQuery<Painting>("Painting", qual);
         List<Persistent> rows = context.performQuery(query);
         assertEquals(nrows, rows.size());
 

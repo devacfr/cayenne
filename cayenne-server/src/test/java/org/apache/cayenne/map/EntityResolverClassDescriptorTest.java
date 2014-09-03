@@ -31,15 +31,17 @@ import org.apache.cayenne.reflect.LazyClassDescriptorDecorator;
 import org.apache.cayenne.reflect.PropertyDescriptor;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.testdo.mt.MtTable2;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.MULTI_TIER_PROJECT)
+@CayenneConfiguration(ServerCase.MULTI_TIER_PROJECT)
 public class EntityResolverClassDescriptorTest extends ServerCase {
 
     @Inject
     private ServerRuntime runtime;
 
+    @Test
     public void testServerDescriptorCaching() {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         resolver.getClassDescriptorMap().clearDescriptors();
@@ -54,6 +56,7 @@ public class EntityResolverClassDescriptorTest extends ServerCase {
         assertNotSame(descriptor, descriptor1);
     }
 
+    @Test
     public void testServerDescriptorFactory() {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         resolver.getClassDescriptorMap().clearDescriptors();
@@ -74,6 +77,7 @@ public class EntityResolverClassDescriptorTest extends ServerCase {
         }
     }
 
+    @Test
     public void testArcProperties() {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         resolver.getClassDescriptorMap().clearDescriptors();

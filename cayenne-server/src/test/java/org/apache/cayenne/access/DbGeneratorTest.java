@@ -25,10 +25,11 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DbGeneratorTest extends ServerCase {
 
     @Inject
@@ -49,10 +50,12 @@ public class DbGeneratorTest extends ServerCase {
                 .getDataMap("tstmap"), logger);
     }
 
+    @Test
     public void testAdapter() throws Exception {
         assertSame(adapter, generator.getAdapter());
     }
 
+    @Test
     public void testPkFilteringLogic() throws Exception {
         DataMap map = runtime.getDataDomain().getDataMap("tstmap");
         DbEntity artistExhibit = map.getDbEntity("ARTIST_EXHIBIT");
@@ -68,6 +71,7 @@ public class DbGeneratorTest extends ServerCase {
         assertFalse(generator.dbEntitiesRequiringAutoPK.contains(artistExhibit));
     }
 
+    @Test
     public void testCreatePkSupport() throws Exception {
         assertTrue(generator.shouldCreatePKSupport());
         generator.setShouldCreatePKSupport(false);
@@ -75,12 +79,14 @@ public class DbGeneratorTest extends ServerCase {
 
     }
 
+    @Test
     public void testShouldCreateTables() throws Exception {
         assertTrue(generator.shouldCreateTables());
         generator.setShouldCreateTables(false);
         assertFalse(generator.shouldCreateTables());
     }
-
+    
+    @Test
     public void testDropPkSupport() throws Exception {
 
         assertFalse(generator.shouldDropPKSupport());
@@ -88,6 +94,7 @@ public class DbGeneratorTest extends ServerCase {
         assertTrue(generator.shouldDropPKSupport());
     }
 
+    @Test
     public void testShouldDropTables() throws Exception {
         assertFalse(generator.shouldDropTables());
         generator.setShouldDropTables(true);

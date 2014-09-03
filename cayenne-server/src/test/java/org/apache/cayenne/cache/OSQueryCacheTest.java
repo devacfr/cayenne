@@ -22,27 +22,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.cache.OSQueryCache.RefreshSpecification;
 import org.apache.cayenne.query.MockQueryMetadata;
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 import com.opensymphony.oscache.base.CacheEntry;
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 
 public class OSQueryCacheTest extends TestCase {
 
+    @Test
     public void testDefaults() {
         OSQueryCache cache = new OSQueryCache();
 
         assertNull(cache.refreshSpecifications);
         assertNull(cache.defaultRefreshSpecification.cronExpression);
-        assertEquals(
-                CacheEntry.INDEFINITE_EXPIRY,
-                cache.defaultRefreshSpecification.refreshPeriod);
+        assertEquals(CacheEntry.INDEFINITE_EXPIRY, cache.defaultRefreshSpecification.refreshPeriod);
     }
 
+    @Test
     public void testDefaultOverrides() {
 
         Properties props = new Properties();
@@ -55,17 +55,14 @@ public class OSQueryCacheTest extends TestCase {
         assertEquals(15, cache.defaultRefreshSpecification.refreshPeriod);
     }
 
+    @Test
     public void testQueryOverrides() {
 
         Properties props = new Properties();
         props.put(OSQueryCache.GROUP_PREFIX + "ABC" + OSQueryCache.REFRESH_SUFFIX, "25");
-        props.put(
-                OSQueryCache.GROUP_PREFIX + "ABC" + OSQueryCache.CRON_SUFFIX,
-                "12 * * * * *");
+        props.put(OSQueryCache.GROUP_PREFIX + "ABC" + OSQueryCache.CRON_SUFFIX, "12 * * * * *");
         props.put(OSQueryCache.GROUP_PREFIX + "XYZ" + OSQueryCache.REFRESH_SUFFIX, "35");
-        props.put(
-                OSQueryCache.GROUP_PREFIX + "XYZ" + OSQueryCache.CRON_SUFFIX,
-                "24 * * * * *");
+        props.put(OSQueryCache.GROUP_PREFIX + "XYZ" + OSQueryCache.CRON_SUFFIX, "24 * * * * *");
 
         OSQueryCache cache = new OSQueryCache(new GeneralCacheAdministrator(), props);
 
@@ -82,7 +79,8 @@ public class OSQueryCacheTest extends TestCase {
         assertEquals("24 * * * * *", xyz.cronExpression);
         assertEquals(35, xyz.refreshPeriod);
     }
-    
+
+    @Test
     public void testGroupNames() {
 
         Properties props = new Properties();
@@ -90,9 +88,7 @@ public class OSQueryCacheTest extends TestCase {
         assertTrue(c1.getGroupNames().isEmpty());
 
         props.put(OSQueryCache.GROUP_PREFIX + "ABC" + OSQueryCache.REFRESH_SUFFIX, "25");
-        props.put(
-                OSQueryCache.GROUP_PREFIX + "XYZ" + OSQueryCache.CRON_SUFFIX,
-                "24 * * * * *");
+        props.put(OSQueryCache.GROUP_PREFIX + "XYZ" + OSQueryCache.CRON_SUFFIX, "24 * * * * *");
 
         OSQueryCache c2 = new OSQueryCache(new GeneralCacheAdministrator(), props);
 
@@ -102,6 +98,7 @@ public class OSQueryCacheTest extends TestCase {
         assertTrue(c2.getGroupNames().contains("XYZ"));
     }
 
+    @Test
     public void testSize() {
         OSQueryCache cache = new OSQueryCache();
 
@@ -115,7 +112,7 @@ public class OSQueryCacheTest extends TestCase {
         };
         cache.put(m1, r1);
         assertEquals(1, cache.size());
-        
+
         List r2 = new ArrayList();
         QueryMetadata m2 = new MockQueryMetadata() {
 

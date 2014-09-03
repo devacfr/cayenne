@@ -19,11 +19,12 @@
 package org.apache.cayenne.configuration;
 
 import org.apache.cayenne.map.DataMap;
-
-import junit.framework.TestCase;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 public class DefaultDataChannelDescriptorMergerTest extends TestCase {
 
+    @Test
     public void testSingleDescriptor() {
         DataChannelDescriptor descriptor = new DataChannelDescriptor();
         descriptor.setName("Zx");
@@ -35,6 +36,7 @@ public class DefaultDataChannelDescriptorMergerTest extends TestCase {
         assertEquals("Zx", merged.getName());
     }
 
+    @Test
     public void testMerged_Name() {
         DataChannelDescriptor d1 = new DataChannelDescriptor();
         d1.setName("Zx");
@@ -49,7 +51,8 @@ public class DefaultDataChannelDescriptorMergerTest extends TestCase {
         assertNotSame(d2, merged);
         assertEquals("Ym", merged.getName());
     }
-    
+
+    @Test
     public void testMerged_Properties() {
         DataChannelDescriptor d1 = new DataChannelDescriptor();
         d1.getProperties().put("X", "1");
@@ -67,6 +70,7 @@ public class DefaultDataChannelDescriptorMergerTest extends TestCase {
         assertEquals("4", merged.getProperties().get("Z"));
     }
 
+    @Test
     public void testMerged_DataMaps() {
         DataChannelDescriptor d1 = new DataChannelDescriptor();
         d1.setName("Zx");
@@ -92,6 +96,7 @@ public class DefaultDataChannelDescriptorMergerTest extends TestCase {
         assertSame(m21, merged.getDataMap("C"));
     }
 
+    @Test
     public void testMerge_DataNodes() {
         DataChannelDescriptor d1 = new DataChannelDescriptor();
         d1.setName("Zx");
@@ -115,7 +120,8 @@ public class DefaultDataChannelDescriptorMergerTest extends TestCase {
 
         assertEquals(3, merged.getNodeDescriptors().size());
 
-        // DataNodes are merged by copy .. so check they are not same as originals
+        // DataNodes are merged by copy .. so check they are not same as
+        // originals
         DataNodeDescriptor mergedA = merged.getNodeDescriptor("A");
         assertNotNull(mergedA);
         assertNotSame(dn11, mergedA);
@@ -131,6 +137,7 @@ public class DefaultDataChannelDescriptorMergerTest extends TestCase {
         assertNotSame(dn22, mergedC);
     }
 
+    @Test
     public void testMerge_DataNodesMapLinks() {
         DataChannelDescriptor d1 = new DataChannelDescriptor();
         d1.setName("Zx");
@@ -152,7 +159,8 @@ public class DefaultDataChannelDescriptorMergerTest extends TestCase {
 
         assertEquals(1, merged.getNodeDescriptors().size());
 
-        // DataNodes are merged by copy .. so check they are not same as originals
+        // DataNodes are merged by copy .. so check they are not same as
+        // originals
         DataNodeDescriptor mergedA = merged.getNodeDescriptor("A");
         assertNotNull(mergedA);
         assertNotSame(dn11, mergedA);

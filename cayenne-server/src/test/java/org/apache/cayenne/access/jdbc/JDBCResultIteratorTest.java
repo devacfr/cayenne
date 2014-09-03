@@ -25,8 +25,6 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.util.Collections;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.jdbc.reader.DefaultRowReaderFactory;
 import org.apache.cayenne.access.jdbc.reader.RowReader;
@@ -34,6 +32,8 @@ import org.apache.cayenne.access.types.ExtendedTypeMap;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.query.MockQueryMetadata;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 import com.mockrunner.mock.jdbc.MockConnection;
 import com.mockrunner.mock.jdbc.MockResultSet;
@@ -41,6 +41,7 @@ import com.mockrunner.mock.jdbc.MockStatement;
 
 public class JDBCResultIteratorTest extends TestCase {
 
+	@Test
     public void testNextDataRow() throws Exception {
         Connection c = new MockConnection();
         Statement s = new MockStatement(c);
@@ -60,6 +61,7 @@ public class JDBCResultIteratorTest extends TestCase {
         assertEquals("1", row.get("a"));
     }
 
+	@Test
     public void testClose() throws Exception {
         Connection c = new MockConnection();
         MockStatement s = new MockStatement(c);

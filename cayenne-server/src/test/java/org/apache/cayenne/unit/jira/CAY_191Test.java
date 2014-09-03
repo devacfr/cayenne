@@ -27,53 +27,54 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationship.FkOfDifferentType;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+@CayenneConfiguration(ServerCase.RELATIONSHIPS_PROJECT)
 public class CAY_191Test extends ServerCase {
-    
-    @Inject
-    protected DataContext context;
-    
-    @Inject
-    protected DBHelper dbHelper;
-    
-    protected TableHelper tRelationshipHelper;
-    protected TableHelper tFkOfDifferentType;
-    
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("FK_OF_DIFFERENT_TYPE");
-        dbHelper.update("REFLEXIVE_AND_TO_ONE").set("PARENT_ID", null, Types.INTEGER).execute();
-        dbHelper.deleteAll("REFLEXIVE_AND_TO_ONE");
-        dbHelper.deleteAll("RELATIONSHIP_HELPER");
-        
-        tRelationshipHelper = new TableHelper(dbHelper, "RELATIONSHIP_HELPER");
-        tRelationshipHelper.setColumns("NAME", "RELATIONSHIP_HELPER_ID");
-        
-        tFkOfDifferentType = new TableHelper(dbHelper, "FK_OF_DIFFERENT_TYPE");
-        tFkOfDifferentType.setColumns("ID", "RELATIONSHIP_HELPER_FK");
-    }
-    
-    protected void createTestDataSet() throws Exception {
-        tRelationshipHelper.insert("RH1", 1);
-        tFkOfDifferentType.insert(1, 1);
-    }
 
-    public void testResolveToOneOverFKOfDifferentNumType() throws Exception {
-        // this is mostly for legacy schemas, as on many dbs you won;t be able to even
-        // create the FK constraint...
+	@Inject
+	protected DataContext context;
 
-        createTestDataSet();
+	@Inject
+	protected DBHelper dbHelper;
 
-        FkOfDifferentType root = Cayenne.objectForPK(
-                context,
-                FkOfDifferentType.class,
-                1);
+	protected TableHelper tRelationshipHelper;
+	protected TableHelper tFkOfDifferentType;
 
-        assertNotNull(root);
-        assertNotNull(root.getRelationshipHelper());
-        assertEquals("RH1", root.getRelationshipHelper().getName());
-    }
+	@Override
+	public void setUp() throws Exception {
+		super.setUp();
+		dbHelper.deleteAll("FK_OF_DIFFERENT_TYPE");
+		dbHelper.update("REFLEXIVE_AND_TO_ONE").set("PARENT_ID", null, Types.INTEGER).execute();
+		dbHelper.deleteAll("REFLEXIVE_AND_TO_ONE");
+		dbHelper.deleteAll("RELATIONSHIP_HELPER");
+
+		tRelationshipHelper = new TableHelper(dbHelper, "RELATIONSHIP_HELPER");
+		tRelationshipHelper.setColumns("NAME", "RELATIONSHIP_HELPER_ID");
+
+		tFkOfDifferentType = new TableHelper(dbHelper, "FK_OF_DIFFERENT_TYPE");
+		tFkOfDifferentType.setColumns("ID", "RELATIONSHIP_HELPER_FK");
+	}
+
+	protected void createTestDataSet() throws Exception {
+		tRelationshipHelper.insert("RH1", 1);
+		tFkOfDifferentType.insert(1, 1);
+	}
+
+	@Test
+	public void testResolveToOneOverFKOfDifferentNumType() throws Exception {
+		// this is mostly for legacy schemas, as on many dbs you won;t be able
+		// to even
+		// create the FK constraint...
+
+		createTestDataSet();
+
+		FkOfDifferentType root = Cayenne.objectForPK(context, FkOfDifferentType.class, 1);
+
+		assertNotNull(root);
+		assertNotNull(root.getRelationshipHelper());
+		assertEquals("RH1", root.getRelationshipHelper().getName());
+	}
 }

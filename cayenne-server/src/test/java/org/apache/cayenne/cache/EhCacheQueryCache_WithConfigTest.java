@@ -24,28 +24,30 @@ import static org.mockito.Mockito.when;
 import java.net.URL;
 import java.util.ArrayList;
 
-import junit.framework.TestCase;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheManager;
 
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 public class EhCacheQueryCache_WithConfigTest extends TestCase {
 
     protected CacheManager cacheManager;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         URL config = getClass().getResource("test-ehcache.xml");
         assertNotNull(config);
         cacheManager = new CacheManager(config);
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         cacheManager.shutdown();
     }
 
+    @Test
     public void testRemoveGroup_WithFactory_WithCacheGroups() {
 
         EhCacheQueryCache cache = new EhCacheQueryCache(cacheManager);

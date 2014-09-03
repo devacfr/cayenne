@@ -28,12 +28,14 @@ import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.ObjAttribute;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.ObjRelationship;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DropColumnToModelTest extends MergeCase {
 
+	@Test
     public void testSimpleColumn() throws Exception {
         dropTableIfPresent("NEW_TABLE");
 
@@ -91,6 +93,7 @@ public class DropColumnToModelTest extends MergeCase {
         assertTokensAndExecute(0, 0);
     }
 
+	@Test
     public void testRemoveFKColumnWithoutRelationshipInDb() throws Exception {
         dropTableIfPresent("NEW_TABLE");
         dropTableIfPresent("NEW_TABLE2");

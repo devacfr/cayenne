@@ -33,10 +33,11 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.test.junit.AssertExtras;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Gallery;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextEJBQLGroupByHavingTest extends ServerCase {
 
     @Inject
@@ -114,6 +115,7 @@ public class DataContextEJBQLGroupByHavingTest extends ServerCase {
         tPainting.insert(33010, 33001, 33002, "P112", 5000);
     }
 
+    @Test
     public void testGroupBy() throws Exception {
         createFivePaintings();
 
@@ -135,6 +137,7 @@ public class DataContextEJBQLGroupByHavingTest extends ServerCase {
         assertEquals(new Long(2l), row1[1]);
     }
 
+    @Test
     public void testGroupByMultipleItems() throws Exception {
         createFivePaintings();
 
@@ -163,6 +166,7 @@ public class DataContextEJBQLGroupByHavingTest extends ServerCase {
         assertEquals(new Long(2), row2[2]);
     }
 
+    @Test
     public void testGroupByRelatedEntity() throws Exception {
 
         createFourArtistsAndTwoPaintings();
@@ -183,6 +187,7 @@ public class DataContextEJBQLGroupByHavingTest extends ServerCase {
         assertTrue(row0[1] instanceof Artist);
     }
 
+    @Test
     public void testGroupByIdVariable() throws Exception {
         createFivePaintings();
 
@@ -203,6 +208,7 @@ public class DataContextEJBQLGroupByHavingTest extends ServerCase {
         // }
     }
 
+    @Test
     public void testGroupByHavingOnColumn() throws Exception {
         createFivePaintings();
 
@@ -220,6 +226,7 @@ public class DataContextEJBQLGroupByHavingTest extends ServerCase {
         assertEquals(new Long(2), row0[1]);
     }
 
+    @Test
     public void testGroupByHavingOnAggregate() throws Exception {
         createFivePaintings();
 
@@ -237,6 +244,7 @@ public class DataContextEJBQLGroupByHavingTest extends ServerCase {
         assertEquals(new Long(3l), row0[1]);
     }
 
+    @Test
     public void testGroupByHavingOnAggregateMultipleConditions() throws Exception {
         createFivePaintings();
 
@@ -254,6 +262,7 @@ public class DataContextEJBQLGroupByHavingTest extends ServerCase {
         assertEquals(new Long(3l), row0[1]);
     }
 
+    @Test
     public void testGroupByJoinedRelatedEntities() throws Exception {
         createFourArtistsAndTwoPaintings();
 
@@ -278,6 +287,7 @@ public class DataContextEJBQLGroupByHavingTest extends ServerCase {
         assertTrue("error artistName:" + artistName, expectedArtists.contains(artistName));
     }
 
+    @Test
     public void testGroupByJoinedEntities() throws Exception {
         createArtistsPaintingGalleries();
         EJBQLQuery query = new EJBQLQuery(
@@ -300,6 +310,7 @@ public class DataContextEJBQLGroupByHavingTest extends ServerCase {
         }
     }
 
+    @Test
     public void testGroupByJoinedEntityInCount() throws Exception {
         createArtistsPaintingGalleries();
 
@@ -321,6 +332,7 @@ public class DataContextEJBQLGroupByHavingTest extends ServerCase {
         }
     }
 
+    @Test
     public void testGroupByChainedJoins() throws Exception {
         createFivePaintings();
 

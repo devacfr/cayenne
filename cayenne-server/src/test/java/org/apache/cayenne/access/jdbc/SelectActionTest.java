@@ -28,11 +28,12 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.ClobTestEntity;
 import org.apache.cayenne.testdo.testmap.ClobTestRelation;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class SelectActionTest extends ServerCase {
 
     @Inject
@@ -44,8 +45,10 @@ public class SelectActionTest extends ServerCase {
     @Inject
     private DBHelper dbHelper;
 
+
     @Override
-    protected void setUpAfterInjection() throws Exception {
+    public void setUp() throws Exception {
+    	super.setUp();
         dbHelper.deleteAll("CLOB_TEST_RELATION");
         
         if (accessStackAdapter.supportsLobs()) {
@@ -53,13 +56,14 @@ public class SelectActionTest extends ServerCase {
         }
     }
 
+    @Test
     public void testFetchLimit_DistinctResultIterator() throws Exception {
         if (accessStackAdapter.supportsLobs()) {
 
             insertClobDb();
 
             Expression qual = Expression.fromString("clobValue.value = 100");
-            SelectQuery select = new SelectQuery(ClobTestEntity.class, qual);
+            SelectQuery<ClobTestEntity> select = new SelectQuery<ClobTestEntity>(ClobTestEntity.class, qual);
             select.setFetchLimit(25);
             List<DataRow> resultRows = context.performQuery(select);
 

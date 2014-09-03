@@ -20,8 +20,6 @@ package org.apache.cayenne.configuration.server;
 
 import java.util.Collections;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
@@ -40,13 +38,16 @@ import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.event.MockEventManager;
 import org.apache.cayenne.log.CommonsJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.testing.TestCase;
 import org.apache.cayenne.tx.DefaultTransactionFactory;
 import org.apache.cayenne.tx.DefaultTransactionManager;
 import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.tx.TransactionManager;
+import org.junit.Test;
 
 public class DataContextFactoryTest extends TestCase {
 
+    @Test
     public void testCreateDataContextWithDedicatedCache() throws Exception {
 
         final EventManager eventManager = new MockEventManager();
@@ -56,15 +57,14 @@ public class DataContextFactoryTest extends TestCase {
 
         Module testModule = new Module() {
 
+            @Override
             public void configure(Binder binder) {
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(DataDomain.class).toInstance(domain);
                 binder.bind(EventManager.class).toInstance(eventManager);
                 binder.bind(QueryCache.class).toInstance(new MapQueryCache(5));
-                binder.bind(RuntimeProperties.class).toInstance(
-                        new DefaultRuntimeProperties(Collections.EMPTY_MAP));
-                binder.bind(ObjectMapRetainStrategy.class).to(
-                        DefaultObjectMapRetainStrategy.class);
+                binder.bind(RuntimeProperties.class).toInstance(new DefaultRuntimeProperties(Collections.EMPTY_MAP));
+                binder.bind(ObjectMapRetainStrategy.class).to(DefaultObjectMapRetainStrategy.class);
                 binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
                 binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
                 binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
@@ -79,11 +79,11 @@ public class DataContextFactoryTest extends TestCase {
         DataContext c3 = (DataContext) factory.createContext();
         assertNotNull(c3.getObjectStore().getDataRowCache());
         assertNull(domain.getSharedSnapshotCache());
-        assertNotSame(
-                c3.getObjectStore().getDataRowCache(),
-                domain.getSharedSnapshotCache());
+        assertNotSame(c3.getObjectStore().getDataRowCache(), domain.getSharedSnapshotCache());
+        injector.shutdown();
     }
 
+    @Test
     public void testCreateDataContextValidation() throws Exception {
         final EventManager eventManager = new MockEventManager();
         final DataDomain domain = new DataDomain("d1");
@@ -92,15 +92,14 @@ public class DataContextFactoryTest extends TestCase {
 
         Module testModule = new Module() {
 
+            @Override
             public void configure(Binder binder) {
                 binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
                 binder.bind(DataDomain.class).toInstance(domain);
                 binder.bind(EventManager.class).toInstance(eventManager);
                 binder.bind(QueryCache.class).toInstance(new MapQueryCache(5));
-                binder.bind(RuntimeProperties.class).toInstance(
-                        new DefaultRuntimeProperties(Collections.EMPTY_MAP));
-                binder.bind(ObjectMapRetainStrategy.class).to(
-                        DefaultObjectMapRetainStrategy.class);
+                binder.bind(RuntimeProperties.class).toInstance(new DefaultRuntimeProperties(Collections.EMPTY_MAP));
+                binder.bind(ObjectMapRetainStrategy.class).to(DefaultObjectMapRetainStrategy.class);
                 binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
                 binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
                 binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
@@ -119,6 +118,8 @@ public class DataContextFactoryTest extends TestCase {
 
         DataContext c2 = (DataContext) factory.createContext();
         assertFalse(c2.isValidatingObjectsOnCommit());
+
+        injector.shutdown();
     }
 
 }

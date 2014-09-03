@@ -18,9 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di;
 
-import junit.framework.TestCase;
 
-import org.apache.cayenne.di.Injector;
+
+import org.apache.cayenne.testing.TestCase;
 
 /**
  * A unit test superclass that supports injection of members based on the standard unit
@@ -28,51 +28,46 @@ import org.apache.cayenne.di.Injector;
  */
 public abstract class DICase extends TestCase {
 
-    protected abstract Injector getUnitTestInjector();
+	
 
+    
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    protected final void setUp() throws Exception {
-        getUnitTestInjector().getInstance(UnitTestLifecycleManager.class).setUp(this);
-
-        try {
-            setUpAfterInjection();
-        }
-        catch (Exception e) {
-
-            // must stop the lifecycle manager (do the same thing we'd normally do in
-            // 'tearDown' ), otherwise following tests will end up in
-            // a bad state
-
-            try {
-                getUnitTestInjector()
-                        .getInstance(UnitTestLifecycleManager.class)
-                        .tearDown(this);
-            }
-            catch (Exception x) {
-                // swallow...
-            }
-
-            throw e;
-        }
+    public void setUp() throws Exception {
+        super.setUp();
+        setUpAfterInjection();
     }
-
+    
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    protected final void tearDown() throws Exception {
-
-        try {
-            tearDownBeforeInjection();
-        }
-        finally {
-            getUnitTestInjector().getInstance(UnitTestLifecycleManager.class).tearDown(
-                    this);
-        }
+    public void tearDown() throws Exception {
+        super.tearDown();
+        tearDownBeforeInjection();
     }
-
+    
+    /**
+     * Just for compatibility
+     * @deprecation Use {@link #setUp()} method 
+     * @throws Exception
+     */
+    @Deprecated()
     protected void setUpAfterInjection() throws Exception {
-        // noop
+    
     }
 
+    /**
+     * Just for compatibility
+     * @deprecation Use {@link #tearDown()} method 
+     * @throws Exception
+     */
+    @Deprecated()
     protected void tearDownBeforeInjection() throws Exception {
-        // noop
+        
     }
+    
+
 }

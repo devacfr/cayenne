@@ -28,11 +28,12 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.ArtistExhibit;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.unit.util.TstBean;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class CayenneDataObjectTest extends ServerCase {
 
     @Inject
@@ -48,6 +49,7 @@ public class CayenneDataObjectTest extends ServerCase {
         assertSame(oid, object.getObjectId());
     }
 
+    @Test
     public void testSetPersistenceState() throws Exception {
         CayenneDataObject obj = new CayenneDataObject();
         assertEquals(PersistenceState.TRANSIENT, obj.getPersistenceState());
@@ -56,6 +58,7 @@ public class CayenneDataObjectTest extends ServerCase {
         assertEquals(PersistenceState.COMMITTED, obj.getPersistenceState());
     }
 
+    @Test
     public void testReadNestedProperty1() throws Exception {
         Artist a = new Artist();
         assertNull(a.readNestedProperty("artistName"));
@@ -63,6 +66,7 @@ public class CayenneDataObjectTest extends ServerCase {
         assertEquals("aaa", a.readNestedProperty("artistName"));
     }
 
+    @Test
     public void testReadNestedPropertyNotPersistentString() throws Exception {
         Artist a = new Artist();
         assertNull(a.readNestedProperty("someOtherProperty"));
@@ -70,6 +74,7 @@ public class CayenneDataObjectTest extends ServerCase {
         assertEquals("aaa", a.readNestedProperty("someOtherProperty"));
     }
 
+    @Test
     public void testReadNestedPropertyNonPersistentNotString() throws Exception {
         Artist a = new Artist();
         Object object = new Object();
@@ -78,6 +83,7 @@ public class CayenneDataObjectTest extends ServerCase {
         assertSame(object, a.readNestedProperty("someOtherObjectProperty"));
     }
 
+    @Test
     public void testReadNestedPropertyNonDataObjectPath() {
         CayenneDataObject o1 = new CayenneDataObject();
         TstBean o2 = new TstBean();
@@ -90,6 +96,7 @@ public class CayenneDataObjectTest extends ServerCase {
         assertEquals(TstBean.class.getName(), o1.readNestedProperty("o2.class.name"));
     }
 
+    @Test
     public void testReadNestedPropertyToManyInMiddle() throws Exception {
 
         Artist a = context.newObject(Artist.class);
@@ -113,6 +120,7 @@ public class CayenneDataObjectTest extends ServerCase {
         assertEquals(names, names2);
     }
 
+    @Test
     public void testReadNestedPropertyToManyInMiddle1() throws Exception {
 
         Artist a = context.newObject(Artist.class);
@@ -136,6 +144,7 @@ public class CayenneDataObjectTest extends ServerCase {
         assertEquals(names, names2);
     }
 
+    @Test
     public void testFilterObjects() {
 
         List<Painting> paintingList = new ArrayList<Painting>();

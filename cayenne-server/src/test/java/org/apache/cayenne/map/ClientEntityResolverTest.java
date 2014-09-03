@@ -26,15 +26,17 @@ import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.MtTable1;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.MULTI_TIER_PROJECT)
+@CayenneConfiguration(ServerCase.MULTI_TIER_PROJECT)
 public class ClientEntityResolverTest extends ServerCase {
 
     @Inject
     private EntityResolver serverResolver;
 
+    @Test
     public void testGetClientEntityResolver() {
 
         EntityResolver clientResolver = serverResolver.getClientEntityResolver();
@@ -52,6 +54,7 @@ public class ClientEntityResolverTest extends ServerCase {
         assertNull(clientResolver.getObjEntity(MtTable1.class));
     }
 
+    @Test
     public void testConstructor() {
         ObjEntity entity = new ObjEntity("test_entity");
         entity.setClassName("java.lang.String");
@@ -64,6 +67,7 @@ public class ClientEntityResolverTest extends ServerCase {
         assertNotNull(resolver.getObjEntity(entity.getName()));
     }
 
+    @Test
     public void testInheritance() {
         ObjEntity superEntity = new ObjEntity("super_entity");
         superEntity.setClassName("java.lang.Object");

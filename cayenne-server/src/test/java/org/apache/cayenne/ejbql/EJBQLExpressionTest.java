@@ -18,19 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 public class EJBQLExpressionTest extends TestCase {
 
+    @Test
     public void testDbPath() {
 
         EJBQLParser parser = EJBQLParserFactory.getParser();
 
-        EJBQLExpression select = parser
-                .parse("select p from Painting p WHERE db:p.toArtist.ARTIST_NAME = 'a'");
+        EJBQLExpression select = parser.parse("select p from Painting p WHERE db:p.toArtist.ARTIST_NAME = 'a'");
         assertNotNull(select);
     }
 
+    @Test
     public void testEnumPath() {
         EJBQLParser parser = EJBQLParserFactory.getParser();
 
@@ -40,22 +42,23 @@ public class EJBQLExpressionTest extends TestCase {
     }
 
     /**
-     * <p>This should not parse because there are multiple non-bracketed parameters.</p>
+     * <p>
+     * This should not parse because there are multiple non-bracketed
+     * parameters.
+     * </p>
      */
-
+    @Test
     public void testInWithMultipleStringPositionalParameter_withoutBrackets() {
         EJBQLParser parser = EJBQLParserFactory.getParser();
 
         try {
-            EJBQLExpression select = parser
-                    .parse("select p from Painting p WHERE p.toArtist IN ?1, ?2");
+            EJBQLExpression select = parser.parse("select p from Painting p WHERE p.toArtist IN ?1, ?2");
             fail("a test in clause with multiple unbracketed parameters parsed; should not be possible");
-        }
-        catch(EJBQLException ejbqlE) {
-            //expected; should not have parsed
-        }
-        catch(Throwable th) {
-            fail("expected an instance of " + EJBQLException.class.getSimpleName()+" to be thrown, but; " + th.getClass().getSimpleName() + " was thrown");
+        } catch (EJBQLException ejbqlE) {
+            // expected; should not have parsed
+        } catch (Throwable th) {
+            fail("expected an instance of " + EJBQLException.class.getSimpleName() + " to be thrown, but; "
+                    + th.getClass().getSimpleName() + " was thrown");
         }
 
     }

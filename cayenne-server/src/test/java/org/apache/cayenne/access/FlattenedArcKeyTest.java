@@ -25,15 +25,17 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.map.ObjRelationship;
 import org.apache.cayenne.testdo.relationship.FlattenedTest1;
 import org.apache.cayenne.testdo.relationship.FlattenedTest3;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+@CayenneConfiguration(ServerCase.RELATIONSHIPS_PROJECT)
 public class FlattenedArcKeyTest extends ServerCase {
 
     @Inject
     private EntityResolver entityResolver;
 
+    @Test
     public void testAttributes() {
         ObjectId src = new ObjectId("X");
         ObjectId target = new ObjectId("Y");
@@ -47,6 +49,7 @@ public class FlattenedArcKeyTest extends ServerCase {
         assertSame(r1, update.relationship);
     }
 
+    @Test
     public void testHashCode() {
         ObjectId src = new ObjectId("X");
         ObjectId target = new ObjectId("Y");
@@ -69,6 +72,7 @@ public class FlattenedArcKeyTest extends ServerCase {
         assertFalse(h == h2);
     }
 
+    @Test
     public void testEquals() {
         ObjectId src = new ObjectId("X");
         ObjectId target = new ObjectId("Y");

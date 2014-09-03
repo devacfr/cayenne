@@ -43,13 +43,14 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import com.mockrunner.jdbc.PreparedStatementResultSetHandler;
 import com.mockrunner.mock.jdbc.MockConnection;
 
-@UseServerRuntime(ServerCase.LOCKING_PROJECT)
+@CayenneConfiguration(ServerCase.LOCKING_PROJECT)
 public class BatchActionLockingTest extends ServerCase {
 
     @Inject
@@ -61,6 +62,7 @@ public class BatchActionLockingTest extends ServerCase {
     @Inject
     private AdhocObjectFactory objectFactory;
 
+    @Test
     public void testRunAsIndividualQueriesSuccess() throws Exception {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
 
@@ -102,6 +104,7 @@ public class BatchActionLockingTest extends ServerCase {
         assertEquals(0, mockConnection.getNumberRollbacks());
     }
 
+    @Test
     public void testRunAsIndividualQueriesOptimisticLockingFailure() throws Exception {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
 

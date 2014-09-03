@@ -33,10 +33,11 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextQueryCachingTest extends ServerCase {
 
     @Inject
@@ -97,6 +98,7 @@ public class DataContextQueryCachingTest extends ServerCase {
         tArtist.update().set("ARTIST_NAME", "ccc").where("ARTIST_ID", 33001).execute();
     }
 
+    @Test
     public void testLocalCacheDataRowsRefresh() throws Exception {
         SelectQuery select = new SelectQuery(Artist.class);
         select.setFetchingDataRows(true);
@@ -135,6 +137,7 @@ public class DataContextQueryCachingTest extends ServerCase {
         }
     }
 
+    @Test
     public void testSharedCacheDataRowsRefresh() throws Exception {
 
         SelectQuery select = new SelectQuery(Artist.class);
@@ -176,6 +179,7 @@ public class DataContextQueryCachingTest extends ServerCase {
         }
     }
 
+    @Test
     public void testLocalCacheDataObjectsRefresh() throws Exception {
 
         SelectQuery select = new SelectQuery(Artist.class);
@@ -216,6 +220,7 @@ public class DataContextQueryCachingTest extends ServerCase {
         }
     }
 
+    @Test
     public void testLocalCacheRefreshObjectsRefresh() throws Exception {
         createInsertDataSet();
 

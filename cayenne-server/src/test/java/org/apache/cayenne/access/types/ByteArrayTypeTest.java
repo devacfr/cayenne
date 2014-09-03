@@ -19,10 +19,14 @@
 
 package org.apache.cayenne.access.types;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
+
+
 
 public class ByteArrayTypeTest extends TestCase {
 
+	@Test
     public void testTrimBytes1() throws Exception {
         byte[] b1 = new byte[] {
                 1, 2, 3
@@ -31,6 +35,7 @@ public class ByteArrayTypeTest extends TestCase {
         assertByteArraysEqual(b1, b2);
     }
 
+	@Test
     public void testTrimBytes2() throws Exception {
         byte[] ref = new byte[] {
                 1, 2, 3
@@ -42,6 +47,7 @@ public class ByteArrayTypeTest extends TestCase {
         assertByteArraysEqual(ref, b2);
     }
 
+	@Test
     public void testTrimBytes3() throws Exception {
         byte[] b1 = new byte[] {
                 0, 1, 2, 3
@@ -50,6 +56,7 @@ public class ByteArrayTypeTest extends TestCase {
         assertByteArraysEqual(b1, b2);
     }
 
+	@Test
     public void testTrimBytes4() throws Exception {
         byte[] b1 = new byte[] {};
         byte[] b2 = ByteArrayType.trimBytes(b1);
