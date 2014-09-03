@@ -24,10 +24,11 @@ import java.util.Map;
 
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DbRelationshipTest extends ServerCase {
 
     @Inject
@@ -44,6 +45,7 @@ public class DbRelationshipTest extends ServerCase {
         galleryEnt = runtime.getDataDomain().getEntityResolver().getDbEntity("GALLERY");
     }
 
+    @Test
     public void testSrcFkSnapshotWithTargetSnapshot() throws Exception {
         Map<String, Object> map = new HashMap<String, Object>();
         Integer id = new Integer(44);
@@ -54,6 +56,7 @@ public class DbRelationshipTest extends ServerCase {
         assertEquals(id, targetMap.get("GALLERY_ID"));
     }
 
+    @Test
     public void testGetReverseRelationship1() throws Exception {
         // start with "to many"
         DbRelationship r1 = artistEnt.getRelationship("paintingArray");
@@ -63,6 +66,7 @@ public class DbRelationshipTest extends ServerCase {
         assertSame(paintingEnt.getRelationship("toArtist"), r2);
     }
 
+    @Test
     public void testGetReverseRelationship2() throws Exception {
         // start with "to one"
         DbRelationship r1 = paintingEnt.getRelationship("toArtist");
@@ -72,6 +76,7 @@ public class DbRelationshipTest extends ServerCase {
         assertSame(artistEnt.getRelationship("paintingArray"), r2);
     }
 
+    @Test
     public void testGetReverseRelationshipToSelf() {
 
         // assemble mockup entity

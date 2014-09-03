@@ -21,10 +21,13 @@ package org.apache.cayenne.util;
 
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
+
 
 public class ListResponseTest extends TestCase {
 
+	@Test
     public void testCreation() throws Exception {
 
         Object object = new Object();
@@ -47,6 +50,7 @@ public class ListResponseTest extends TestCase {
         assertSame(currentList, r.firstList());
     }
 
+	@Test
     public void testSerialization() throws Exception {
 
         ListResponse r = new ListResponse(new Integer(67));

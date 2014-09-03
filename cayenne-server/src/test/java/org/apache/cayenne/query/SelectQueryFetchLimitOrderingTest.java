@@ -26,10 +26,11 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class SelectQueryFetchLimitOrderingTest extends ServerCase {
 
     @Inject
@@ -61,6 +62,7 @@ public class SelectQueryFetchLimitOrderingTest extends ServerCase {
         tArtist.insert(33006, "e");
     }
 
+    @Test
     public void testOrdering() throws Exception {
 
         creatArtistsDataSet();

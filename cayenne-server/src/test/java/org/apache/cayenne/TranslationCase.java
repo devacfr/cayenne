@@ -22,7 +22,7 @@ package org.apache.cayenne;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
 public class TranslationCase {
 
@@ -62,10 +62,7 @@ public class TranslationCase {
 
         // strip column aliases
         String aliasSubstituted = trim("\\b\\w+\\.", translated);
-        Assert.assertEquals(
-                "Unexpected translation: " + translated + "....",
-                sqlExp,
-                aliasSubstituted);
+        Assert.assertEquals("Unexpected translation: " + translated + "....", sqlExp, aliasSubstituted);
     }
 
     public String getRootEntity() {

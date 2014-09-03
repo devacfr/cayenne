@@ -33,25 +33,26 @@ import org.apache.cayenne.testdo.testmap.DateTestEntity;
 import org.apache.cayenne.testdo.testmap.ReturnTypesMap1;
 import org.apache.cayenne.testdo.testmap.ReturnTypesMap2;
 import org.apache.cayenne.testdo.testmap.ReturnTypesMapLobs1;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 /**
  * Test Types mapping for selected columns
  */
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class ReturnTypesMappingTest extends ServerCase {
 
     @Inject
     private DataContext context;
-    
+
     @Inject
     private DBHelper dbHelper;
-    
+
     @Inject
     private UnitDbAdapter unitDbAdapter;
-    
+
     @Override
     protected void setUpAfterInjection() throws Exception {
         if (unitDbAdapter.supportsLobs()) {
@@ -63,9 +64,10 @@ public class ReturnTypesMappingTest extends ServerCase {
     }
 
     /*
-     * TODO: olga: We need divided TYPES_MAPPING_TES2 to 2 schemas with lobs columns and not lobs columns 
+     * TODO: olga: We need divided TYPES_MAPPING_TES2 to 2 schemas with lobs
+     * columns and not lobs columns
      */
-    
+    @Test
     public void testBIGINT() throws Exception {
         String columnName = "BIGINT_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
@@ -82,9 +84,10 @@ public class ReturnTypesMappingTest extends ServerCase {
         assertEquals(bigintValue, columnValue);
     }
 
+    @Test
     public void testBIGINT2() throws Exception {
-       ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
-    
+        ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
+
         Long bigintValue = 5326457654783454355l;
         test.setBigintColumn(bigintValue);
         context.commitChanges();
@@ -97,17 +100,16 @@ public class ReturnTypesMappingTest extends ServerCase {
         assertEquals(bigintValue, columnValue);
     }
 
+    @Test
     public void testBINARY() throws Exception {
         if (unitDbAdapter.supportsLobs()) {
             String columnName = "BINARY_COLUMN";
             ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
-    
-            byte[] binaryValue = {
-                    3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
-            };
+
+            byte[] binaryValue = { 3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60 };
             test.setBinaryColumn(binaryValue);
             context.commitChanges();
-    
+
             NamedQuery q = new NamedQuery("SelectReturnTypesMap2");
             DataRow testRead = (DataRow) context.performQuery(q).get(0);
             Object columnValue = testRead.get(columnName);
@@ -117,16 +119,15 @@ public class ReturnTypesMappingTest extends ServerCase {
         }
     }
 
+    @Test
     public void testBINARY2() throws Exception {
         if (unitDbAdapter.supportsLobs()) {
             ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
-    
-            byte[] binaryValue = {
-                    3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
-            };
+
+            byte[] binaryValue = { 3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60 };
             test.setBinaryColumn(binaryValue);
             context.commitChanges();
-    
+
             SelectQuery q = new SelectQuery(ReturnTypesMap2.class);
             ReturnTypesMap2 testRead = (ReturnTypesMap2) context.performQuery(q).get(0);
             byte[] columnValue = testRead.getBinaryColumn();
@@ -136,6 +137,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         }
     }
 
+    @Test
     public void testBIT() throws Exception {
         String columnName = "BIT_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
@@ -148,11 +150,11 @@ public class ReturnTypesMappingTest extends ServerCase {
         DataRow testRead = (DataRow) context.performQuery(q).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
-        assertTrue(Boolean.class.equals(columnValue.getClass())
-                || Short.class.equals(columnValue.getClass()));
+        assertTrue(Boolean.class.equals(columnValue.getClass()) || Short.class.equals(columnValue.getClass()));
         assertTrue(bitValue.equals(columnValue) || ((Number) columnValue).intValue() == 1);
     }
 
+    @Test
     public void testBIT2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -168,17 +170,16 @@ public class ReturnTypesMappingTest extends ServerCase {
         assertEquals(bitValue, columnValue);
     }
 
+    @Test
     public void testBLOB() throws Exception {
         if (unitDbAdapter.supportsLobs()) {
             String columnName = "BLOB_COLUMN";
             ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
-    
-            byte[] blobValue = {
-                    3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
-            };
+
+            byte[] blobValue = { 3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60 };
             test.setBlobColumn(blobValue);
             context.commitChanges();
-    
+
             NamedQuery q = new NamedQuery("SelectReturnTypesMap2");
             DataRow testRead = (DataRow) context.performQuery(q).get(0);
             Object columnValue = testRead.get(columnName);
@@ -188,16 +189,15 @@ public class ReturnTypesMappingTest extends ServerCase {
         }
     }
 
+    @Test
     public void testBLOB2() throws Exception {
         if (unitDbAdapter.supportsLobs()) {
             ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
-    
-            byte[] blobValue = {
-                    3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
-            };
+
+            byte[] blobValue = { 3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60 };
             test.setBlobColumn(blobValue);
             context.commitChanges();
-    
+
             SelectQuery q = new SelectQuery(ReturnTypesMap2.class);
             ReturnTypesMap2 testRead = (ReturnTypesMap2) context.performQuery(q).get(0);
             byte[] columnValue = testRead.getBlobColumn();
@@ -207,6 +207,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         }
     }
 
+    @Test
     public void testBOOLEAN() throws Exception {
         String columnName = "BOOLEAN_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
@@ -219,12 +220,11 @@ public class ReturnTypesMappingTest extends ServerCase {
         DataRow testRead = (DataRow) context.performQuery(q).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
-        assertTrue(Boolean.class.equals(columnValue.getClass())
-                || Short.class.equals(columnValue.getClass()));
-        assertTrue(booleanValue.equals(columnValue)
-                || ((Number) columnValue).intValue() == 1);
+        assertTrue(Boolean.class.equals(columnValue.getClass()) || Short.class.equals(columnValue.getClass()));
+        assertTrue(booleanValue.equals(columnValue) || ((Number) columnValue).intValue() == 1);
     }
 
+    @Test
     public void testBOOLEAN2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -240,6 +240,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         assertEquals(booleanValue, columnValue);
     }
 
+    @Test
     public void testCHAR() throws Exception {
         String columnName = "CHAR_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
@@ -256,6 +257,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         assertEquals(charValue, columnValue);
     }
 
+    @Test
     public void testCHAR2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -271,11 +273,12 @@ public class ReturnTypesMappingTest extends ServerCase {
         assertEquals(charValue, columnValue);
     }
 
+    @Test
     public void testCLOB() throws Exception {
         if (unitDbAdapter.supportsLobs()) {
             String columnName = "CLOB_COLUMN";
             ReturnTypesMapLobs1 test = context.newObject(ReturnTypesMapLobs1.class);
-    
+
             StringBuffer buffer = new StringBuffer();
             for (int i = 0; i < 10000; i++) {
                 buffer.append("CLOB very large string for tests!!!!\n");
@@ -283,7 +286,7 @@ public class ReturnTypesMappingTest extends ServerCase {
             String clobValue = buffer.toString();
             test.setClobColumn(clobValue);
             context.commitChanges();
-    
+
             NamedQuery q = new NamedQuery("SelectReturnTypesLobsMap1");
             DataRow testRead = (DataRow) context.performQuery(q).get(0);
             Object columnValue = testRead.get(columnName);
@@ -296,10 +299,11 @@ public class ReturnTypesMappingTest extends ServerCase {
         }
     }
 
+    @Test
     public void testCLOB2() throws Exception {
         if (unitDbAdapter.supportsLobs()) {
             ReturnTypesMapLobs1 test = context.newObject(ReturnTypesMapLobs1.class);
-    
+
             StringBuffer buffer = new StringBuffer();
             for (int i = 0; i < 10000; i++) {
                 buffer.append("CLOB very large string for tests!!!!\n");
@@ -307,7 +311,7 @@ public class ReturnTypesMappingTest extends ServerCase {
             String clobValue = buffer.toString();
             test.setClobColumn(clobValue);
             context.commitChanges();
-    
+
             SelectQuery q = new SelectQuery(ReturnTypesMapLobs1.class);
             ReturnTypesMapLobs1 testRead = (ReturnTypesMapLobs1) context.performQuery(q).get(0);
             String columnValue = testRead.getClobColumn();
@@ -317,6 +321,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         }
     }
 
+    @Test
     public void testDATE() throws Exception {
         String columnName = "DATE_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
@@ -336,6 +341,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         assertEquals(dateValue.toString(), columnValue.toString());
     }
 
+    @Test
     public void testDATE2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -354,6 +360,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         assertEquals(dateValue.toString(), columnValue.toString());
     }
 
+    @Test
     public void testDECIMAL() throws Exception {
         String columnName = "DECIMAL_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
@@ -370,6 +377,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         assertEquals(decimalValue, columnValue);
     }
 
+    @Test
     public void testDECIMAL2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -385,6 +393,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         assertEquals(decimalValue, columnValue);
     }
 
+    @Test
     public void testDOUBLE() throws Exception {
         String columnName = "DOUBLE_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
@@ -401,6 +410,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         assertEquals(doubleValue, columnValue);
     }
 
+    @Test
     public void testDOUBLE2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -416,6 +426,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         assertEquals(doubleValue, columnValue);
     }
 
+    @Test
     public void testFLOAT() throws Exception {
         String columnName = "FLOAT_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
@@ -428,11 +439,11 @@ public class ReturnTypesMappingTest extends ServerCase {
         DataRow testRead = (DataRow) context.performQuery(q).get(0);
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
-        assertTrue(Float.class.equals(columnValue.getClass())
-                || Double.class.equals(columnValue.getClass()));
-        assertEquals(floatValue.floatValue(), ((Number)columnValue).floatValue());
+        assertTrue(Float.class.equals(columnValue.getClass()) || Double.class.equals(columnValue.getClass()));
+        assertEquals(floatValue.floatValue(), ((Number) columnValue).floatValue(), 0.1f);
     }
 
+    @Test
     public void testFLOAT2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -448,6 +459,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         assertEquals(floatValue, columnValue);
     }
 
+    @Test
     public void testINTEGER() throws Exception {
         String columnName = "INTEGER_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
@@ -464,6 +476,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         assertEquals(integerValue, columnValue);
     }
 
+    @Test
     public void testINTEGER2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -479,17 +492,16 @@ public class ReturnTypesMappingTest extends ServerCase {
         assertEquals(integerValue, columnValue);
     }
 
+    @Test
     public void testLONGVARBINARY() throws Exception {
         if (unitDbAdapter.supportsLobs()) {
             String columnName = "LONGVARBINARY_COLUMN";
             ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
-    
-            byte[] longvarbinaryValue = {
-                    3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
-            };
+
+            byte[] longvarbinaryValue = { 3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60 };
             test.setLongvarbinaryColumn(longvarbinaryValue);
             context.commitChanges();
-    
+
             NamedQuery q = new NamedQuery("SelectReturnTypesMap2");
             DataRow testRead = (DataRow) context.performQuery(q).get(0);
             Object columnValue = testRead.get(columnName);
@@ -499,16 +511,15 @@ public class ReturnTypesMappingTest extends ServerCase {
         }
     }
 
+    @Test
     public void testLONGVARBINARY2() throws Exception {
         if (unitDbAdapter.supportsLobs()) {
             ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
-    
-            byte[] longvarbinaryValue = {
-                    3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
-            };
+
+            byte[] longvarbinaryValue = { 3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60 };
             test.setLongvarbinaryColumn(longvarbinaryValue);
             context.commitChanges();
-    
+
             SelectQuery q = new SelectQuery(ReturnTypesMap2.class);
             ReturnTypesMap2 testRead = (ReturnTypesMap2) context.performQuery(q).get(0);
             byte[] columnValue = testRead.getLongvarbinaryColumn();
@@ -518,6 +529,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         }
     }
 
+    @Test
     public void testLONGVARCHAR() throws Exception {
         String columnName = "LONGVARCHAR_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
@@ -538,6 +550,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         assertEquals(longvarcharValue, columnValue);
     }
 
+    @Test
     public void testLONGVARCHAR2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -557,6 +570,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         assertEquals(longvarcharValue, columnValue);
     }
 
+    @Test
     public void testNUMERIC() throws Exception {
         String columnName = "NUMERIC_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
@@ -573,6 +587,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         assertEquals(numericValue, columnValue);
     }
 
+    @Test
     public void testNUMERIC2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -588,6 +603,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         assertEquals(numericValue, columnValue);
     }
 
+    @Test
     public void testREAL() throws Exception {
         String columnName = "REAL_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
@@ -612,6 +628,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         }
     }
 
+    @Test
     public void testREAL2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -627,6 +644,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         assertEquals(realValue, columnValue);
     }
 
+    @Test
     public void testSMALLINT() throws Exception {
         String columnName = "SMALLINT_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
@@ -643,6 +661,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         assertEquals(smallintValue, columnValue);
     }
 
+    @Test
     public void testSMALLINT2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -658,6 +677,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         assertEquals(smallintValue, columnValue);
     }
 
+    @Test
     public void testTIME() throws Exception {
         String columnName = "TIME_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
@@ -674,10 +694,10 @@ public class ReturnTypesMappingTest extends ServerCase {
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
         assertEquals(Date.class, columnValue.getClass());
-        assertEquals(timeValue.toString(), new Time(((Date) columnValue).getTime())
-                .toString());
+        assertEquals(timeValue.toString(), new Time(((Date) columnValue).getTime()).toString());
     }
 
+    @Test
     public void testTIME2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -696,6 +716,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         assertEquals(timeValue.toString(), new Time(columnValue.getTime()).toString());
     }
 
+    @Test
     public void testSQLTemplateTime() throws Exception {
         DateTestEntity test = (DateTestEntity) context.newObject("DateTestEntity");
 
@@ -717,6 +738,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         assertEquals(now.toString(), new Time(columnValue.getTime()).toString());
     }
 
+    @Test
     public void testTIMESTAMP() throws Exception {
         String columnName = "TIMESTAMP_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
@@ -730,13 +752,14 @@ public class ReturnTypesMappingTest extends ServerCase {
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
         assertEquals(Date.class, columnValue.getClass());
-        
+
         // some DB's, noteably MySQL, strip the milliseconds from timestamps,
         // so comparing within 1 second precision
         long delta = timestampValue.getTime() - ((Date) columnValue).getTime();
         assertTrue(delta < 1000);
     }
 
+    @Test
     public void testTIMESTAMP2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -749,12 +772,14 @@ public class ReturnTypesMappingTest extends ServerCase {
         Date columnValue = testRead.getTimestampColumn();
         assertNotNull(columnValue);
         assertEquals(Date.class, columnValue.getClass());
-        
+
         // some DB's, noteably MySQL, strip the milliseconds from timestamps,
         // so comparing within 1 second precision
-        long delta = timestampValue.getTime() - ((Date) columnValue).getTime();
-        assertTrue(delta < 1000);    }
+        long delta = timestampValue.getTime() - columnValue.getTime();
+        assertTrue(delta < 1000);
+    }
 
+    @Test
     public void testTINYINT() throws Exception {
         String columnName = "TINYINT_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
@@ -768,9 +793,10 @@ public class ReturnTypesMappingTest extends ServerCase {
         Object columnValue = testRead.get(columnName);
         assertNotNull(columnValue);
         assertTrue(Short.class.equals(columnValue.getClass()));
-        assertEquals(tinyintValue.intValue(), ((Number)columnValue).intValue());
+        assertEquals(tinyintValue.intValue(), ((Number) columnValue).intValue());
     }
 
+    @Test
     public void testTINYINT2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 
@@ -786,17 +812,16 @@ public class ReturnTypesMappingTest extends ServerCase {
         assertEquals(tinyintValue, columnValue);
     }
 
+    @Test
     public void testVARBINARY() throws Exception {
         if (unitDbAdapter.supportsLobs()) {
             String columnName = "VARBINARY_COLUMN";
             ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
-    
-            byte[] varbinaryValue = {
-                    3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
-            };
+
+            byte[] varbinaryValue = { 3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60 };
             test.setVarbinaryColumn(varbinaryValue);
             context.commitChanges();
-    
+
             NamedQuery q = new NamedQuery("SelectReturnTypesMap2");
             DataRow testRead = (DataRow) context.performQuery(q).get(0);
             Object columnValue = testRead.get(columnName);
@@ -806,16 +831,15 @@ public class ReturnTypesMappingTest extends ServerCase {
         }
     }
 
+    @Test
     public void testVARBINARY2() throws Exception {
         if (unitDbAdapter.supportsLobs()) {
             ReturnTypesMap2 test = context.newObject(ReturnTypesMap2.class);
-    
-            byte[] varbinaryValue = {
-                    3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60
-            };
+
+            byte[] varbinaryValue = { 3, 4, 5, -6, 7, 0, 2, 9, 45, 64, 3, 127, -128, -60 };
             test.setVarbinaryColumn(varbinaryValue);
             context.commitChanges();
-    
+
             SelectQuery q = new SelectQuery(ReturnTypesMap2.class);
             ReturnTypesMap2 testRead = (ReturnTypesMap2) context.performQuery(q).get(0);
             byte[] columnValue = testRead.getVarbinaryColumn();
@@ -825,6 +849,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         }
     }
 
+    @Test
     public void testVARCHAR() throws Exception {
         String columnName = "VARCHAR_COLUMN";
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
@@ -841,6 +866,7 @@ public class ReturnTypesMappingTest extends ServerCase {
         assertEquals(varcharValue, columnValue);
     }
 
+    @Test
     public void testVARCHAR2() throws Exception {
         ReturnTypesMap1 test = context.newObject(ReturnTypesMap1.class);
 

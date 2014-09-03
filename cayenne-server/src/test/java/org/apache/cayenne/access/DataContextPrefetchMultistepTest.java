@@ -40,10 +40,11 @@ import org.apache.cayenne.testdo.testmap.ArtistExhibit;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextPrefetchMultistepTest extends ServerCase {
 
     @Inject
@@ -111,6 +112,7 @@ public class DataContextPrefetchMultistepTest extends ServerCase {
         tGallery.insert(45, "gallery3");
     }
 
+    @Test
     public void testToManyToManyFirstStepUnresolved() throws Exception {
 
         createTwoArtistsWithExhibitsDataSet();
@@ -160,6 +162,7 @@ public class DataContextPrefetchMultistepTest extends ServerCase {
         assertEquals(PersistenceState.COMMITTED, ae2.getPersistenceState());
     }
 
+    @Test
     public void testToManyToManyFirstStepResolved() throws Exception {
 
         createTwoArtistsWithExhibitsDataSet();
@@ -195,6 +198,7 @@ public class DataContextPrefetchMultistepTest extends ServerCase {
         assertEquals(PersistenceState.COMMITTED, ae1.getPersistenceState());
     }
 
+    @Test
     public void testMixedPrefetch1() throws Exception {
 
         createTwoArtistsWithExhibitsDataSet();
@@ -231,6 +235,7 @@ public class DataContextPrefetchMultistepTest extends ServerCase {
         assertEquals(PersistenceState.COMMITTED, ae1.getPersistenceState());
     }
 
+    @Test
     public void testMixedPrefetch2() throws Exception {
 
         createTwoArtistsWithExhibitsDataSet();
@@ -269,6 +274,7 @@ public class DataContextPrefetchMultistepTest extends ServerCase {
         assertEquals(PersistenceState.COMMITTED, ae1.getPersistenceState());
     }
     
+    @Test
     public void testToManyToOne_EmptyToMany() throws Exception {
 
         createGalleriesAndArtists();
@@ -289,6 +295,7 @@ public class DataContextPrefetchMultistepTest extends ServerCase {
         assertEquals(0, exhibits.size());
     }
     
+    @Test
     public void testToManyToOne_EmptyToMany_NoRootQualifier() throws Exception {
 
         createGalleriesAndArtists();

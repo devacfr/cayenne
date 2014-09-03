@@ -25,16 +25,17 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.ObjectId;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 /**
  */
 public class SQLTemplateProcessorTest extends TestCase {
 
+	@Test
     public void testProcessTemplateUnchanged1() throws Exception {
         String sqlTemplate = "SELECT * FROM ME";
 
@@ -46,6 +47,7 @@ public class SQLTemplateProcessorTest extends TestCase {
         assertEquals(0, compiled.getBindings().length);
     }
 
+	@Test
     public void testProcessTemplateUnchanged2() throws Exception {
         String sqlTemplate = "SELECT a.b as XYZ FROM $SYSTEM_TABLE";
 
@@ -57,6 +59,7 @@ public class SQLTemplateProcessorTest extends TestCase {
         assertEquals(0, compiled.getBindings().length);
     }
 
+	@Test
     public void testProcessTemplateSimpleDynamicContent() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE $a";
 
@@ -71,6 +74,7 @@ public class SQLTemplateProcessorTest extends TestCase {
         assertEquals(0, compiled.getBindings().length);
     }
 
+	@Test
     public void testProcessTemplateBind() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE "
                 + "COLUMN1 = #bind($a 'VARCHAR') AND COLUMN2 = #bind($b 'INTEGER')";
@@ -86,6 +90,7 @@ public class SQLTemplateProcessorTest extends TestCase {
         assertBindingValue(null, compiled.getBindings()[1]);
     }
 
+	@Test
     public void testProcessTemplateBindGuessVarchar() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE COLUMN1 = #bind($a)";
         Map map = Collections.singletonMap("a", "VALUE_OF_A");
@@ -98,6 +103,7 @@ public class SQLTemplateProcessorTest extends TestCase {
         assertBindingType(Types.VARCHAR, compiled.getBindings()[0]);
     }
 
+	@Test
     public void testProcessTemplateBindGuessInteger() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE COLUMN1 = #bind($a)";
         Map map = Collections.singletonMap("a", new Integer(4));
@@ -110,6 +116,7 @@ public class SQLTemplateProcessorTest extends TestCase {
         assertBindingType(Types.INTEGER, compiled.getBindings()[0]);
     }
 
+	@Test
     public void testProcessTemplateBindEqual() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE COLUMN #bindEqual($a 'VARCHAR')";
 
@@ -129,6 +136,7 @@ public class SQLTemplateProcessorTest extends TestCase {
         assertBindingValue("VALUE_OF_A", compiled.getBindings()[0]);
     }
 
+	@Test
     public void testProcessTemplateBindNotEqual() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE COLUMN #bindNotEqual($a 'VARCHAR')";
 
@@ -148,6 +156,7 @@ public class SQLTemplateProcessorTest extends TestCase {
         assertBindingValue("VALUE_OF_A", compiled.getBindings()[0]);
     }
 
+	@Test
     public void testProcessTemplateID() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE COLUMN1 = #bind($helper.cayenneExp($a, 'db:ID_COLUMN'))";
 
@@ -165,6 +174,7 @@ public class SQLTemplateProcessorTest extends TestCase {
         assertBindingValue(new Integer(5), compiled.getBindings()[0]);
     }
 
+	@Test
     public void testProcessTemplateNotEqualID() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE "
                 + "COLUMN1 #bindNotEqual($helper.cayenneExp($a, 'db:ID_COLUMN1')) "
@@ -190,6 +200,7 @@ public class SQLTemplateProcessorTest extends TestCase {
         assertBindingValue("aaa", compiled.getBindings()[1]);
     }
 
+	@Test
     public void testProcessTemplateConditions() throws Exception {
         String sqlTemplate = "SELECT * FROM ME #if($a) WHERE COLUMN1 > #bind($a)#end";
 
@@ -211,6 +222,7 @@ public class SQLTemplateProcessorTest extends TestCase {
         assertEquals(0, compiled.getBindings().length);
     }
 
+	@Test
     public void testProcessTemplateBindCollection() throws Exception {
         String sqlTemplate = "SELECT * FROM ME WHERE COLUMN IN (#bind($list 'VARCHAR'))";
 
@@ -229,6 +241,7 @@ public class SQLTemplateProcessorTest extends TestCase {
         assertBindingValue("c", compiled.getBindings()[2]);
     }
 
+	
     protected void assertBindingValue(Object expectedValue, Object binding) {
         assertTrue("Not a binding!", binding instanceof ParameterBinding);
         assertEquals(expectedValue, ((ParameterBinding) binding).getValue());

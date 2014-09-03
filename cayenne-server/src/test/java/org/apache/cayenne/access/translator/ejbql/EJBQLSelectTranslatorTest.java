@@ -22,9 +22,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.cayenne.access.translator.ejbql.EJBQLSelectTranslator;
-import org.apache.cayenne.access.translator.ejbql.EJBQLTranslationContext;
-import org.apache.cayenne.access.translator.ejbql.JdbcEJBQLTranslatorFactory;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.di.Inject;
@@ -33,10 +30,11 @@ import org.apache.cayenne.ejbql.EJBQLParser;
 import org.apache.cayenne.ejbql.EJBQLParserFactory;
 import org.apache.cayenne.query.EJBQLQuery;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class EJBQLSelectTranslatorTest extends ServerCase {
 
     @Inject
@@ -46,13 +44,14 @@ public class EJBQLSelectTranslatorTest extends ServerCase {
     private DbAdapter adapter;
 
     private SQLTemplate translateSelect(String ejbql) {
-        return translateSelect(ejbql, Collections.EMPTY_MAP);
+        return translateSelect(ejbql, Collections.<Integer, Object>emptyMap());
     }
 
     private SQLTemplate translateSelect(String ejbql, final Map<Integer, Object> queryParameters) {
         EJBQLParser parser = EJBQLParserFactory.getParser();
         EJBQLCompiledExpression select = parser.compile(ejbql, runtime.getDataDomain().getEntityResolver());
-        EJBQLQuery query = new EJBQLQuery(ejbql) {
+        @SuppressWarnings("serial")
+		EJBQLQuery query = new EJBQLQuery(ejbql) {
 
             @Override
             public Map<Integer, Object> getPositionalParameters() {
@@ -66,6 +65,7 @@ public class EJBQLSelectTranslatorTest extends ServerCase {
         return tr.getQuery();
     }
 
+    @Test
     public void testSelectFrom() {
         SQLTemplate query = translateSelect("select a from Artist a");
         String sql = query.getDefaultTemplate();
@@ -79,6 +79,7 @@ public class EJBQLSelectTranslatorTest extends ServerCase {
         assertTrue(sql, sql.endsWith(" FROM ARTIST t0"));
     }
 
+    @Test
     public void testSelectMultipleJoinsToTheSameTable() throws Exception {
         SQLTemplate query = translateSelect("SELECT a "
                 + "FROM Artist a JOIN a.paintingArray b JOIN a.paintingArray c "
@@ -91,6 +92,7 @@ public class EJBQLSelectTranslatorTest extends ServerCase {
         assertTrue(sql, sql.indexOf("INNER JOIN PAINTING t2 ON (t0.ARTIST_ID = t2.ARTIST_ID)") > 0);
     }
 
+    @Test
     public void testSelectImplicitColumnJoins() throws Exception {
         SQLTemplate query = translateSelect("SELECT a.paintingArray.toGallery.galleryName "
                 + "FROM Artist a JOIN a.paintingArray b");
@@ -112,6 +114,7 @@ public class EJBQLSelectTranslatorTest extends ServerCase {
         // assertTrue(sql, i2 < 0);
     }
 
+    @Test
     public void testSelectDistinct() {
         SQLTemplate query = translateSelect("select distinct a from Artist a");
         String sql = query.getDefaultTemplate();
@@ -119,6 +122,7 @@ public class EJBQLSelectTranslatorTest extends ServerCase {
         assertTrue(sql, sql.startsWith("SELECT DISTINCT "));
     }
 
+    @Test
     public void testSelectFromWhereEqual() {
         SQLTemplate query = translateSelect("select a from Artist a where a.artistName = 'Dali'");
         String sql = query.getDefaultTemplate();
@@ -128,6 +132,7 @@ public class EJBQLSelectTranslatorTest extends ServerCase {
         assertTrue(sql, sql.endsWith(" FROM ARTIST t0 WHERE t0.ARTIST_NAME =" + " #bind('Dali' 'VARCHAR')"));
     }
 
+    @Test
     public void testSelectFromWhereOrEqual() {
         SQLTemplate query = translateSelect("select a from Artist a where a.artistName = 'Dali' "
                 + "or a.artistName = 'Malevich'");
@@ -146,6 +151,7 @@ public class EJBQLSelectTranslatorTest extends ServerCase {
         assertEquals(2, countDelimiters(sql1, " OR ", sql.indexOf("WHERE ")));
     }
 
+    @Test
     public void testSelectFromWhereAndEqual() {
 
         SQLTemplate query = translateSelect("select a from Artist a where a.artistName = 'Dali' "
@@ -165,6 +171,7 @@ public class EJBQLSelectTranslatorTest extends ServerCase {
         assertEquals(2, countDelimiters(sql1, " AND ", sql1.indexOf("WHERE ")));
     }
 
+    @Test
     public void testSelectFromWhereNot() {
         SQLTemplate query = translateSelect("select a from Artist a where not (a.artistName = 'Dali')");
         String sql = query.getDefaultTemplate();
@@ -173,6 +180,7 @@ public class EJBQLSelectTranslatorTest extends ServerCase {
         assertTrue(sql, sql.endsWith("WHERE NOT " + "t0.ARTIST_NAME = #bind('Dali' 'VARCHAR')"));
     }
 
+    @Test
     public void testSelectFromWhereGreater() {
         SQLTemplate query = translateSelect("select p from Painting p where p.estimatedPrice > 1.0");
         String sql = query.getDefaultTemplate();
@@ -181,24 +189,28 @@ public class EJBQLSelectTranslatorTest extends ServerCase {
         assertTrue(sql, sql.endsWith("WHERE t0.ESTIMATED_PRICE > #bind($id0 'DECIMAL')"));
     }
 
+    @Test
     public void testSelectFromWhereGreaterOrEqual() {
         SQLTemplate query = translateSelect("select p from Painting p where p.estimatedPrice >= 2");
         String sql = query.getDefaultTemplate();
         assertTrue(sql, sql.endsWith("WHERE t0.ESTIMATED_PRICE >= #bind($id0 'INTEGER')"));
     }
 
+    @Test
     public void testSelectFromWhereLess() {
         SQLTemplate query = translateSelect("select p from Painting p where p.estimatedPrice < 1.0");
         String sql = query.getDefaultTemplate();
         assertTrue(sql, sql.endsWith("WHERE t0.ESTIMATED_PRICE < #bind($id0 'DECIMAL')"));
     }
 
+    @Test
     public void testSelectFromWhereLessOrEqual() {
         SQLTemplate query = translateSelect("select p from Painting p where p.estimatedPrice <= 1.0");
         String sql = query.getDefaultTemplate();
         assertTrue(sql, sql.endsWith("WHERE t0.ESTIMATED_PRICE <= #bind($id0 'DECIMAL')"));
     }
 
+    @Test
     public void testSelectFromWhereNotEqual() {
         SQLTemplate query = translateSelect("select a from Artist a where a.artistName <> 'Dali'");
         String sql = query.getDefaultTemplate();
@@ -206,6 +218,7 @@ public class EJBQLSelectTranslatorTest extends ServerCase {
         assertTrue(sql, sql.endsWith("WHERE t0.ARTIST_NAME <> #bind('Dali' 'VARCHAR')"));
     }
 
+    @Test
     public void testSelectFromWhereBetween() {
         SQLTemplate query = translateSelect("select p from Painting p where p.estimatedPrice between 3 and 5");
         String sql = query.getDefaultTemplate();
@@ -214,6 +227,7 @@ public class EJBQLSelectTranslatorTest extends ServerCase {
                 + "BETWEEN #bind($id0 'INTEGER') AND #bind($id1 'INTEGER')"));
     }
 
+    @Test
     public void testSelectFromWhereNotBetween() {
         SQLTemplate query = translateSelect("select p from Painting p where p.estimatedPrice not between 3 and 5");
         String sql = query.getDefaultTemplate();
@@ -222,6 +236,7 @@ public class EJBQLSelectTranslatorTest extends ServerCase {
                 + "NOT BETWEEN #bind($id0 'INTEGER') AND #bind($id1 'INTEGER')"));
     }
 
+    @Test
     public void testSelectFromWhereLike() {
         SQLTemplate query = translateSelect("select p from Painting p where p.paintingTitle like 'Stuff'");
         String sql = query.getDefaultTemplate();
@@ -229,6 +244,7 @@ public class EJBQLSelectTranslatorTest extends ServerCase {
         assertTrue(sql, sql.endsWith("WHERE t0.PAINTING_TITLE " + "LIKE #bind('Stuff' 'VARCHAR')"));
     }
 
+    @Test
     public void testSelectFromWhereNotLike() {
         SQLTemplate query = translateSelect("select p from Painting p where p.paintingTitle NOT like 'Stuff'");
         String sql = query.getDefaultTemplate();
@@ -236,6 +252,7 @@ public class EJBQLSelectTranslatorTest extends ServerCase {
         assertTrue(sql, sql.endsWith("WHERE t0.PAINTING_TITLE " + "NOT LIKE #bind('Stuff' 'VARCHAR')"));
     }
 
+    @Test
     public void testSelectPositionalParameters() {
         Map<Integer, Object> params = new HashMap<Integer, Object>();
         params.put(new Integer(1), "X");
@@ -246,6 +263,7 @@ public class EJBQLSelectTranslatorTest extends ServerCase {
         assertTrue(sql, sql.endsWith("t0.ARTIST_NAME = #bind($id0) OR t0.ARTIST_NAME = #bind($id1)"));
     }
 
+    @Test
     public void testMax() {
         SQLTemplate query = translateSelect("select max(p.estimatedPrice) from Painting p");
         String sql = query.getDefaultTemplate();
@@ -254,6 +272,7 @@ public class EJBQLSelectTranslatorTest extends ServerCase {
                 + "FROM PAINTING t0"));
     }
 
+    @Test
     public void testDistinctSum() {
         SQLTemplate query = translateSelect("select sum( distinct p.estimatedPrice) from Painting p");
         String sql = query.getDefaultTemplate();
@@ -263,6 +282,7 @@ public class EJBQLSelectTranslatorTest extends ServerCase {
                         + "FROM PAINTING t0"));
     }
 
+    @Test
     public void testColumnPaths() {
         SQLTemplate query = translateSelect("select p.estimatedPrice, p.toArtist.artistName from Painting p");
         String sql = query.getDefaultTemplate();
@@ -284,6 +304,7 @@ public class EJBQLSelectTranslatorTest extends ServerCase {
 
     // if parameter value is null (in this test x := null) we will generate
     // "IS NULL"
+    @Test
     public void testEqualsNullParameter() {
         String ejbql = "select p from Painting p WHERE p.toArtist=:x";
         EJBQLParser parser = EJBQLParserFactory.getParser();
@@ -299,6 +320,7 @@ public class EJBQLSelectTranslatorTest extends ServerCase {
     }
 
     // if parameter value is null and more than one parameter in query
+    @Test
     public void testEqualsNullAndNotNullParameter() {
         String ejbql = "select p from Painting p WHERE p.toArtist=:x OR p.toArtist.artistName=:b";
         EJBQLParser parser = EJBQLParserFactory.getParser();

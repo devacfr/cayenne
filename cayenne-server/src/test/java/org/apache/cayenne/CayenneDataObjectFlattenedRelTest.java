@@ -19,8 +19,8 @@
 
 package org.apache.cayenne;
 
-import java.util.List;
 import java.sql.Types;
+import java.util.List;
 
 import org.apache.cayenne.access.MockDataNode;
 import org.apache.cayenne.configuration.server.ServerRuntime;
@@ -31,12 +31,13 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class CayenneDataObjectFlattenedRelTest extends ServerCase {
 
     @Inject
@@ -57,9 +58,10 @@ public class CayenneDataObjectFlattenedRelTest extends ServerCase {
 
     private TableHelper tArtistGroup;
 
-    @Override
-    protected void setUpAfterInjection() throws Exception {
-        dbHelper.deleteAll("PAINTING_INFO");
+	@Override
+	public void setUp() throws Exception {
+		super.setUp();
+		dbHelper.deleteAll("PAINTING_INFO");
         dbHelper.deleteAll("PAINTING");
         dbHelper.deleteAll("ARTIST_EXHIBIT");
         dbHelper.deleteAll("ARTIST_GROUP");
@@ -75,8 +77,9 @@ public class CayenneDataObjectFlattenedRelTest extends ServerCase {
 
         tArtistGroup = new TableHelper(dbHelper, "ARTIST_GROUP");
         tArtistGroup.setColumns("ARTIST_ID", "GROUP_ID");
-    }
-
+	}
+    
+    
     private void create1Artist1ArtGroupDataSet() throws Exception {
         tArtist.insert(33001, "artist1");
         tArtGroup.insert(1, "g1");
@@ -92,6 +95,7 @@ public class CayenneDataObjectFlattenedRelTest extends ServerCase {
         tArtistGroup.insert(33001, 1);
     }
 
+    @Test
     public void testReadFlattenedRelationship() throws Exception {
         create1Artist1ArtGroupDataSet();
 
@@ -101,6 +105,7 @@ public class CayenneDataObjectFlattenedRelTest extends ServerCase {
         assertEquals(0, groupList.size());
     }
 
+    @Test
     public void testReadFlattenedRelationship2() throws Exception {
 
         create1Artist1ArtGroup1ArtistGroupDataSet();
@@ -113,6 +118,7 @@ public class CayenneDataObjectFlattenedRelTest extends ServerCase {
         assertEquals("g1", groupList.get(0).getName());
     }
 
+    @Test
     public void testAddToFlattenedRelationship() throws Exception {
 
         create1Artist1ArtGroupDataSet();
@@ -120,7 +126,7 @@ public class CayenneDataObjectFlattenedRelTest extends ServerCase {
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
         assertEquals(0, a1.getGroupArray().size());
 
-        SelectQuery q = new SelectQuery(ArtGroup.class, ExpressionFactory.matchExp(
+        SelectQuery<ArtGroup> q = new SelectQuery<ArtGroup>(ArtGroup.class, ExpressionFactory.matchExp(
                 "name",
                 "g1"));
         List<?> results = context.performQuery(q);
@@ -150,12 +156,13 @@ public class CayenneDataObjectFlattenedRelTest extends ServerCase {
     }
 
     // Test case to show up a bug in committing more than once
+    @Test
     public void testDoubleCommitAddToFlattenedRelationship() throws Exception {
         create1Artist1ArtGroupDataSet();
 
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
 
-        SelectQuery q = new SelectQuery(ArtGroup.class, ExpressionFactory.matchExp(
+        SelectQuery<ArtGroup> q = new SelectQuery<ArtGroup>(ArtGroup.class, ExpressionFactory.matchExp(
                 "name",
                 "g1"));
         List<?> results = context.performQuery(q);
@@ -183,6 +190,7 @@ public class CayenneDataObjectFlattenedRelTest extends ServerCase {
 
     }
 
+    @Test
     public void testRemoveFromFlattenedRelationship() throws Exception {
         create1Artist1ArtGroup1ArtistGroupDataSet();
 
@@ -205,6 +213,7 @@ public class CayenneDataObjectFlattenedRelTest extends ServerCase {
     // Demonstrates a possible bug in ordering of deletes, when a flattened relationships
     // link record is deleted at the same time (same transaction) as one of the record to
     // which it links.
+    @Test
     public void testRemoveFlattenedRelationshipAndRootRecord() throws Exception {
         create1Artist1ArtGroup1ArtistGroupDataSet();
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
@@ -223,12 +232,13 @@ public class CayenneDataObjectFlattenedRelTest extends ServerCase {
         }
     }
 
+    @Test
     public void testAddRemoveFlattenedRelationship1() throws Exception {
         create1Artist1ArtGroupDataSet();
 
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
 
-        SelectQuery q = new SelectQuery(ArtGroup.class, ExpressionFactory.matchExp(
+        SelectQuery<ArtGroup> q = new SelectQuery<ArtGroup>(ArtGroup.class, ExpressionFactory.matchExp(
                 "name",
                 "g1"));
         List<?> results = context.performQuery(q);
@@ -246,12 +256,13 @@ public class CayenneDataObjectFlattenedRelTest extends ServerCase {
         });
     }
 
+    @Test
     public void testAddRemoveFlattenedRelationship2() throws Exception {
         create1Artist2ArtGroupDataSet();
 
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
 
-        SelectQuery q = new SelectQuery(ArtGroup.class);
+        SelectQuery<ArtGroup> q = new SelectQuery<ArtGroup>(ArtGroup.class);
         List<?> results = context.performQuery(q);
         assertEquals(2, results.size());
 

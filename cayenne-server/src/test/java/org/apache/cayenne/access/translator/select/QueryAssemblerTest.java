@@ -25,11 +25,12 @@ import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class QueryAssemblerTest extends ServerCase {
 
     @Inject
@@ -43,20 +44,24 @@ public class QueryAssemblerTest extends ServerCase {
     private TstQueryAssembler qa;
 
     @Override
-    protected void setUpAfterInjection() throws Exception {
+    public void setUp() throws Exception {
+    	super.setUp();
         this.connection = dataSourceFactory.getSharedDataSource().getConnection();
         this.qa = new TstQueryAssembler(new SelectQuery<Object>(), dataNode, connection);
     }
 
     @Override
-    protected void tearDownBeforeInjection() throws Exception {
+    public void tearDown() throws Exception {
+    	super.tearDown();
         connection.close();
     }
 
+    @Test
     public void testGetQuery() throws Exception {
         assertNotNull(qa.getQuery());
     }
 
+    @Test
     public void testAddToParamList() throws Exception {
 
         assertEquals(0, qa.getAttributes().size());
@@ -67,6 +72,7 @@ public class QueryAssemblerTest extends ServerCase {
         assertEquals(1, qa.getValues().size());
     }
 
+    @Test
     public void testCreateStatement() throws Exception {
         assertNotNull(qa.createStatement());
     }

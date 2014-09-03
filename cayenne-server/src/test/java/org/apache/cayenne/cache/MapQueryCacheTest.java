@@ -20,13 +20,14 @@ package org.apache.cayenne.cache;
 
 import java.util.ArrayList;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.query.MockQueryMetadata;
+import org.apache.cayenne.testing.TestCase;
 import org.apache.cayenne.util.Util;
+import org.junit.Test;
 
 public class MapQueryCacheTest extends TestCase {
 
+    @Test
     public void testSerializability() throws Exception {
 
         MapQueryCache cache = new MapQueryCache(5);
@@ -40,7 +41,7 @@ public class MapQueryCacheTest extends TestCase {
 
         assertEquals(1, cache.size());
 
-        MapQueryCache deserialized = (MapQueryCache) Util.cloneViaSerialization(cache);
+        MapQueryCache deserialized = Util.cloneViaSerialization(cache);
         assertNotNull(deserialized);
         assertEquals(1, deserialized.size());
     }

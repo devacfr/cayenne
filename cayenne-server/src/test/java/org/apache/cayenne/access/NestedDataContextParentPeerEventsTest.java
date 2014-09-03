@@ -25,10 +25,11 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.relationship.Child;
 import org.apache.cayenne.testdo.relationship.Master;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+@CayenneConfiguration(ServerCase.RELATIONSHIPS_PROJECT)
 public class NestedDataContextParentPeerEventsTest extends ServerCase {
 
     @Inject
@@ -40,6 +41,7 @@ public class NestedDataContextParentPeerEventsTest extends ServerCase {
     @Inject
     private DataContext parentContext2;
 
+    @Test
     public void testPeerObjectUpdatedSimpleProperty() throws Exception {
         Master a = parentContext1.newObject(Master.class);
         a.setName("X");
@@ -67,6 +69,7 @@ public class NestedDataContextParentPeerEventsTest extends ServerCase {
         }.runTest(2000);
     }
 
+    @Test
     public void testPeerObjectUpdatedToOneRelationship() throws Exception {
         Master a = parentContext1.newObject(Master.class);
         Master altA = parentContext1.newObject(Master.class);
@@ -102,6 +105,7 @@ public class NestedDataContextParentPeerEventsTest extends ServerCase {
         }.runTest(2000);
     }
 
+    @Test
     public void testPeerObjectUpdatedToManyRelationship() throws Exception {
         Master a = parentContext1.newObject(Master.class);
         a.setName("X");

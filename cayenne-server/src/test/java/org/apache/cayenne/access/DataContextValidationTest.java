@@ -24,14 +24,15 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.unit.util.ValidationDelegate;
 import org.apache.cayenne.validation.ValidationResult;
+import org.junit.Test;
 
 /**
  */
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextValidationTest extends ServerCase {
 
     @Inject
@@ -50,6 +51,7 @@ public class DataContextValidationTest extends ServerCase {
         dbHelper.deleteAll("ARTIST");
     }
 
+    @Test
     public void testValidatingObjectsOnCommitProperty() throws Exception {
         context.setValidatingObjectsOnCommit(true);
         assertTrue(context.isValidatingObjectsOnCommit());
@@ -58,6 +60,7 @@ public class DataContextValidationTest extends ServerCase {
         assertFalse(context.isValidatingObjectsOnCommit());
     }
 
+    @Test
     public void testValidatingObjectsOnCommit() throws Exception {
         // test that validation is called properly
 
@@ -74,6 +77,7 @@ public class DataContextValidationTest extends ServerCase {
         assertFalse(a2.isValidateForSaveCalled());
     }
 
+    @Test
     public void testValidationModifyingContext() throws Exception {
 
         ValidationDelegate delegate = new ValidationDelegate() {

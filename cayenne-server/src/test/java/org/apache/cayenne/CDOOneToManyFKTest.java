@@ -25,12 +25,13 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.relationship.ToManyFkDep;
 import org.apache.cayenne.testdo.relationship.ToManyFkRoot;
 import org.apache.cayenne.testdo.relationship.ToManyRoot2;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 // TODO: this mapping scenario is really unsupported ... this is just an attempt at
 // partial solution
-@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+@CayenneConfiguration(ServerCase.RELATIONSHIPS_PROJECT)
 public class CDOOneToManyFKTest extends ServerCase {
 
     @Inject
@@ -45,6 +46,7 @@ public class CDOOneToManyFKTest extends ServerCase {
         dbHelper.deleteAll("TO_ONEFK1");
     }
 
+    @Test
     public void testReadRelationship() throws Exception {
 
         ToManyRoot2 src2 = context.newObject(ToManyRoot2.class);

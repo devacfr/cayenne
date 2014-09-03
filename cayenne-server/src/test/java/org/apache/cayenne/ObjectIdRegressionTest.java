@@ -22,7 +22,8 @@ package org.apache.cayenne;
 import java.util.HashSet;
 import java.util.Set;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 public class ObjectIdRegressionTest extends TestCase {
 
@@ -33,13 +34,15 @@ public class ObjectIdRegressionTest extends TestCase {
     // for(int j = 0; j < 8; j++) {
     // IDUtil.appendFormattedByte(buffer, bytes[j]);
     // }
-    //            
+    //
     // System.out.println(buffer);
     // }
     // }
 
+    @Test
     public void testIdPool() throws Exception {
-        // testing uniqueness of a sequence of ObjectIds generated quickly one after the
+        // testing uniqueness of a sequence of ObjectIds generated quickly one
+        // after the
         // other...
 
         int size = 100000;

@@ -22,10 +22,12 @@ import static org.mockito.Mockito.mock;
 
 import java.util.Collections;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 public class OsgiClassLoaderManagerTest extends TestCase {
 
+    @Test
     public void testGetClassLoader() {
 
         final ClassLoader appCl = mock(ClassLoader.class);

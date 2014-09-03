@@ -27,12 +27,13 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextLocalObjectTest extends ServerCase {
 
     @Inject
@@ -66,6 +67,7 @@ public class DataContextLocalObjectTest extends ServerCase {
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
     }
 
+    @Test
     public void testLocalObject_InCache() throws Exception {
         tArtist.insert(456, "Bla");
 
@@ -82,6 +84,7 @@ public class DataContextLocalObjectTest extends ServerCase {
         });
     }
 
+    @Test
     public void testLocalObject_SameContext() throws Exception {
         tArtist.insert(456, "Bla");
 
@@ -96,6 +99,7 @@ public class DataContextLocalObjectTest extends ServerCase {
         });
     }
 
+    @Test
     public void testLocalObject_NotInCache() throws Exception {
         tArtist.insert(456, "Bla");
 
@@ -112,6 +116,7 @@ public class DataContextLocalObjectTest extends ServerCase {
         });
     }
 
+    @Test
     public void testLocalObject_FFE_InvalidID() throws Exception {
         tArtist.insert(777, "AA");
 
@@ -137,6 +142,7 @@ public class DataContextLocalObjectTest extends ServerCase {
 
     }
 
+    @Test
     public void testLocalObject_TempId() throws Exception {
 
         final Artist a1 = context1.newObject(Artist.class);
@@ -163,6 +169,7 @@ public class DataContextLocalObjectTest extends ServerCase {
         });
     }
 
+    @Test
     public void testLocalObject_TempId_NestedContext() throws Exception {
 
         final Artist a1 = context1.newObject(Artist.class);

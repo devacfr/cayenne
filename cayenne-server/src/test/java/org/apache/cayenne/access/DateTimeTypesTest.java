@@ -30,13 +30,14 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.CalendarEntity;
 import org.apache.cayenne.testdo.testmap.DateTestEntity;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 /**
  * Tests Date handling in Cayenne.
  */
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DateTimeTypesTest extends ServerCase {
 
     @Inject
@@ -51,6 +52,7 @@ public class DateTimeTypesTest extends ServerCase {
         dbHelper.deleteAll("DATE_TEST");
     }
 
+    @Test
     public void testCalendar() throws Exception {
 
         CalendarEntity test = context.newObject(CalendarEntity.class);
@@ -62,7 +64,7 @@ public class DateTimeTypesTest extends ServerCase {
         test.setCalendarField(cal);
         context.commitChanges();
 
-        SelectQuery q = new SelectQuery(CalendarEntity.class);
+        SelectQuery<CalendarEntity> q = new SelectQuery<CalendarEntity>(CalendarEntity.class);
         CalendarEntity testRead = (CalendarEntity) context.performQuery(q).get(0);
         assertNotNull(testRead.getCalendarField());
         assertEquals(cal, testRead.getCalendarField());
@@ -71,6 +73,7 @@ public class DateTimeTypesTest extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testDate() throws Exception {
         DateTestEntity test = context.newObject(DateTestEntity.class);
 
@@ -81,13 +84,14 @@ public class DateTimeTypesTest extends ServerCase {
         test.setDateColumn(nowDate);
         context.commitChanges();
 
-        SelectQuery q = new SelectQuery(DateTestEntity.class);
+        SelectQuery<DateTestEntity> q = new SelectQuery<DateTestEntity>(DateTestEntity.class);
         DateTestEntity testRead = (DateTestEntity) context.performQuery(q).get(0);
         assertNotNull(testRead.getDateColumn());
         assertEquals(nowDate, testRead.getDateColumn());
         assertEquals(Date.class, testRead.getDateColumn().getClass());
     }
 
+    @Test
     public void testTime() throws Exception {
         DateTestEntity test = context.newObject(DateTestEntity.class);
 
@@ -98,7 +102,7 @@ public class DateTimeTypesTest extends ServerCase {
         test.setTimeColumn(nowTime);
         context.commitChanges();
 
-        SelectQuery q = new SelectQuery(DateTestEntity.class);
+        SelectQuery<DateTestEntity> q = new SelectQuery<DateTestEntity>(DateTestEntity.class);
         DateTestEntity testRead = (DateTestEntity) context.performQuery(q).get(0);
         assertNotNull(testRead.getTimeColumn());
         assertEquals(Date.class, testRead.getTimeColumn().getClass());
@@ -112,6 +116,7 @@ public class DateTimeTypesTest extends ServerCase {
         assertTrue("" + delta, Math.abs(delta) <= 1000 * 60 * 60);
     }
 
+    @Test
     public void testTimestamp() throws Exception {
         DateTestEntity test = context.newObject(DateTestEntity.class);
 
@@ -126,12 +131,13 @@ public class DateTimeTypesTest extends ServerCase {
         test.setTimestampColumn(now);
         context.commitChanges();
 
-        SelectQuery q = new SelectQuery(DateTestEntity.class);
+        SelectQuery<DateTestEntity> q = new SelectQuery<DateTestEntity>(DateTestEntity.class);
         DateTestEntity testRead = (DateTestEntity) context.performQuery(q).get(0);
         assertNotNull(testRead.getTimestampColumn());
         assertEquals(now, testRead.getTimestampColumn());
     }
 
+    @Test
     public void testSQLTemplateTimestamp() throws Exception {
         DateTestEntity test = context.newObject(DateTestEntity.class);
 
@@ -153,6 +159,7 @@ public class DateTimeTypesTest extends ServerCase {
         assertEquals(now, columnValue);
     }
 
+    @Test
     public void testSQLTemplateDate() throws Exception {
         DateTestEntity test = (DateTestEntity) context.newObject("DateTestEntity");
 
@@ -174,6 +181,7 @@ public class DateTimeTypesTest extends ServerCase {
         assertEquals(now.toString(), new java.sql.Date(columnValue.getTime()).toString());
     }
 
+    @Test
     public void testSQLTemplateTime() throws Exception {
         DateTestEntity test = (DateTestEntity) context.newObject("DateTestEntity");
 

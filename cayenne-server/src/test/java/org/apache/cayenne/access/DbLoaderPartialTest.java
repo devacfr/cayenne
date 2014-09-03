@@ -27,11 +27,12 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.ObjEntity;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DbLoaderPartialTest extends ServerCase {
 
     @Inject
@@ -85,6 +86,7 @@ public class DbLoaderPartialTest extends ServerCase {
      * ARTIST and GALLERY should remain unmodified, and all PAINTING relationships should
      * be loaded.
      */
+    @Test
     public void testPartialLoad() throws Exception {
 
         DataMap map = new DataMap();

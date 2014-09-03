@@ -34,12 +34,13 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextDisjointByIdPrefetchTest extends ServerCase {
 
     @Inject
@@ -110,6 +111,7 @@ public class DataContextDisjointByIdPrefetchTest extends ServerCase {
         tPaintingInfo.insert(2, "green");
     }
 
+    @Test
     public void testOneToMany() throws Exception {
         createArtistWithTwoPaintingsDataSet();
 
@@ -140,6 +142,7 @@ public class DataContextDisjointByIdPrefetchTest extends ServerCase {
         });
     }
 
+    @Test
     public void testManyToOne() throws Exception {
         createArtistWithTwoPaintingsDataSet();
 
@@ -159,6 +162,7 @@ public class DataContextDisjointByIdPrefetchTest extends ServerCase {
         });
     }
 
+    @Test
     public void testFetchLimit() throws Exception {
         createThreeArtistsWithPlentyOfPaintingsDataSet();
 
@@ -193,6 +197,7 @@ public class DataContextDisjointByIdPrefetchTest extends ServerCase {
         });
     }
 
+    @Test
     public void testOneToOneRelationship() throws Exception {
         createTwoPaintingsWithInfosDataSet();
 

@@ -21,10 +21,13 @@ package org.apache.cayenne.access.jdbc;
 
 import java.util.Collections;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
+
 
 public class SQLTemplateProcessorSelectTest extends TestCase {
 
+	@Test
     public void testProcessTemplateUnchanged() throws Exception {
         String sqlTemplate = "SELECT * FROM ME";
 
@@ -37,6 +40,7 @@ public class SQLTemplateProcessorSelectTest extends TestCase {
         assertEquals(0, compiled.getResultColumns().length);
     }
 
+	@Test
     public void testProcessSelectTemplate1() throws Exception {
         String sqlTemplate = "SELECT #result('A') FROM ME";
 
@@ -51,6 +55,7 @@ public class SQLTemplateProcessorSelectTest extends TestCase {
         assertNull(compiled.getResultColumns()[0].getJavaClass());
     }
 
+	@Test
     public void testProcessSelectTemplate2() throws Exception {
         String sqlTemplate = "SELECT #result('A' 'String') FROM ME";
 
@@ -66,6 +71,7 @@ public class SQLTemplateProcessorSelectTest extends TestCase {
         assertEquals("java.lang.String", compiled.getResultColumns()[0].getJavaClass());
     }
 
+	@Test
     public void testProcessSelectTemplate3() throws Exception {
         String sqlTemplate = "SELECT #result('A' 'String' 'B') FROM ME";
 
@@ -83,6 +89,7 @@ public class SQLTemplateProcessorSelectTest extends TestCase {
         assertEquals("java.lang.String", column.getJavaClass());
     }
 
+	@Test
     public void testProcessSelectTemplate4() throws Exception {
         String sqlTemplate = "SELECT #result('A'), #result('B'), #result('C') FROM ME";
 

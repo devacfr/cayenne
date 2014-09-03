@@ -27,13 +27,14 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.validation.BeanValidationFailure;
 import org.apache.cayenne.validation.ValidationFailure;
 import org.apache.cayenne.validation.ValidationResult;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class CayenneDataObjectValidationTest extends ServerCase {
 
     @Inject
@@ -65,6 +66,7 @@ public class CayenneDataObjectValidationTest extends ServerCase {
         assertFalse("No failures expected: " + result, result.hasFailures());
     }
 
+    @Test
     public void testValidateForSaveMandatoryAttributeMissing() throws Exception {
 
         Artist artist = context.newObject(Artist.class);
@@ -88,6 +90,7 @@ public class CayenneDataObjectValidationTest extends ServerCase {
         assertFalse(result.hasFailures());
     }
 
+    @Test
     public void testValidateForSaveAttributeTooLong() throws Exception {
 
         Artist artist = context.newObject(Artist.class);

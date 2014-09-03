@@ -20,11 +20,12 @@ package org.apache.cayenne.configuration.web;
 
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.spi.DefaultInjector;
-
-import junit.framework.TestCase;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 public class WebModuleTest extends TestCase {
 
+    @Test
     public void testBind_Scopes() {
 
         Injector injector = new DefaultInjector(new WebModule());

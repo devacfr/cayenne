@@ -34,10 +34,11 @@ import org.apache.cayenne.testdo.testmap.ArtistExhibit;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class CDOOne2ManyTest extends ServerCase {
 
     @Inject
@@ -70,6 +71,7 @@ public class CDOOne2ManyTest extends ServerCase {
         tPainting.setColumns("PAINTING_ID", "PAINTING_TITLE", "ARTIST_ID", "GALLERY_ID");
     }
 
+    @Test
     public void testSelectWithToManyDBQualifier() throws Exception {
 
         // intentionally add more than 1 painting to artist
@@ -103,6 +105,7 @@ public class CDOOne2ManyTest extends ServerCase {
         assertSame(a1, artists.get(0));
     }
 
+    @Test
     public void testSelectWithToManyQualifier() throws Exception {
 
         // intentionally add more than 1 painting to artist
@@ -136,6 +139,7 @@ public class CDOOne2ManyTest extends ServerCase {
         assertSame(a1, artists.get(0));
     }
 
+    @Test
     public void testNewAdd() throws Exception {
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XyzQ");
@@ -165,6 +169,7 @@ public class CDOOne2ManyTest extends ServerCase {
         assertEquals(aRow[0], pRow[2]);
     }
 
+    @Test
     public void testNewAddMultiples() throws Exception {
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XyzV");
@@ -192,6 +197,7 @@ public class CDOOne2ManyTest extends ServerCase {
         assertEquals(2, a2.getPaintingArray().size());
     }
 
+    @Test
     public void testRemove1() throws Exception {
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XyzE");
@@ -230,6 +236,7 @@ public class CDOOne2ManyTest extends ServerCase {
         assertEquals(0, a3.getPaintingArray().size());
     }
 
+    @Test
     public void testRemove2() throws Exception {
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XyzQ");
@@ -269,6 +276,7 @@ public class CDOOne2ManyTest extends ServerCase {
         assertEquals(1, a3.getPaintingArray().size());
     }
 
+    @Test
     public void testPropagatePK() throws Exception {
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("XyBn");

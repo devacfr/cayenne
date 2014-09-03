@@ -24,15 +24,17 @@ import java.sql.Types;
 
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class Oracle8AdapterTest extends ServerCase {
     
     @Inject
     private AdhocObjectFactory objectFactory;
 
+    @Test
     public void testTimestampMapping() throws Exception {
         
         Oracle8Adapter adapter = objectFactory.newInstance(
@@ -45,6 +47,7 @@ public class Oracle8AdapterTest extends ServerCase {
         assertEquals("DATE", types[0]);
     }
 
+    @Test
     public void testFindAdapterResource() throws Exception {
         
         Oracle8Adapter adapter = objectFactory.newInstance(

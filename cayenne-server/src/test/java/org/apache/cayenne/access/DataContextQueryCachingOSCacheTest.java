@@ -20,10 +20,10 @@ package org.apache.cayenne.access;
 
 import org.apache.cayenne.cache.OSQueryCache;
 import org.apache.cayenne.test.jdbc.TableHelper;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextQueryCachingOSCacheTest extends DataContextQueryCachingTest {
 
     // runs super tests with a different setup...

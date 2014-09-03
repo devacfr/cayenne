@@ -19,10 +19,12 @@
 
 package org.apache.cayenne;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 public class DataRowTest extends TestCase {
 
+    @Test
     public void testVersion() throws Exception {
         DataRow s1 = new DataRow(10);
         DataRow s2 = new DataRow(10);

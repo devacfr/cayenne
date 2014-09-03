@@ -20,14 +20,17 @@ package org.apache.cayenne.conn;
 
 import java.sql.SQLException;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 public class DriverDataSourceTest extends TestCase {
 
+    @Test
     public void testLazyInstantiationOfDriverClass() {
-        DriverDataSource dataSource = new DriverDataSource("does.not.exist.Driver", "jdbc:postgresql://localhost/database");
+        DriverDataSource dataSource = new DriverDataSource("does.not.exist.Driver",
+                "jdbc:postgresql://localhost/database");
         assertNotNull(dataSource);
-        
+
         try {
             dataSource.getConnection();
             fail();
@@ -35,5 +38,5 @@ public class DriverDataSourceTest extends TestCase {
             // expected because driver class does not exist
         }
     }
-    
+
 }

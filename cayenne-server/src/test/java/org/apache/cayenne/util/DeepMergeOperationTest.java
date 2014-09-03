@@ -24,12 +24,15 @@ import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+
+
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DeepMergeOperationTest extends ServerCase {
 
     @Inject
@@ -41,6 +44,7 @@ public class DeepMergeOperationTest extends ServerCase {
     @Inject
     private DataContext context1;
 
+    @Test
     public void testDeepMergeNonExistent() {
 
         final Artist a = context.newObject(Artist.class);
@@ -60,6 +64,7 @@ public class DeepMergeOperationTest extends ServerCase {
         });
     }
 
+    @Test
     public void testDeepMergeModified() {
 
         final Artist a = context.newObject(Artist.class);

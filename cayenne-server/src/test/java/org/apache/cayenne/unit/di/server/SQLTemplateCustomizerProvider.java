@@ -31,6 +31,7 @@ public class SQLTemplateCustomizerProvider implements Provider<SQLTemplateCustom
 
     @Inject
     private DbAdapter dbAdapter;
+   
 
     public SQLTemplateCustomizer get() throws ConfigurationException {
         Map<String, Map<String, String>> map = new HashMap<String, Map<String, String>>();

@@ -32,10 +32,11 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataDomainQueryActionTest extends ServerCase {
 
     @Inject
@@ -62,6 +63,7 @@ public class DataDomainQueryActionTest extends ServerCase {
         runtime.getDataDomain().resetProperties();
     }
 
+    @Test
     public void testCachedQuery() {
 
         DataDomain domain = runtime.getDataDomain();

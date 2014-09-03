@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.cayenne.access.translator.batch.DeleteBatchTranslator;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
@@ -36,11 +35,12 @@ import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.DeleteBatchQuery;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.LOCKING_PROJECT)
+@CayenneConfiguration(ServerCase.LOCKING_PROJECT)
 public class DeleteBatchTranslatorTest extends ServerCase {
 
     @Inject
@@ -55,6 +55,7 @@ public class DeleteBatchTranslatorTest extends ServerCase {
     @Inject
     private AdhocObjectFactory objectFactory;
 
+    @Test
     public void testConstructor() throws Exception {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
 
@@ -63,6 +64,7 @@ public class DeleteBatchTranslatorTest extends ServerCase {
         assertSame(adapter, builder.adapter);
     }
 
+    @Test
     public void testCreateSqlString() throws Exception {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
@@ -78,6 +80,7 @@ public class DeleteBatchTranslatorTest extends ServerCase {
         assertEquals("DELETE FROM " + entity.getName() + " WHERE LOCKING_TEST_ID = ?", generatedSql);
     }
 
+    @Test
     public void testCreateSqlStringWithNulls() throws Exception {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
@@ -96,6 +99,7 @@ public class DeleteBatchTranslatorTest extends ServerCase {
         assertEquals("DELETE FROM " + entity.getName() + " WHERE LOCKING_TEST_ID = ? AND NAME IS NULL", generatedSql);
     }
 
+    @Test
     public void testCreateSqlStringWithIdentifiersQuote() throws Exception {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
@@ -121,6 +125,7 @@ public class DeleteBatchTranslatorTest extends ServerCase {
 
     }
 
+    @Test
     public void testCreateSqlStringWithNullsWithIdentifiersQuote() throws Exception {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();

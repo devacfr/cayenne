@@ -30,10 +30,11 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationship.ReflexiveAndToOne;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+@CayenneConfiguration(ServerCase.RELATIONSHIPS_PROJECT)
 public class AshwoodEntitySorterTest extends ServerCase {
 
     @Inject
@@ -60,6 +61,7 @@ public class AshwoodEntitySorterTest extends ServerCase {
                 .setColumnTypes(Types.INTEGER, Types.INTEGER, Types.INTEGER, Types.VARCHAR);
     }
 
+    @Test
     public void testSortObjectsForEntityReflexiveWithFaults() throws Exception {
 
         tRelationshipHelper.insert(1, "rh1");

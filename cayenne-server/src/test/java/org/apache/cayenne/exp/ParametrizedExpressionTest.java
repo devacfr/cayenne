@@ -28,12 +28,13 @@ import java.util.Map;
 import org.apache.cayenne.CayenneDataObject;
 import org.apache.cayenne.DataObject;
 import org.apache.cayenne.exp.parser.ASTList;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 /**
  */
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class ParametrizedExpressionTest extends ServerCase {
 
     /**
@@ -42,6 +43,7 @@ public class ParametrizedExpressionTest extends ServerCase {
      * 
      * @throws Exception
      */
+	@Test
     public void testCopy1() throws Exception {
         Expression e1 = ExpressionFactory.matchExp("k1", "v1");
         e1 = e1.orExp(ExpressionFactory.matchExp("k2", "v2"));
@@ -58,6 +60,7 @@ public class ParametrizedExpressionTest extends ServerCase {
      * 
      * @throws Exception
      */
+	@Test
     public void testCopy2() throws Exception {
         Expression andExp = ExpressionFactory.matchExp("k1", "v1");
         andExp = andExp.andExp(ExpressionFactory.matchExp("k2", "v2"));
@@ -79,6 +82,7 @@ public class ParametrizedExpressionTest extends ServerCase {
      * 
      * @throws Exception
      */
+	@Test
     public void testInParameter() throws Exception {
         Expression inExp = Expression.fromString("k1 in $test");
         Expression e1 = Expression.fromString("k1 in ('a', 'b')");
@@ -96,6 +100,7 @@ public class ParametrizedExpressionTest extends ServerCase {
         assertFalse(transformed.match(o2));
     }
 
+	@Test
     public void testInParameter_AsValues() throws Exception {
         Expression inExp = Expression.fromString("k1 in ($ap, $bp)");
 
@@ -126,6 +131,7 @@ public class ParametrizedExpressionTest extends ServerCase {
      * 
      * @throws Exception
      */
+	@Test
     public void testFailOnMissingParams() throws Exception {
         Expression e1 = ExpressionFactory.matchExp("k1", new ExpressionParameter("test"));
         e1 = e1.orExp(ExpressionFactory.matchExp("k2", "v2"));
@@ -139,6 +145,7 @@ public class ParametrizedExpressionTest extends ServerCase {
         }
     }
 
+	@Test
     public void testParams1() throws Exception {
         Expression e1 = ExpressionFactory.matchExp("k1", new ExpressionParameter("test"));
 
@@ -151,6 +158,7 @@ public class ParametrizedExpressionTest extends ServerCase {
         assertEquals("xyz", e2.getOperand(1));
     }
 
+	@Test
     public void testParams2() throws Exception {
         Expression e1 = ExpressionFactory.likeExp("k1", new ExpressionParameter("test"));
 
@@ -163,6 +171,7 @@ public class ParametrizedExpressionTest extends ServerCase {
         assertEquals("xyz", e2.getOperand(1));
     }
 
+	@Test
     public void testNoParams1() throws Exception {
         Expression e1 = ExpressionFactory.matchExp("k1", new ExpressionParameter("test"));
 
@@ -172,6 +181,7 @@ public class ParametrizedExpressionTest extends ServerCase {
         assertNull(e2);
     }
 
+	@Test
     public void testNoParams2() throws Exception {
         List list = new ArrayList();
         list.add(ExpressionFactory.matchExp("k1", new ExpressionParameter("test1")));
@@ -197,6 +207,7 @@ public class ParametrizedExpressionTest extends ServerCase {
         assertEquals("xyz", k3.getOperand(1));
     }
 
+	@Test
     public void testNoParams3() throws Exception {
         List list = new ArrayList();
         list.add(ExpressionFactory.matchExp("k1", new ExpressionParameter("test1")));
@@ -218,6 +229,7 @@ public class ParametrizedExpressionTest extends ServerCase {
         assertEquals("k4", ((Expression) e2.getOperand(0)).getOperand(0));
     }
 
+	@Test
     public void testNullOptionalParameter() throws Exception {
         Expression e = Expression.fromString("abc = 3 and x = $a");
 
@@ -234,6 +246,7 @@ public class ParametrizedExpressionTest extends ServerCase {
         assertEquals(Expression.fromString("abc = 3 and x = null"), e2);
     }
 
+	@Test
     public void testNullRequiredParameter() throws Exception {
         Expression e1 = Expression.fromString("abc = 3 and x = $a");
 
@@ -252,6 +265,7 @@ public class ParametrizedExpressionTest extends ServerCase {
         assertEquals(Expression.fromString("abc = 3 and x = null"), e2);
     }
 
+	@Test
     public void testNulls() {
         Expression e1 = Expression.fromString("x = null");
         Expression e2 = e1.expWithParameters(Collections.EMPTY_MAP, true);
@@ -265,6 +279,7 @@ public class ParametrizedExpressionTest extends ServerCase {
      * 
      * @throws Exception
      */
+	@Test
     public void testCopy1_FromString() {
         Expression e1 = Expression.fromString("k1 = 'v1' or k2 = 'v2' or k3 = 'v3'");
         Expression e2 = e1.expWithParameters(Collections.EMPTY_MAP, true);
@@ -275,12 +290,14 @@ public class ParametrizedExpressionTest extends ServerCase {
      * Tests how parameter substitution algorithm works on an expression with no
      * parameters.
      */
+	@Test
     public void testCopy2_FromString() {
         Expression e1 = Expression.fromString("(k1 = 'v1' and k2 = 'v2' and k3 = 'v3') or (k1 = 'v1')");
         Expression e2 = e1.expWithParameters(Collections.EMPTY_MAP, true);
         TstTraversalHandler.compareExps(e1, e2);
     }
 
+	@Test
     public void testCopy3_FromString() {
         Expression e1 = Expression.fromString("(k1 / 2) = (k2 * 2)");
         Expression e2 = e1.expWithParameters(Collections.EMPTY_MAP, true);
@@ -291,6 +308,7 @@ public class ParametrizedExpressionTest extends ServerCase {
      * Tests how parameter substitution algorithm works on an expression with no
      * parameters.
      */
+	@Test
     public void testFailOnMissingParams_FromString() {
         Expression e1 = Expression.fromString("k1 = $test or k2 = 'v2' or k3 = 'v3'");
 
@@ -302,6 +320,7 @@ public class ParametrizedExpressionTest extends ServerCase {
         }
     }
 
+	@Test
     public void testParams1_FromString() {
         Expression e1 = Expression.fromString("k1 = $test");
 
@@ -314,6 +333,7 @@ public class ParametrizedExpressionTest extends ServerCase {
         assertEquals("xyz", e2.getOperand(1));
     }
 
+	@Test
     public void testParams2_FromString() {
         Expression e1 = Expression.fromString("k1 like $test");
 
@@ -326,6 +346,7 @@ public class ParametrizedExpressionTest extends ServerCase {
         assertEquals("xyz", e2.getOperand(1));
     }
 
+	@Test
     public void testNoParams1_FromString() {
         Expression e1 = Expression.fromString("k1 = $test");
         Expression e2 = e1.expWithParameters(Collections.EMPTY_MAP, true);
@@ -334,6 +355,7 @@ public class ParametrizedExpressionTest extends ServerCase {
         assertNull(e2);
     }
 
+	@Test
     public void testNoParams2_FromString() {
         Expression e1 = Expression.fromString("k1 = $test1 or k2 = $test2 or k3 = $test3 or k4 = $test4");
 
@@ -353,6 +375,7 @@ public class ParametrizedExpressionTest extends ServerCase {
         assertEquals("xyz", k3.getOperand(1));
     }
 
+	@Test
     public void testNoParams3_FromString() {
         Expression e1 = Expression.fromString("k1 = $test1 or k2 = $test2 or k3 = $test3 or k4 = $test4");
 

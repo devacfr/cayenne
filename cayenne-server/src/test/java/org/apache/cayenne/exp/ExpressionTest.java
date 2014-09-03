@@ -20,9 +20,10 @@
 package org.apache.cayenne.exp;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
@@ -33,10 +34,11 @@ import org.apache.cayenne.exp.parser.SimpleNode;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class ExpressionTest extends ServerCase {
 
     @Inject
@@ -63,11 +65,13 @@ public class ExpressionTest extends ServerCase {
         context.deleteObjects(objects);
     }
 
+    @Test
     public void testFromStringLong() {
         Expression e = Expression.fromString("216201000180L");
         assertEquals(new Long(216201000180L), e.evaluate(new Object()));
     }
 
+    @Test
     public void testFromStringPath() {
         Expression e1 = Expression.fromString("object.path");
         assertEquals(Expression.OBJ_PATH, e1.getType());
@@ -82,11 +86,13 @@ public class ExpressionTest extends ServerCase {
         assertEquals(Expression.DB_PATH, e4.getType());
     }
 
+    @Test
     public void testFromStringScalar() {
         Expression e1 = Expression.fromString("a = 'abc'");
         assertEquals("abc", e1.getOperand(1));
     }
 
+    @Test
     public void testFromStringEnum() {
         Expression e1 = Expression.fromString("a = enum:org.apache.cayenne.exp.ExpEnum1.ONE");
         assertEquals(ExpEnum1.ONE, e1.getOperand(1));
@@ -112,6 +118,7 @@ public class ExpressionTest extends ServerCase {
         }
     }
 
+    @Test
     public void testExpWithParametersNullHandling_CAY847() {
         Expression e = Expression.fromString("X = $x");
 
@@ -119,6 +126,7 @@ public class ExpressionTest extends ServerCase {
         assertEquals("X = null", e.toString());
     }
 
+    @Test
     public void testToEJBQL1() {
 
         Expression e = Expression.fromString("artistName = \"bla\"");
@@ -127,6 +135,7 @@ public class ExpressionTest extends ServerCase {
         assertEquals("x.artistName = 'bla'", e.toEJBQL("x"));
     }
 
+    @Test
     public void testEncodeAsEJBQL1() throws IOException {
 
         Expression e = Expression.fromString("artistName = 'bla'");
@@ -140,6 +149,7 @@ public class ExpressionTest extends ServerCase {
         assertEquals("x.artistName = 'bla'", ejbql);
     }
 
+    @Test
     public void testEncodeAsEJBQL2() throws IOException {
 
         Expression e = Expression.fromString("artistName.stuff = $name");
@@ -152,31 +162,37 @@ public class ExpressionTest extends ServerCase {
         assertEquals("x.artistName.stuff = :name", ejbql);
     }
 
+    @Test
     public void testEncodeAsEJBQL_likeEscape() throws IOException {
-        Expression e = ExpressionFactory.likeExp("mainName", "|%|%?|_title|%",'|');
+        Expression e = ExpressionFactory.likeExp("mainName", "|%|%?|_title|%", '|');
         assertEquals("x.mainName like '|%|%?|_title|%' escape '|'", e.toEJBQL("x"));
     }
 
+    @Test
     public void testEncodeAsEJBQL_numericType_integer() throws IOException {
         Expression e = ExpressionFactory.matchExp("consignment.parts", new Integer(123));
         assertEquals("x.consignment.parts = 123", e.toEJBQL("x"));
     }
 
+    @Test
     public void testEncodeAsEJBQL_numericType_long() throws IOException {
         Expression e = ExpressionFactory.matchExp("consignment.parts", new Long(1418342400));
         assertEquals("x.consignment.parts = 1418342400", e.toEJBQL("x"));
     }
 
+    @Test
     public void testEncodeAsEJBQL_numericType_float() throws IOException {
         Expression e = ExpressionFactory.greaterOrEqualExp("consignment.parts", new Float("3.145"));
         assertEquals("x.consignment.parts >= 3.145", e.toEJBQL("x"));
     }
 
+    @Test
     public void testEncodeAsEJBQL_numericType_double() throws IOException {
         Expression e = ExpressionFactory.greaterOrEqualExp("consignment.parts", new Double(3.14));
         assertEquals("x.consignment.parts >= 3.14", e.toEJBQL("x"));
     }
 
+    @Test
     public void testEncodeAsEJBQL_in() throws IOException {
         List<Integer> valuesIn = new ArrayList<Integer>();
         valuesIn.add(91);
@@ -185,6 +201,7 @@ public class ExpressionTest extends ServerCase {
         assertEquals("x.consignment.parts in (91, 23)", e.toEJBQL("x"));
     }
 
+    @Test
     public void testEncodeAsEJBQL_Timestamp_ParameterCapture() throws IOException {
         Date now = new Date();
 
@@ -203,6 +220,7 @@ public class ExpressionTest extends ServerCase {
 
     }
 
+    @Test
     public void testEncodeAsEJBQL3_EncodeListOfParameters_ParameterCapture() throws IOException {
 
         Expression e = ExpressionFactory.inExp("artistName", "a", "b", "c");
@@ -222,6 +240,7 @@ public class ExpressionTest extends ServerCase {
 
     }
 
+    @Test
     public void testEncodeAsEJBQL3_EncodeListOfParameters() throws IOException {
 
         Expression e = ExpressionFactory.inExp("artistName", "a", "b", "c");
@@ -235,6 +254,7 @@ public class ExpressionTest extends ServerCase {
         assertEquals("x.artistName in ('a', 'b', 'c')", ejbql);
     }
 
+    @Test
     public void testEncodeAsEJBQL_PersistentParamater() throws IOException {
 
         Artist a = new Artist();
@@ -252,6 +272,7 @@ public class ExpressionTest extends ServerCase {
         assertEquals("x.artist = 1", ejbql);
     }
 
+    @Test
     public void testAppendAsEJBQLNotEquals() throws IOException {
 
         Expression e = Expression.fromString("artistName != 'bla'");
@@ -263,6 +284,7 @@ public class ExpressionTest extends ServerCase {
         assertEquals("x.artistName <> 'bla'", ejbql);
     }
 
+    @Test
     public void testAppendAsEJBQLNotEquals_ParameterCapture() throws IOException {
         Expression e = Expression.fromString("artistName != 'bla'");
 
@@ -276,6 +298,7 @@ public class ExpressionTest extends ServerCase {
         assertEquals(parametersAccumulator.get(0), "bla");
     }
 
+    @Test
     public void testEncodeAsEJBQL_Enum() throws IOException {
 
         Expression e = Expression.fromString("a = enum:org.apache.cayenne.exp.ExpEnum1.THREE");
@@ -288,6 +311,7 @@ public class ExpressionTest extends ServerCase {
         assertEquals("x.a = enum:org.apache.cayenne.exp.ExpEnum1.THREE", ejbql);
     }
 
+    @Test
     public void testEncodeAsString_StringLiteral() throws IOException {
         Expression e1 = Expression.fromString("a = 'abc'");
 
@@ -298,6 +322,7 @@ public class ExpressionTest extends ServerCase {
         assertEquals("a = \"abc\"", buffer.toString());
     }
 
+    @Test
     public void testEncodeAsString_Enum() throws IOException {
         Expression e1 = Expression.fromString("a = enum:org.apache.cayenne.exp.ExpEnum1.TWO");
 
@@ -307,6 +332,7 @@ public class ExpressionTest extends ServerCase {
         assertEquals("a = enum:org.apache.cayenne.exp.ExpEnum1.TWO", buffer.toString());
     }
 
+    @Test
     public void testEqualsObjects() {
 
         assertTrue(context instanceof DataContext);
@@ -318,7 +344,7 @@ public class ExpressionTest extends ServerCase {
         Painting p1 = context.newObject(Painting.class);
         p1.setToArtist(a1);
         p1.setPaintingTitle("painting1");
-        
+
         context.commitChanges();
 
         SelectQuery query = new SelectQuery(Painting.class);
@@ -347,7 +373,7 @@ public class ExpressionTest extends ServerCase {
         a2.setArtistName("Equals");
 
         context.commitChanges();
-        
+
         SelectQuery q = new SelectQuery(Painting.class);
         Expression ex = ExpressionFactory.matchExp(Painting.TO_ARTIST_PROPERTY, a2);
         q.setQualifier(ex);
@@ -356,6 +382,7 @@ public class ExpressionTest extends ServerCase {
         assertFalse(ex.match(objects.get(0)));
     }
 
+    @Test
     public void testFirst() {
         List<Painting> paintingList = new ArrayList<Painting>();
         Painting p1 = context.newObject(Painting.class);
@@ -380,6 +407,7 @@ public class ExpressionTest extends ServerCase {
         assertNull(e4.first(paintingList));
     }
 
+    @Test
     public void testAndExp() {
         Expression e1 = ExpressionFactory.matchExp("name", "Picasso");
         Expression e2 = ExpressionFactory.matchExp("age", 30);
@@ -389,6 +417,7 @@ public class ExpressionTest extends ServerCase {
         assertEquals(2, ((SimpleNode) exp).jjtGetNumChildren());
     }
 
+    @Test
     public void testOrExp() {
         Expression e1 = ExpressionFactory.matchExp("name", "Picasso");
         Expression e2 = ExpressionFactory.matchExp("age", 30);
@@ -398,6 +427,7 @@ public class ExpressionTest extends ServerCase {
         assertEquals(2, ((SimpleNode) exp).jjtGetNumChildren());
     }
 
+    @Test
     public void testAndExpVarArgs() {
         Expression e1 = ExpressionFactory.matchExp("name", "Picasso");
         Expression e2 = ExpressionFactory.matchExp("age", 30);
@@ -409,6 +439,7 @@ public class ExpressionTest extends ServerCase {
         assertEquals(4, ((SimpleNode) exp).jjtGetNumChildren());
     }
 
+    @Test
     public void testOrExpVarArgs() {
         Expression e1 = ExpressionFactory.matchExp("name", "Picasso");
         Expression e2 = ExpressionFactory.matchExp("age", 30);
@@ -421,6 +452,7 @@ public class ExpressionTest extends ServerCase {
     }
 
     // bitwise operations test
+    @Test
     public void testBitwiseNegate() {
         Expression exp = Expression.fromString("~7");
 
@@ -430,6 +462,7 @@ public class ExpressionTest extends ServerCase {
                                                                 // digital world
     }
 
+    @Test
     public void testBitwiseAnd() {
         Expression exp = Expression.fromString("1 & 0");
 
@@ -438,6 +471,7 @@ public class ExpressionTest extends ServerCase {
         assertEquals(new Long(0), exp.evaluate(new Object()));
     }
 
+    @Test
     public void testBitwiseOr() {
         Expression exp = Expression.fromString("1 | 0");
 
@@ -446,6 +480,7 @@ public class ExpressionTest extends ServerCase {
         assertEquals(new Long(1), exp.evaluate(new Object()));
     }
 
+    @Test
     public void testBitwiseXor() {
         Expression exp = Expression.fromString("1 ^ 0");
 
@@ -454,6 +489,7 @@ public class ExpressionTest extends ServerCase {
         assertEquals(new Long(1), exp.evaluate(new Object()));
     }
 
+    @Test
     public void testBitwiseLeftShift() {
         Expression exp = Expression.fromString("7 << 2");
 
@@ -462,6 +498,7 @@ public class ExpressionTest extends ServerCase {
         assertEquals(new Long(28), exp.evaluate(new Object()));
     }
 
+    @Test
     public void testBitwiseRightShift() {
         Expression exp = Expression.fromString("7 >> 2");
 
@@ -474,6 +511,7 @@ public class ExpressionTest extends ServerCase {
     /**
      * (a | b) | c = a | (b | c)
      */
+    @Test
     public void testBitwiseAssociativity() {
         Expression e1 = Expression.fromString("(3010 | 2012) | 4095");
         Expression e2 = Expression.fromString("3010 | (2012 | 4095)");
@@ -484,6 +522,7 @@ public class ExpressionTest extends ServerCase {
     /**
      * a | b = b | a
      */
+    @Test
     public void testBitwiseCommutativity() {
         Expression e1 = Expression.fromString("3010 | 4095");
         Expression e2 = Expression.fromString("4095 | 3010");
@@ -494,6 +533,7 @@ public class ExpressionTest extends ServerCase {
     /**
      * a | (a & b) = a
      */
+    @Test
     public void testBitwiseAbsorption() {
         Expression e1 = Expression.fromString("2012 | (2012 & 3010)");
         Expression e2 = Expression.fromString("2012L"); // scalar becomes Long
@@ -505,6 +545,7 @@ public class ExpressionTest extends ServerCase {
     /**
      * a | (b & c) = (a | b) & (a | c)
      */
+    @Test
     public void testBitwiseDistributivity() {
         Expression e1 = Expression.fromString("4095 | (7777 & 8888)");
         Expression e2 = Expression.fromString("(4095 | 7777) & (4095 | 8888)");
@@ -518,6 +559,7 @@ public class ExpressionTest extends ServerCase {
      * 4 bits and that is why -3 means '1101' and 3 means '0011' because of
      * '1101' + '0011' = (1)'0000' what is zero; but the same time '1101' is 13.
      */
+    @Test
     public void testBitwiseComplements() {
         Expression e1 = Expression.fromString("5555 | ~5555");
         Expression e2 = Expression.fromString("9999 & ~9999");
@@ -542,6 +584,7 @@ public class ExpressionTest extends ServerCase {
      * negotation (may be any other unary operation) and '+' is disjunction (OR
      * operation, i.e. '|' bitwise operation).
      */
+    @Test
     public void testBitwiseHuntingtonEquation() {
         Expression theHuntingEquation = Expression.fromString("~(~3748 | 4095) | ~(~3748 | ~4095)");
 
@@ -554,6 +597,7 @@ public class ExpressionTest extends ServerCase {
      * Robbins algebra is a Boolean algebra according to automated reasoning
      * program EQP.
      */
+    @Test
     public void testBitwiseRobbinsEquation() {
         Expression theRobbinsEquation = Expression.fromString("~(~(5111 | 4095) | ~(5111 | ~4095))");
 
@@ -563,6 +607,7 @@ public class ExpressionTest extends ServerCase {
     /**
      * Bitwise and math operations are ruled by precedence.
      */
+    @Test
     public void testBitwisePrecedence() {
         Expression e1 = Expression.fromString("1 << 1 & 2"); // 1 << 1 = 2 and
                                                              // after that 2 & 2

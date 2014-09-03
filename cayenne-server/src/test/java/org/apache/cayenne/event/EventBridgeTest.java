@@ -48,20 +48,24 @@ public class EventBridgeTest extends TestCase {
         String external = "externalSubject";
         TestBridge bridge = new TestBridge(local, external);
 
-        EventManager manager = new DefaultEventManager();
+        DefaultEventManager manager = new DefaultEventManager();
         bridge.startup(manager, EventBridge.RECEIVE_LOCAL_EXTERNAL);
 
         assertSame(manager, bridge.eventManager);
         assertEquals(1, bridge.startupCalls);
         assertEquals(0, bridge.shutdownCalls);
 
+        manager.shutdown();
+
         // try startup again
-        EventManager newManager = new DefaultEventManager();
+        DefaultEventManager newManager = new DefaultEventManager();
         bridge.startup(newManager, EventBridge.RECEIVE_LOCAL_EXTERNAL);
 
         assertSame(newManager, bridge.eventManager);
         assertEquals(2, bridge.startupCalls);
         assertEquals(1, bridge.shutdownCalls);
+
+        newManager.shutdown();
     }
 
     public void testShutdown() throws Exception {
@@ -70,9 +74,10 @@ public class EventBridgeTest extends TestCase {
         String external = "externalSubject";
         TestBridge bridge = new TestBridge(local, external);
 
-        EventManager manager = new DefaultEventManager();
+        DefaultEventManager manager = new DefaultEventManager();
         bridge.startup(manager, EventBridge.RECEIVE_LOCAL_EXTERNAL);
         bridge.shutdown();
+        manager.shutdown();
 
         assertNull(bridge.eventManager);
         assertEquals(1, bridge.startupCalls);
@@ -87,7 +92,7 @@ public class EventBridgeTest extends TestCase {
         String external = "externalSubject";
         final TestBridge bridge = new TestBridge(local, external);
 
-        EventManager manager = new DefaultEventManager(2);
+        DefaultEventManager manager = new DefaultEventManager(2);
         bridge.startup(manager, EventBridge.RECEIVE_LOCAL_EXTERNAL);
 
         final SnapshotEvent eventWithNoSubject = new SnapshotEvent(
@@ -139,6 +144,7 @@ public class EventBridgeTest extends TestCase {
         };
 
         helper1.runTest(5000);
+        manager.shutdown();
     }
 
     class TestBridge extends EventBridge {

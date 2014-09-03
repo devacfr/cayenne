@@ -32,10 +32,11 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.inherit.Address;
 import org.apache.cayenne.testdo.inherit.Department;
 import org.apache.cayenne.testdo.inherit.Manager;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.PEOPLE_PROJECT)
+@CayenneConfiguration(ServerCase.PEOPLE_PROJECT)
 public class DataContextEJBQLConditionsPeopleTest extends ServerCase {
 
     @Inject
@@ -112,6 +113,7 @@ public class DataContextEJBQLConditionsPeopleTest extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testCollectionMemberOfId() throws Exception {
 
         String ejbql = "SELECT DISTINCT m FROM Manager m JOIN m.managedDepartments d"
@@ -132,6 +134,7 @@ public class DataContextEJBQLConditionsPeopleTest extends ServerCase {
         assertTrue(ids.contains("m3"));
     }
 
+    @Test
     public void testCollectionNotMemberOfId() throws Exception {
 
         String ejbql = "SELECT DISTINCT m FROM Manager m JOIN m.managedDepartments d"
@@ -151,6 +154,7 @@ public class DataContextEJBQLConditionsPeopleTest extends ServerCase {
         assertTrue(ids.contains("m2"));
     }
 
+    @Test
     public void testCollectionNotMemberOfToOne() throws Exception {
 
         // need a better test ... this query returns zero rows by definition

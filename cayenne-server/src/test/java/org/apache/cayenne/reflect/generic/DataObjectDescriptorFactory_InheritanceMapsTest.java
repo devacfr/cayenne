@@ -28,15 +28,17 @@ import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.SingletonFaultFactory;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.INHERTITANCE_SINGLE_TABLE1_PROJECT)
+@CayenneConfiguration(ServerCase.INHERTITANCE_SINGLE_TABLE1_PROJECT)
 public class DataObjectDescriptorFactory_InheritanceMapsTest extends ServerCase {
 
     @Inject
     private EntityResolver resolver;
 
+    @Test
     public void testVisitProperties_IterationOrder() {
 
         DataObjectDescriptorFactory factory = new DataObjectDescriptorFactory(

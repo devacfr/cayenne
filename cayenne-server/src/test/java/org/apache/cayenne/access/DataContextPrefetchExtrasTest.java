@@ -37,13 +37,14 @@ import org.apache.cayenne.testdo.testmap.CharFkTestEntity;
 import org.apache.cayenne.testdo.testmap.CharPkTestEntity;
 import org.apache.cayenne.testdo.testmap.CompoundFkTestEntity;
 import org.apache.cayenne.testdo.testmap.CompoundPkTestEntity;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 /**
  * Test prefetching of various obscure cases.
  */
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextPrefetchExtrasTest extends ServerCase {
 
     @Inject
@@ -99,10 +100,11 @@ public class DataContextPrefetchExtrasTest extends ServerCase {
         tCompoundFkTest.insert(303, "101", "201", "CFK3");
     }
 
+    @Test
     public void testPrefetchToManyOnCharKey() throws Exception {
         createPrefetchToManyOnCharKeyDataSet();
 
-        SelectQuery q = new SelectQuery(CharPkTestEntity.class);
+        SelectQuery<CharPkTestEntity> q = new SelectQuery<CharPkTestEntity>(CharPkTestEntity.class);
         q.addPrefetch("charFKs");
         q.addOrdering(CharPkTestEntity.OTHER_COL_PROPERTY, SortOrder.ASCENDING);
 
@@ -124,11 +126,12 @@ public class DataContextPrefetchExtrasTest extends ServerCase {
     /**
      * Tests to-one prefetching over relationships with compound keys.
      */
+    @Test
     public void testPrefetch10() throws Exception {
         createCompoundDataSet();
 
         Expression e = ExpressionFactory.matchExp("name", "CFK2");
-        SelectQuery q = new SelectQuery(CompoundFkTestEntity.class, e);
+        SelectQuery<CompoundFkTestEntity> q = new SelectQuery<CompoundFkTestEntity>(CompoundFkTestEntity.class, e);
         q.addPrefetch("toCompoundPk");
 
         List<?> objects = context.performQuery(q);
@@ -149,11 +152,12 @@ public class DataContextPrefetchExtrasTest extends ServerCase {
     /**
      * Tests to-many prefetching over relationships with compound keys.
      */
+    @Test
     public void testPrefetch11() throws Exception {
         createCompoundDataSet();
 
         Expression e = ExpressionFactory.matchExp("name", "CPK2");
-        SelectQuery q = new SelectQuery(CompoundPkTestEntity.class, e);
+        SelectQuery<CompoundPkTestEntity> q = new SelectQuery<CompoundPkTestEntity>(CompoundPkTestEntity.class, e);
         q.addPrefetch("compoundFkArray");
 
         List<?> pks = context.performQuery(q);

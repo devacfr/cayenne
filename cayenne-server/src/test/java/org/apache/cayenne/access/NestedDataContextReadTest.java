@@ -40,12 +40,13 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class NestedDataContextReadTest extends ServerCase {
 
     @Inject
@@ -112,6 +113,7 @@ public class NestedDataContextReadTest extends ServerCase {
         tPainting.insert(33006, "P_artist6", 33001, 3000);
     }
 
+    @Test
     public void testCreateChildDataContext() {
         context.setValidatingObjectsOnCommit(true);
 
@@ -137,6 +139,7 @@ public class NestedDataContextReadTest extends ServerCase {
         assertFalse(((DataContext) child2).isValidatingObjectsOnCommit());
     }
 
+    @Test
     public void testSelect() throws Exception {
         createArtistsDataSet();
 
@@ -178,6 +181,7 @@ public class NestedDataContextReadTest extends ServerCase {
         }
     }
 
+    @Test
     public void testReadToOneRelationship() throws Exception {
         createRelationshipDataSet();
 
@@ -277,6 +281,7 @@ public class NestedDataContextReadTest extends ServerCase {
         });
     }
 
+    @Test
     public void testPrefetchingToOne() throws Exception {
         createPrefetchingDataSet();
 
@@ -315,6 +320,7 @@ public class NestedDataContextReadTest extends ServerCase {
         });
     }
 
+    @Test
     public void testPrefetchingToMany() throws Exception {
         createPrefetchingDataSet();
 
@@ -356,6 +362,7 @@ public class NestedDataContextReadTest extends ServerCase {
         });
     }
 
+    @Test
     public void testObjectFromDataRow() throws Exception {
 
         DataContext childContext = (DataContext) runtime.newContext(context);

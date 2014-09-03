@@ -19,13 +19,14 @@
 package org.apache.cayenne.configuration.web;
 
 import org.apache.cayenne.configuration.CayenneRuntime;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 import com.mockrunner.mock.web.MockServletContext;
 
-import junit.framework.TestCase;
-
 public class WebUtilTest extends TestCase {
 
+    @Test
     public void testGetCayenneRuntime() {
         MockServletContext context = new MockServletContext();
 

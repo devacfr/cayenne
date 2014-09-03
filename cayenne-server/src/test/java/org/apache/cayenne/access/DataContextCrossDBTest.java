@@ -23,15 +23,17 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.db1.CrossdbM1E1;
 import org.apache.cayenne.testdo.db2.CrossdbM2E1;
 import org.apache.cayenne.testdo.db2.CrossdbM2E2;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.MULTINODE_PROJECT)
+@CayenneConfiguration(ServerCase.MULTINODE_PROJECT)
 public class DataContextCrossDBTest extends ServerCase {
 
     @Inject
     private DataContext context;
 
+    @Test
     public void testMultiDBUpdate() {
 
         // for now testing that no exceptions are thrown... wouldn't hurt to check the

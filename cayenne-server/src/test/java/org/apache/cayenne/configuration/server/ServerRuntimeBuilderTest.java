@@ -23,14 +23,15 @@ import static org.mockito.Mockito.mock;
 import java.util.Arrays;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 public class ServerRuntimeBuilderTest extends TestCase {
 
+    @Test
     public void test_NoLocation() {
 
         // this is meaningless (no DataSource), but should work...
@@ -47,6 +48,7 @@ public class ServerRuntimeBuilderTest extends TestCase {
         assertTrue(m0 instanceof ServerModule);
     }
 
+    @Test
     public void test_SingleLocation() {
 
         ServerRuntime runtime = new ServerRuntimeBuilder("xxxx").build();
@@ -62,6 +64,7 @@ public class ServerRuntimeBuilderTest extends TestCase {
         assertTrue(m0 instanceof ServerModule);
     }
 
+    @Test
     public void test_MultipleLocations() {
 
         ServerRuntime runtime = new ServerRuntimeBuilder("xxxx").addConfig("yyyy").build();
@@ -77,6 +80,7 @@ public class ServerRuntimeBuilderTest extends TestCase {
         assertTrue(m0 instanceof ServerModule);
     }
 
+    @Test
     public void test_ExtraModules() {
 
         Module m = mock(Module.class);

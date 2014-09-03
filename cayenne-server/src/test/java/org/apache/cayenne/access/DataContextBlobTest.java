@@ -26,11 +26,12 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.BlobTestEntity;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextBlobTest extends ServerCase {
 
     @Inject
@@ -49,7 +50,8 @@ public class DataContextBlobTest extends ServerCase {
     private DBHelper dbHelper;
 
     @Override
-    protected void setUpAfterInjection() throws Exception {
+    public void setUp() throws Exception {
+    	super.setUp();
         if (accessStackAdapter.supportsLobs()) {
             dbHelper.deleteAll("BLOB_TEST");
         }
@@ -63,6 +65,7 @@ public class DataContextBlobTest extends ServerCase {
         return !accessStackAdapter.handlesNullVsEmptyLOBs();
     }
     
+    @Test
     public void testManyBlobsInOneTX() throws Exception {
         if (skipTests()) {
             return;
@@ -85,6 +88,7 @@ public class DataContextBlobTest extends ServerCase {
         assertEquals(3, objects2.size());
     }
 
+    @Test
     public void testEmptyBlob() throws Exception {
         if (skipTests()) {
             return;
@@ -95,6 +99,7 @@ public class DataContextBlobTest extends ServerCase {
         runWithBlobSize(0);
     }
 
+    @Test
     public void test5ByteBlob() throws Exception {
         if (skipTests()) {
             return;
@@ -102,6 +107,7 @@ public class DataContextBlobTest extends ServerCase {
         runWithBlobSize(5);
     }
 
+    @Test
     public void test5KByteBlob() throws Exception {
         if (skipTests()) {
             return;
@@ -109,6 +115,7 @@ public class DataContextBlobTest extends ServerCase {
         runWithBlobSize(5 * 1024);
     }
 
+    @Test
     public void test1MBBlob() throws Exception {
         if (skipTests()) {
             return;
@@ -116,6 +123,7 @@ public class DataContextBlobTest extends ServerCase {
         runWithBlobSize(1024 * 1024);
     }
 
+    @Test
     public void testNullBlob() throws Exception {
         if (skipTests()) {
             return;
@@ -131,7 +139,7 @@ public class DataContextBlobTest extends ServerCase {
 
         // read the BLOB in the new context
 
-        List<?> objects2 = context2.performQuery(new SelectQuery(BlobTestEntity.class));
+        List<?> objects2 = context2.performQuery(new SelectQuery<BlobTestEntity>(BlobTestEntity.class));
         assertEquals(1, objects2.size());
 
         BlobTestEntity blobObj2 = (BlobTestEntity) objects2.get(0);
@@ -142,7 +150,7 @@ public class DataContextBlobTest extends ServerCase {
         context2.commitChanges();
 
         // read into yet another context and check for changes
-        List<?> objects3 = context3.performQuery(new SelectQuery(BlobTestEntity.class));
+        List<?> objects3 = context3.performQuery(new SelectQuery<BlobTestEntity>(BlobTestEntity.class));
         assertEquals(1, objects3.size());
 
         BlobTestEntity blobObj3 = (BlobTestEntity) objects3.get(0);
@@ -165,7 +173,7 @@ public class DataContextBlobTest extends ServerCase {
         context.commitChanges();
 
         // read the CLOB in the new context
-        List<?> objects2 = context2.performQuery(new SelectQuery(BlobTestEntity.class));
+        List<?> objects2 = context2.performQuery(new SelectQuery<BlobTestEntity>(BlobTestEntity.class));
         assertEquals(1, objects2.size());
 
         BlobTestEntity blobObj2 = (BlobTestEntity) objects2.get(0);
@@ -179,7 +187,7 @@ public class DataContextBlobTest extends ServerCase {
         context2.commitChanges();
 
         // read into yet another context and check for changes
-        List<?> objects3 = context3.performQuery(new SelectQuery(BlobTestEntity.class));
+        List<?> objects3 = context3.performQuery(new SelectQuery<BlobTestEntity>(BlobTestEntity.class));
         assertEquals(1, objects3.size());
 
         BlobTestEntity blobObj3 = (BlobTestEntity) objects3.get(0);

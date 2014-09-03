@@ -29,10 +29,11 @@ import org.apache.cayenne.testdo.oneway.OnewayTable1;
 import org.apache.cayenne.testdo.oneway.OnewayTable2;
 import org.apache.cayenne.testdo.oneway.OnewayTable3;
 import org.apache.cayenne.testdo.oneway.OnewayTable4;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.ONEWAY_PROJECT)
+@CayenneConfiguration(ServerCase.ONEWAY_PROJECT)
 public class OneWayRelationshipsTest extends ServerCase {
 
     @Inject
@@ -64,7 +65,8 @@ public class OneWayRelationshipsTest extends ServerCase {
         t4Helper = new TableHelper(dbHelper, "oneway_table4");
         t4Helper.setColumns("ID", "TABLE3_ID");
     }
-
+    
+    @Test
     public void testToOne_TwoNew() throws SQLException {
 
         OnewayTable1 t1 = context.newObject(OnewayTable1.class);
@@ -78,7 +80,8 @@ public class OneWayRelationshipsTest extends ServerCase {
         int t2FK = t2Helper.getInt("TABLE1_ID");
         assertEquals(t1Pk, t2FK);
     }
-
+    
+    @Test
     public void testToOne_Replace() throws SQLException {
 
         t1Helper.insert(1).insert(2);
@@ -99,6 +102,8 @@ public class OneWayRelationshipsTest extends ServerCase {
         assertEquals(2, t2FK);
     }
 
+    
+    @Test
     public void testToOne_ReplaceWithNull() throws SQLException {
 
         t1Helper.insert(1);
@@ -118,6 +123,7 @@ public class OneWayRelationshipsTest extends ServerCase {
         assertNull(t2FK);
     }
 
+    @Test
     public void testToMany_TwoNew() throws SQLException {
 
         OnewayTable3 t3 = context.newObject(OnewayTable3.class);
@@ -132,6 +138,7 @@ public class OneWayRelationshipsTest extends ServerCase {
         assertEquals(t3Pk, t4FK);
     }
 
+    @Test
     public void testToMany_AddNew() throws SQLException {
 
         t3Helper.insert(1);
@@ -159,6 +166,7 @@ public class OneWayRelationshipsTest extends ServerCase {
         }
     }
 
+    @Test
     public void testToMany_AddExisting() throws SQLException {
 
         t3Helper.insert(1);
@@ -187,6 +195,7 @@ public class OneWayRelationshipsTest extends ServerCase {
         }
     }
 
+    @Test
     public void testToMany_RemoveExisting() throws SQLException {
 
         t3Helper.insert(1);

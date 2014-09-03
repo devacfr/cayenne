@@ -21,15 +21,17 @@ package org.apache.cayenne.query;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class SQLTemplateCacheKeyTest extends ServerCase {
 
     @Inject
     private EntityResolver resolver;
 
+    @Test
     public void testNoCache() {
 
         SQLTemplate query = new SQLTemplate(Artist.class, "SELECT ME");
@@ -44,6 +46,7 @@ public class SQLTemplateCacheKeyTest extends ServerCase {
         assertNull(md2.getCacheKey());
     }
 
+    @Test
     public void testLocalCache() {
 
         SQLTemplate query = new SQLTemplate(Artist.class, "SELECT ME");
@@ -55,6 +58,7 @@ public class SQLTemplateCacheKeyTest extends ServerCase {
         assertNotNull(md1.getCacheKey());
     }
 
+    @Test
     public void testSharedCache() {
 
         SQLTemplate query = new SQLTemplate(Artist.class, "SELECT ME");

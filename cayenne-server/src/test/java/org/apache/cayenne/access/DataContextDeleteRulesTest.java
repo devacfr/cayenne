@@ -33,13 +33,14 @@ import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 // TODO: redefine all test cases in terms of entities in "relationships" map
 // and merge this test case with DeleteRulesTst that inherits
 // from RelationshipTestCase.
-@UseServerRuntime("cayenne-small-testmap.xml")
+@CayenneConfiguration("cayenne-small-testmap.xml")
 public class DataContextDeleteRulesTest extends ServerCase {
 
     @Inject
@@ -61,6 +62,7 @@ public class DataContextDeleteRulesTest extends ServerCase {
         dbHelper.deleteAll("GALLERY");
     }
 
+    @Test
     public void testNullifyToOne() {
         // ArtGroup toParentGroup
         ArtGroup parentGroup = (ArtGroup) context.newObject("ArtGroup");
@@ -94,6 +96,7 @@ public class DataContextDeleteRulesTest extends ServerCase {
      * Tests that deleting a source of a flattened relationship with CASCADE rule results
      * in deleting a join and a target.
      */
+    @Test
     public void testCascadeToManyFlattened() {
         // testing Artist.groupArray relationship
         ArtGroup aGroup = context.newObject(ArtGroup.class);
@@ -126,6 +129,7 @@ public class DataContextDeleteRulesTest extends ServerCase {
      * Tests that deleting a source of a flattened relationship with NULLIFY rule results
      * in deleting a join together with the object deleted.
      */
+    @Test
     public void testNullifyToManyFlattened() {
         // testing ArtGroup.artistArray relationship
         ArtGroup aGroup = context.newObject(ArtGroup.class);
@@ -155,6 +159,7 @@ public class DataContextDeleteRulesTest extends ServerCase {
         assertEquals(0, joins2.size());
     }
 
+    @Test
     public void testNullifyToMany() {
         // ArtGroup childGroupsArray
         ArtGroup parentGroup = (ArtGroup) context.newObject("ArtGroup");
@@ -180,6 +185,7 @@ public class DataContextDeleteRulesTest extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testCascadeToOne() {
         // Painting toPaintingInfo
         Painting painting = (Painting) context.newObject("Painting");
@@ -201,6 +207,7 @@ public class DataContextDeleteRulesTest extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testCascadeToMany() {
         // Artist artistExhibitArray
         Artist anArtist = (Artist) context.newObject("Artist");
@@ -229,6 +236,7 @@ public class DataContextDeleteRulesTest extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testDenyToMany() {
         // Gallery paintingArray
         Gallery gallery = (Gallery) context.newObject("Gallery");

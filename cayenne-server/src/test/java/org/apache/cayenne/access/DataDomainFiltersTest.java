@@ -32,11 +32,12 @@ import org.apache.cayenne.graph.GraphDiff;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.ListResponse;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataDomainFiltersTest extends ServerCase {
 
     @Inject
@@ -51,6 +52,7 @@ public class DataDomainFiltersTest extends ServerCase {
         assertEquals(0, domain.filters.size());
     }
 
+    @Test
     public void testOnQuery_FilterOrdering() {
 
         DataDomain domain = runtime.getDataDomain();
@@ -100,6 +102,7 @@ public class DataDomainFiltersTest extends ServerCase {
         assertEquals("f2end", results.get(3));
     }
 
+    @Test
     public void testOnSync_FilterOrdering() {
 
         DataDomain domain = runtime.getDataDomain();
@@ -159,6 +162,7 @@ public class DataDomainFiltersTest extends ServerCase {
         assertEquals("f2end", results.get(3));
     }
 
+    @Test
     public void testOnQuery_Blocking() {
 
         DataDomain domain = runtime.getDataDomain();

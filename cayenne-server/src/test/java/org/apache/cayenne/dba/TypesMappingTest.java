@@ -30,14 +30,18 @@ import java.util.List;
 
 import org.apache.cayenne.MockSerializable;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
+import org.junit.Test;
 
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class TypesMappingTest extends ServerCase {
 
     @Inject
     private ServerCaseDataSourceFactory dataSourceFactory;
 
+    @Test
     public void testGetSqlTypeByJava() throws Exception {
         assertEquals(Types.VARCHAR, TypesMapping.getSqlTypeByJava(String.class));
 
@@ -58,6 +62,7 @@ public class TypesMappingTest extends ServerCase {
         assertEquals(Types.VARBINARY, TypesMapping.getSqlTypeByJava(Byte[].class));
     }
 
+    @Test
     public void testGetSqlTypeByJavaString() throws Exception {
         assertEquals(Types.VARCHAR, TypesMapping.getSqlTypeByJava(String.class.getName()));
 
@@ -85,11 +90,13 @@ public class TypesMappingTest extends ServerCase {
         assertEquals(Types.VARBINARY, TypesMapping.getSqlTypeByJava("java.lang.Byte[]"));
     }
 
+    @Test
     public void testGetSqlTypeByJavaPrimitive() throws Exception {
         assertEquals(Types.INTEGER, TypesMapping.getSqlTypeByJava(Integer.TYPE));
         assertEquals(Types.BIGINT, TypesMapping.getSqlTypeByJava(Long.TYPE));
     }
 
+    @Test
     public void testTypeInfoCompleteness() throws Exception {
         // check counts
         // since more then 1 database type can map to a single JDBC type

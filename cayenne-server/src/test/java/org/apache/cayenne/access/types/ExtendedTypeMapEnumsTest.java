@@ -19,10 +19,14 @@
 
 package org.apache.cayenne.access.types;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
+
+
 
 public class ExtendedTypeMapEnumsTest extends TestCase {
 
+	@Test
     public void testCreateType1_5() {
         ExtendedTypeMap map = new ExtendedTypeMap();
 
@@ -36,6 +40,7 @@ public class ExtendedTypeMapEnumsTest extends TestCase {
         assertNotSame(type, type2);
     }
 
+	@Test
     public void testCreateType1_5InnerEnum() {
         ExtendedTypeMap map = new ExtendedTypeMap();
 
@@ -56,6 +61,7 @@ public class ExtendedTypeMapEnumsTest extends TestCase {
         assertSame(type.getClassName(), type2.getClassName());
     }
 
+	@Test
     public void testGetDefaultType1_4() {
         ExtendedTypeMap map = new ExtendedTypeMap();
         map.internalTypeFactories.clear();
@@ -65,6 +71,7 @@ public class ExtendedTypeMapEnumsTest extends TestCase {
         assertNull(map.createType(MockEnum2.class.getName()));
     }
 
+	@Test
     public void testGetType() {
         ExtendedTypeMap map = new ExtendedTypeMap();
         ExtendedType type = map.getRegisteredType(MockEnum.class.getName());

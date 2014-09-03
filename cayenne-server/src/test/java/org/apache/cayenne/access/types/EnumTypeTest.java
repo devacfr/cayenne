@@ -21,12 +21,15 @@ package org.apache.cayenne.access.types;
 
 import java.sql.Types;
 
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
+
 import com.mockrunner.mock.jdbc.MockResultSet;
 
-import junit.framework.TestCase;
 
 public class EnumTypeTest extends TestCase {
 
+	@Test
     public void testConstructor() throws Exception {
         EnumType type = new EnumType(MockEnum.class);
         assertEquals(MockEnum.class.getName(), type.getClassName());
@@ -37,6 +40,7 @@ public class EnumTypeTest extends TestCase {
         }
     }
 
+	@Test
     public void testInvalidConstructor1() throws Exception {
         try {
             new EnumType(Object.class);
@@ -47,6 +51,7 @@ public class EnumTypeTest extends TestCase {
         }
     }
 
+	@Test
     public void testInvalidConstructor2() throws Exception {
         try {
             new EnumType(null);
@@ -57,6 +62,7 @@ public class EnumTypeTest extends TestCase {
         }
     }
     
+	@Test
     public void testMaterializeStringObject() throws Exception {
         EnumType type = new EnumType(MockEnum.class);
         
@@ -69,6 +75,7 @@ public class EnumTypeTest extends TestCase {
         assertSame(MockEnum.b, o);
     }
     
+	@Test
     public void testMaterializeNumericObject() throws Exception {
         EnumType type = new EnumType(MockEnum.class);
         
@@ -81,6 +88,7 @@ public class EnumTypeTest extends TestCase {
         assertSame(MockEnum.c, o);
     }
     
+	@Test
     public void testMaterializeStringObjectInnerEnum() throws Exception {
         EnumType type = new EnumType(InnerEnumHolder.InnerEnum.class);
         
@@ -93,6 +101,7 @@ public class EnumTypeTest extends TestCase {
         assertSame(InnerEnumHolder.InnerEnum.b, o);
     }
     
+	@Test
     public void testMaterializeNumericObjectInnerEnum() throws Exception {
         EnumType type = new EnumType(InnerEnumHolder.InnerEnum.class);
         

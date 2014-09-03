@@ -28,10 +28,11 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationship.CollectionToMany;
 import org.apache.cayenne.testdo.relationship.CollectionToManyTarget;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+@CayenneConfiguration(ServerCase.RELATIONSHIPS_PROJECT)
 public class CDOCollectionRelationshipTest extends ServerCase {
 
     @Inject
@@ -58,6 +59,7 @@ public class CDOCollectionRelationshipTest extends ServerCase {
         tCollectionToManyTarget.insert(1, 1).insert(2, 1).insert(3, 1).insert(4, 2);
     }
 
+    @Test
     public void testReadToMany() throws Exception {
 
         CollectionToMany o1 = Cayenne.objectForPK(context, CollectionToMany.class, 1);
@@ -83,6 +85,7 @@ public class CDOCollectionRelationshipTest extends ServerCase {
                 3)));
     }
 
+    @Test
     public void testReadToManyPrefetching() throws Exception {
 
         SelectQuery query = new SelectQuery(CollectionToMany.class, ExpressionFactory
@@ -111,6 +114,7 @@ public class CDOCollectionRelationshipTest extends ServerCase {
                 3)));
     }
 
+    @Test
     public void testAddToMany() throws Exception {
 
         CollectionToMany o1 = Cayenne.objectForPK(context, CollectionToMany.class, 1);
@@ -133,6 +137,7 @@ public class CDOCollectionRelationshipTest extends ServerCase {
         assertEquals(4, o1.getTargets().size());
     }
 
+    @Test
     public void testRemoveToMany() throws Exception {
 
         CollectionToMany o1 = Cayenne.objectForPK(context, CollectionToMany.class, 1);
@@ -157,6 +162,7 @@ public class CDOCollectionRelationshipTest extends ServerCase {
         assertFalse(o1.getTargets().contains(target));
     }
 
+    @Test
     public void testAddToManyViaReverse() throws Exception {
 
         CollectionToMany o1 = Cayenne.objectForPK(context, CollectionToMany.class, 1);

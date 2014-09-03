@@ -50,7 +50,7 @@ import org.apache.commons.logging.LogFactory;
  * A {@link DataChannel} provider that provides a single instance of DataDomain
  * configured per configuration supplied via injected
  * {@link DataChannelDescriptorLoader}.
- * 
+ *
  * @since 3.1
  */
 public class DataDomainProvider implements Provider<DataDomain> {
@@ -93,7 +93,10 @@ public class DataDomainProvider implements Provider<DataDomain> {
     public DataDomain get() throws ConfigurationException {
 
         try {
-            return createAndInitDataDomain();
+            // return createAndInitDataDomain();
+            DataDomain dataDomain = createAndInitDataDomain();
+            injector.injectMembers(dataDomain);
+            return dataDomain;
         } catch (ConfigurationException e) {
             throw e;
         } catch (Exception e) {

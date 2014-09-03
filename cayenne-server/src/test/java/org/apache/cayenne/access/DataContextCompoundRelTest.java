@@ -28,13 +28,14 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.CompoundFkTestEntity;
 import org.apache.cayenne.testdo.testmap.CompoundPkTestEntity;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 /**
  * Testing relationships with compound keys.
  */
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextCompoundRelTest extends ServerCase {
 
     @Inject
@@ -52,6 +53,7 @@ public class DataContextCompoundRelTest extends ServerCase {
         dbHelper.deleteAll("COMPOUND_PK_TEST");
     }
 
+    @Test
     public void testInsert() {
 
         CompoundPkTestEntity master = context.newObject(CompoundPkTestEntity.class);
@@ -79,6 +81,7 @@ public class DataContextCompoundRelTest extends ServerCase {
         assertEquals("d1", detail.getName());
     }
 
+    @Test
     public void testFetchQualifyingToOne() {
         CompoundPkTestEntity master = (CompoundPkTestEntity) context
                 .newObject("CompoundPkTestEntity");
@@ -115,6 +118,7 @@ public class DataContextCompoundRelTest extends ServerCase {
         assertEquals("d1", detail.getName());
     }
 
+    @Test
     public void testFetchQualifyingToMany() throws Exception {
         CompoundPkTestEntity master = (CompoundPkTestEntity) context
                 .newObject("CompoundPkTestEntity");

@@ -22,10 +22,12 @@ package org.apache.cayenne.dba.oracle;
 import java.util.Calendar;
 import java.util.Date;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 public class OracleUtilDateTypeTest extends TestCase {
 
+    @Test
     public void testNormalizeDate() throws Exception {
         Date date = new Date();
         Date timeNormalized = new OracleUtilDateType().normalizeDate(date);

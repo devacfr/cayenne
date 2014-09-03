@@ -22,10 +22,10 @@ package org.apache.cayenne.exp;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 
-/** 
- * Class that collects statistics of expression traversal. 
+/**
+ * Class that collects statistics of expression traversal.
  */
 public class TstTraversalHandler implements TraversalHandler {
     protected List treeFlatView = new ArrayList();
@@ -35,9 +35,8 @@ public class TstTraversalHandler implements TraversalHandler {
     protected int leafs;
 
     /**
-     * Performs independent traversal of two expressions,
-     * comparing the results. If expressions structure is different,
-     * throws an exception.
+     * Performs independent traversal of two expressions, comparing the results.
+     * If expressions structure is different, throws an exception.
      */
     public static void compareExps(Expression exp1, Expression exp2) {
         TstTraversalHandler handler1 = new TstTraversalHandler();
@@ -93,19 +92,23 @@ public class TstTraversalHandler implements TraversalHandler {
         return leafs;
     }
 
+    @Override
     public void finishedChild(Expression node, int childIndex, boolean hasMoreChildren) {
         children++;
     }
 
+    @Override
     public void startNode(Expression node, Expression parentNode) {
         treeFlatView.add(node);
         nodesStarted++;
     }
 
+    @Override
     public void endNode(Expression node, Expression parentNode) {
         nodes++;
     }
 
+    @Override
     public void objectNode(Object leaf, Expression parentNode) {
         treeFlatView.add(leaf);
         leafs++;

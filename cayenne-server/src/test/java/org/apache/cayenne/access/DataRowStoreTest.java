@@ -27,64 +27,59 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataRowStoreTest extends ServerCase {
 
+	@Test
     public void testDefaultConstructor() {
-        DataRowStore cache = new DataRowStore(
-                "cacheXYZ",
-                Collections.EMPTY_MAP,
-                new DefaultEventManager());
+        DefaultEventManager eventManager = new DefaultEventManager();
+        DataRowStore cache = new DataRowStore("cacheXYZ", Collections.EMPTY_MAP, eventManager);
         assertEquals("cacheXYZ", cache.getName());
         assertNotNull(cache.getSnapshotEventSubject());
         assertTrue(cache.getSnapshotEventSubject().getSubjectName().contains("cacheXYZ"));
 
-        assertEquals(DataRowStore.REMOTE_NOTIFICATION_DEFAULT, cache
-                .isNotifyingRemoteListeners());
+        assertEquals(DataRowStore.REMOTE_NOTIFICATION_DEFAULT, cache.isNotifyingRemoteListeners());
+        eventManager.shutdown();
     }
 
+	@Test
     public void testConstructorWithProperties() {
+        DefaultEventManager eventManager = new DefaultEventManager();
         Map<Object, Object> props = new HashMap<Object, Object>();
-        props.put(DataRowStore.REMOTE_NOTIFICATION_PROPERTY, String
-                .valueOf(!DataRowStore.REMOTE_NOTIFICATION_DEFAULT));
+        props.put(DataRowStore.REMOTE_NOTIFICATION_PROPERTY, String.valueOf(!DataRowStore.REMOTE_NOTIFICATION_DEFAULT));
 
-        DataRowStore cache = new DataRowStore(
-                "cacheXYZ",
-                props,
-                new DefaultEventManager());
+        DataRowStore cache = new DataRowStore("cacheXYZ", props, eventManager);
         assertEquals("cacheXYZ", cache.getName());
-        assertEquals(!DataRowStore.REMOTE_NOTIFICATION_DEFAULT, cache
-                .isNotifyingRemoteListeners());
+        assertEquals(!DataRowStore.REMOTE_NOTIFICATION_DEFAULT, cache.isNotifyingRemoteListeners());
+        eventManager.shutdown();
     }
 
+	@Test
     public void testNotifyingRemoteListeners() {
-        DataRowStore cache = new DataRowStore(
-                "cacheXYZ",
-                Collections.EMPTY_MAP,
-                new DefaultEventManager());
+        DefaultEventManager eventManager = new DefaultEventManager();
+        DataRowStore cache = new DataRowStore("cacheXYZ", Collections.EMPTY_MAP, eventManager);
 
-        assertEquals(DataRowStore.REMOTE_NOTIFICATION_DEFAULT, cache
-                .isNotifyingRemoteListeners());
+        assertEquals(DataRowStore.REMOTE_NOTIFICATION_DEFAULT, cache.isNotifyingRemoteListeners());
 
         cache.setNotifyingRemoteListeners(!DataRowStore.REMOTE_NOTIFICATION_DEFAULT);
-        assertEquals(!DataRowStore.REMOTE_NOTIFICATION_DEFAULT, cache
-                .isNotifyingRemoteListeners());
+        assertEquals(!DataRowStore.REMOTE_NOTIFICATION_DEFAULT, cache.isNotifyingRemoteListeners());
+        eventManager.shutdown();
     }
 
     /**
      * Tests LRU cache behavior.
      */
+	@Test
     public void testMaxSize() throws Exception {
+        DefaultEventManager eventManager = new DefaultEventManager();
         Map<Object, Object> props = new HashMap<Object, Object>();
         props.put(DataRowStore.SNAPSHOT_CACHE_SIZE_PROPERTY, String.valueOf(2));
 
-        DataRowStore cache = new DataRowStore(
-                "cacheXYZ",
-                props,
-                new DefaultEventManager());
+        DataRowStore cache = new DataRowStore("cacheXYZ", props, eventManager);
         assertEquals(2, cache.maximumSize());
         assertEquals(0, cache.size());
 
@@ -127,5 +122,7 @@ public class DataRowStoreTest extends ServerCase {
         assertNotNull(cache.getCachedSnapshot(key2));
         assertNotNull(cache.getCachedSnapshot(key3));
         assertNull(cache.getCachedSnapshot(key1));
+
+        eventManager.shutdown();
     }
 }

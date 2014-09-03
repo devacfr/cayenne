@@ -26,10 +26,11 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.CharPkTestEntity;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextCharPKTest extends ServerCase {
 
     @Inject
@@ -39,11 +40,14 @@ public class DataContextCharPKTest extends ServerCase {
     private DBHelper dbHelper;
 
     @Override
-    protected void setUpAfterInjection() throws Exception {
+    @Test
+    public void setUp() throws Exception {
+    	super.setUp();
         dbHelper.deleteAll("CHAR_FK_TEST");
         dbHelper.deleteAll("CHAR_PK_TEST");
     }
 
+    @Test
     public void testInsert() throws Exception {
         CharPkTestEntity object = context.newObject(CharPkTestEntity.class);
         object.setOtherCol("object-XYZ");
@@ -74,6 +78,7 @@ public class DataContextCharPKTest extends ServerCase {
         assertEquals("PK1", val);
     }
 
+    @Test
     public void testDelete() throws Exception {
         CharPkTestEntity object = context.newObject(CharPkTestEntity.class);
         object.setOtherCol("object-XYZ");
@@ -93,6 +98,7 @@ public class DataContextCharPKTest extends ServerCase {
         assertEquals(0, rows.size());
     }
 
+    @Test
     public void testUpdate() throws Exception {
         CharPkTestEntity object = context.newObject(CharPkTestEntity.class);
         object.setOtherCol("object-XYZ");

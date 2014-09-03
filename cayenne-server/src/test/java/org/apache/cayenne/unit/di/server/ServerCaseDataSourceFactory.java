@@ -27,15 +27,13 @@ import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.conn.PoolDataSource;
 import org.apache.cayenne.conn.PoolManager;
 import org.apache.cayenne.di.Inject;
 
 public class ServerCaseDataSourceFactory  {
-
+	
     private DataSource sharedDataSource;
     private DataSourceInfo dataSourceInfo;
     private Map<String, DataSource> dataSources;

@@ -25,11 +25,12 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.ClobTestEntity;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextClobTest extends ServerCase {
 
     @Inject
@@ -48,7 +49,8 @@ public class DataContextClobTest extends ServerCase {
     private DBHelper dbHelper;
 
     @Override
-    protected void setUpAfterInjection() throws Exception {
+    public void setUp() throws Exception {
+    	super.setUp();
         if (accessStackAdapter.supportsLobs()) {
             dbHelper.deleteAll("CLOB_TEST");
         }
@@ -62,6 +64,7 @@ public class DataContextClobTest extends ServerCase {
         return !accessStackAdapter.handlesNullVsEmptyLOBs();
     }
 
+    @Test
     public void testEmptyClob() throws Exception {
         if (skipEmptyLOBTests()) {
             return;
@@ -69,6 +72,7 @@ public class DataContextClobTest extends ServerCase {
         runWithClobSize(0);
     }
 
+    @Test
     public void test5ByteClob() throws Exception {
         if (skipTests()) {
             return;
@@ -76,6 +80,7 @@ public class DataContextClobTest extends ServerCase {
         runWithClobSize(5);
     }
 
+    @Test
     public void test5KByteClob() throws Exception {
         if (skipTests()) {
             return;
@@ -83,6 +88,7 @@ public class DataContextClobTest extends ServerCase {
         runWithClobSize(5 * 1024);
     }
 
+    @Test
     public void test1MBClob() throws Exception {
         if (skipTests()) {
             return;
@@ -90,6 +96,7 @@ public class DataContextClobTest extends ServerCase {
         runWithClobSize(1024 * 1024);
     }
 
+    @Test
     public void testNullClob() throws Exception {
         if (skipTests()) {
             return;
@@ -100,7 +107,7 @@ public class DataContextClobTest extends ServerCase {
         context.commitChanges();
 
         // read the CLOB in the new context
-        List<?> objects2 = context2.performQuery(new SelectQuery(ClobTestEntity.class));
+        List<?> objects2 = context2.performQuery(new SelectQuery<ClobTestEntity>(ClobTestEntity.class));
         assertEquals(1, objects2.size());
 
         ClobTestEntity clobObj2 = (ClobTestEntity) objects2.get(0);
@@ -112,7 +119,7 @@ public class DataContextClobTest extends ServerCase {
         context2.commitChanges();
 
         // read into yet another context and check for changes
-        List<?> objects3 = context3.performQuery(new SelectQuery(ClobTestEntity.class));
+        List<?> objects3 = context3.performQuery(new SelectQuery<ClobTestEntity>(ClobTestEntity.class));
         assertEquals(1, objects3.size());
 
         ClobTestEntity clobObj3 = (ClobTestEntity) objects3.get(0);
@@ -138,7 +145,7 @@ public class DataContextClobTest extends ServerCase {
         context.commitChanges();
 
         // read the CLOB in the new context
-        List<?> objects2 = context2.performQuery(new SelectQuery(ClobTestEntity.class));
+        List<?> objects2 = context2.performQuery(new SelectQuery<ClobTestEntity>(ClobTestEntity.class));
         assertEquals(1, objects2.size());
 
         ClobTestEntity clobObj2 = (ClobTestEntity) objects2.get(0);
@@ -149,7 +156,7 @@ public class DataContextClobTest extends ServerCase {
         context2.commitChanges();
 
         // read into yet another context and check for changes
-        List<?> objects3 = context3.performQuery(new SelectQuery(ClobTestEntity.class));
+        List<?> objects3 = context3.performQuery(new SelectQuery<ClobTestEntity>(ClobTestEntity.class));
         assertEquals(1, objects3.size());
 
         ClobTestEntity clobObj3 = (ClobTestEntity) objects3.get(0);

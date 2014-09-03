@@ -32,15 +32,16 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 /**
  * Tests objects registration in DataContext, transferring objects between contexts and
  * such.
  */
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextObjectTrackingTest extends ServerCase {
 
     @Inject
@@ -93,6 +94,7 @@ public class DataContextObjectTrackingTest extends ServerCase {
         tPainting.insert(33003, 33003, "P_artist3", 3000);
     }
 
+    @Test
     public void testUnregisterObject() {
 
         DataRow row = new DataRow(10);
@@ -115,6 +117,7 @@ public class DataContextObjectTrackingTest extends ServerCase {
         assertNull(context.getObjectStore().getCachedSnapshot(oid));
     }
 
+    @Test
     public void testInvalidateObjects_Vararg() {
 
         DataRow row = new DataRow(10);

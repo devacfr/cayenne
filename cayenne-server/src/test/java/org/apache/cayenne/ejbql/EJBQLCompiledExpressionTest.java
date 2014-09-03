@@ -21,15 +21,17 @@ package org.apache.cayenne.ejbql;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class EJBQLCompiledExpressionTest extends ServerCase {
     
     @Inject
     protected ServerRuntime runtime;
 
+    @Test
     public void testGetSource() {
         String source = "select a from Artist a";
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
@@ -39,6 +41,7 @@ public class EJBQLCompiledExpressionTest extends ServerCase {
         assertEquals(source, select.getSource());
     }
 
+    @Test
     public void testGetExpression() {
         String source = "select a from Artist a";
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
@@ -48,6 +51,7 @@ public class EJBQLCompiledExpressionTest extends ServerCase {
         assertNotNull(select.getExpression());
     }
 
+    @Test
     public void testGetEntityDescriptor() {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         EJBQLParser parser = EJBQLParserFactory.getParser();
@@ -71,6 +75,7 @@ public class EJBQLCompiledExpressionTest extends ServerCase {
                 .getEntityDescriptor("p.toArtist"));
     }
 
+    @Test
     public void testGetRootDescriptor() {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         EJBQLParser parser = EJBQLParserFactory.getParser();
@@ -83,6 +88,7 @@ public class EJBQLCompiledExpressionTest extends ServerCase {
                 .getClassDescriptor("Artist"), select.getRootDescriptor());
     }
 
+    @Test
     public void testGetEntityDescriptorCaseSensitivity() {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         EJBQLParser parser = EJBQLParserFactory.getParser();

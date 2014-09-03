@@ -27,8 +27,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
@@ -50,12 +48,15 @@ import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.ResourceLocator;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 import com.mockrunner.mock.jdbc.MockConnection;
 import com.mockrunner.mock.jdbc.MockDataSource;
 
 public class DefaultDbAdapterFactoryTest extends TestCase {
 
+    @Test
     public void testCreatedAdapter_Auto() throws Exception {
 
         final DbAdapter adapter = mock(DbAdapter.class);
@@ -64,6 +65,7 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
         List<DbAdapterDetector> detectors = new ArrayList<DbAdapterDetector>();
         detectors.add(new DbAdapterDetector() {
 
+            @Override
             public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
                 return adapter;
             }
@@ -76,6 +78,7 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
 
         Module testModule = new Module() {
 
+            @Override
             public void configure(Binder binder) {
                 binder.bindMap(Constants.PROPERTIES_MAP);
 
@@ -96,12 +99,14 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
         assertEquals("XXXXX", createdAdapter.createTable(new DbEntity("Test")));
     }
 
+    @Test
     public void testCreatedAdapter_Generic() throws Exception {
 
         List<DbAdapterDetector> detectors = new ArrayList<DbAdapterDetector>();
 
         Module testModule = new Module() {
 
+            @Override
             public void configure(Binder binder) {
                 binder.bindMap(Constants.PROPERTIES_MAP);
                 binder.bindList(Constants.SERVER_DEFAULT_TYPES_LIST);
@@ -128,6 +133,7 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
         assertEquals("CREATE TABLE Test ()", createdAdapter.createTable(new DbEntity("Test")));
     }
 
+    @Test
     public void testCreatedAdapter_Custom() throws Exception {
 
         DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
@@ -137,6 +143,7 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
 
         Module testModule = new Module() {
 
+            @Override
             public void configure(Binder binder) {
                 binder.bindMap(Constants.PROPERTIES_MAP);
                 binder.bindList(Constants.SERVER_DEFAULT_TYPES_LIST);
@@ -162,6 +169,7 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
         assertTrue("Unexpected class: " + createdAdapter.getClass().getName(), createdAdapter instanceof SybaseAdapter);
     }
 
+    @Test
     public void testCreatedAdapter_AutoExplicit() throws Exception {
 
         final DbAdapter adapter = mock(DbAdapter.class);
@@ -170,6 +178,7 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
         List<DbAdapterDetector> detectors = new ArrayList<DbAdapterDetector>();
         detectors.add(new DbAdapterDetector() {
 
+            @Override
             public DbAdapter createAdapter(DatabaseMetaData md) throws SQLException {
                 return adapter;
             }
@@ -182,6 +191,7 @@ public class DefaultDbAdapterFactoryTest extends TestCase {
 
         Module testModule = new Module() {
 
+            @Override
             public void configure(Binder binder) {
                 binder.bindMap(Constants.PROPERTIES_MAP);
 

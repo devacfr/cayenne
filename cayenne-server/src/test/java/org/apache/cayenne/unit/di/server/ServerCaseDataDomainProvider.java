@@ -44,7 +44,6 @@ class ServerCaseDataDomainProvider extends DataDomainProvider {
 
     @Override
     protected DataDomain createAndInitDataDomain() throws Exception {
-
         DataDomain domain = super.createAndInitDataDomain();
         DataNode node = null;
 

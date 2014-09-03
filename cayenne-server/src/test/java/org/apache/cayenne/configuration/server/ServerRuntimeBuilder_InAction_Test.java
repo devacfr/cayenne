@@ -28,10 +28,11 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.SQLSelect;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class ServerRuntimeBuilder_InAction_Test extends ServerCase {
 
     @Inject
@@ -63,6 +64,7 @@ public class ServerRuntimeBuilder_InAction_Test extends ServerCase {
         this.dataSource = runtime.getDataSource("tstmap");
     }
 
+    @Test
     public void testConfigFree_WithDataSource() {
 
         ServerRuntime localRuntime = new ServerRuntimeBuilder().dataSource(dataSource).build();
@@ -75,6 +77,7 @@ public class ServerRuntimeBuilder_InAction_Test extends ServerCase {
         }
     }
 
+    @Test
     public void testConfigFree_WithDBParams() {
 
         ServerRuntime localRuntime = new ServerRuntimeBuilder().jdbcDriver(dsi.getJdbcDriver())

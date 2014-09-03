@@ -21,12 +21,12 @@ package org.apache.cayenne.configuration.web;
 import java.util.Arrays;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Key;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 import com.mockrunner.mock.web.MockFilterChain;
 import com.mockrunner.mock.web.MockFilterConfig;
@@ -36,6 +36,7 @@ import com.mockrunner.mock.web.MockServletContext;
 
 public class CayenneFilterTest extends TestCase {
 
+    @Test
     public void testInitWithFilterName() throws Exception {
 
         MockFilterConfig config = new MockFilterConfig();
@@ -58,6 +59,7 @@ public class CayenneFilterTest extends TestCase {
         assertEquals(Arrays.asList("abc.xml"), locations);
     }
 
+    @Test
     public void testInitWithLocation() throws Exception {
 
         MockFilterConfig config = new MockFilterConfig();
@@ -78,6 +80,7 @@ public class CayenneFilterTest extends TestCase {
         assertEquals(Arrays.asList("xyz"), locations);
     }
 
+    @Test
     public void testInitWithStandardModules() throws Exception {
 
         MockFilterConfig config = new MockFilterConfig();
@@ -105,13 +108,13 @@ public class CayenneFilterTest extends TestCase {
         assertTrue(handler instanceof SessionContextRequestHandler);
     }
 
+    @Test
     public void testInitWithExtraModules() throws Exception {
 
         MockFilterConfig config = new MockFilterConfig();
         config.setFilterName("abc");
-        config.setInitParameter(
-                WebConfiguration.EXTRA_MODULES_PARAMETER,
-                MockModule1.class.getName() + "," + MockModule2.class.getName());
+        config.setInitParameter(WebConfiguration.EXTRA_MODULES_PARAMETER, MockModule1.class.getName() + ","
+                + MockModule2.class.getName());
 
         MockServletContext context = new MockServletContext();
         config.setupServletContext(context);
@@ -133,12 +136,11 @@ public class CayenneFilterTest extends TestCase {
         assertTrue(handler instanceof MockRequestHandler);
     }
 
+    @Test
     public void testDoFilter() throws Exception {
         MockFilterConfig config = new MockFilterConfig();
         config.setFilterName("abc");
-        config.setInitParameter(
-                WebConfiguration.EXTRA_MODULES_PARAMETER,
-                CayenneFilter_DispatchModule.class.getName());
+        config.setInitParameter(WebConfiguration.EXTRA_MODULES_PARAMETER, CayenneFilter_DispatchModule.class.getName());
 
         MockServletContext context = new MockServletContext();
         config.setupServletContext(context);
@@ -147,24 +149,17 @@ public class CayenneFilterTest extends TestCase {
         filter.init(config);
 
         CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
-        CayenneFilter_DispatchRequestHandler handler = (CayenneFilter_DispatchRequestHandler) runtime
-                .getInjector()
+        CayenneFilter_DispatchRequestHandler handler = (CayenneFilter_DispatchRequestHandler) runtime.getInjector()
                 .getInstance(RequestHandler.class);
 
         assertEquals(0, handler.getStarted());
         assertEquals(0, handler.getEnded());
 
-        filter.doFilter(
-                new MockHttpServletRequest(),
-                new MockHttpServletResponse(),
-                new MockFilterChain());
+        filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(), new MockFilterChain());
         assertEquals(1, handler.getStarted());
         assertEquals(1, handler.getEnded());
 
-        filter.doFilter(
-                new MockHttpServletRequest(),
-                new MockHttpServletResponse(),
-                new MockFilterChain());
+        filter.doFilter(new MockHttpServletRequest(), new MockHttpServletResponse(), new MockFilterChain());
         assertEquals(2, handler.getStarted());
         assertEquals(2, handler.getEnded());
     }

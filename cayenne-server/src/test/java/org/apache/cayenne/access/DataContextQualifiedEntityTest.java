@@ -31,12 +31,13 @@ import org.apache.cayenne.testdo.inherit.AbstractPerson;
 import org.apache.cayenne.testdo.inherit.CustomerRepresentative;
 import org.apache.cayenne.testdo.inherit.Employee;
 import org.apache.cayenne.testdo.inherit.Manager;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 /**
  */
-@UseServerRuntime(ServerCase.PEOPLE_PROJECT)
+@CayenneConfiguration(ServerCase.PEOPLE_PROJECT)
 public class DataContextQualifiedEntityTest extends ServerCase {
 
     @Inject
@@ -85,6 +86,7 @@ public class DataContextQualifiedEntityTest extends ServerCase {
         tPerson.insert(null, null, null, "c1", 6, "C", null);
     }
 
+    @Test
     public void testSelect() throws Exception {
         createPersonsDataSet();
 
@@ -109,6 +111,7 @@ public class DataContextQualifiedEntityTest extends ServerCase {
         assertEquals(2, managers.size());
     }
 
+    @Test
     public void testPrefetch() throws Exception {
         createPersonsDataSet();
 

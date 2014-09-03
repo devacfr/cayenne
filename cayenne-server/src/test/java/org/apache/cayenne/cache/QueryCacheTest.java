@@ -25,10 +25,11 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class QueryCacheTest extends ServerCase {
 
     @Inject
@@ -37,6 +38,7 @@ public class QueryCacheTest extends ServerCase {
     @Inject
     private ObjectContext context2;
     
+    @Test
     public void testLocalCache() {
         
         Artist a = context1.newObject(Artist.class);

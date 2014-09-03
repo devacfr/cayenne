@@ -18,10 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.access.types;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
+
 
 public class EnumTypeFactoryTest extends TestCase {
 
+	@Test
     public void testSupportsEnums() {
         EnumTypeFactory map = new EnumTypeFactory();
         assertNotNull(map.getType(MockEnum.class));

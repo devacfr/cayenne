@@ -31,11 +31,12 @@ import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.test.jdbc.DBHelper;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.Util;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class SQLTemplateTest extends ServerCase {
 
     @Inject
@@ -53,6 +54,7 @@ public class SQLTemplateTest extends ServerCase {
         dbHelper.deleteAll("ARTIST");
     }
 
+    @Test
     public void testSQLTemplateForDataMap() {
         DataMap testDataMap = context.getEntityResolver().getDataMap("tstmap");
         SQLTemplate q1 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST", true);
@@ -60,6 +62,7 @@ public class SQLTemplateTest extends ServerCase {
         assertEquals(0, result.size());
     }
 
+    @Test
     public void testSQLTemplateForDataMapWithInsert() {
         DataMap testDataMap = context.getEntityResolver().getDataMap("tstmap");
         String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
@@ -71,6 +74,7 @@ public class SQLTemplateTest extends ServerCase {
         assertEquals(1, result.size());
     }
 
+    @Test
     public void testSQLTemplateForDataMapWithInsertException() {
         DataMap testDataMap = context.getEntityResolver().getDataMap("tstmap");
         String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
@@ -88,6 +92,7 @@ public class SQLTemplateTest extends ServerCase {
                 gotRuntimeException);
     }
 
+    @Test
     public void testColumnNameCapitalization() {
         SQLTemplate q1 = new SQLTemplate("E1", "SELECT");
         assertSame(CapsStrategy.DEFAULT, q1.getColumnNamesCapitalization());
@@ -95,6 +100,7 @@ public class SQLTemplateTest extends ServerCase {
         assertEquals(CapsStrategy.UPPER, q1.getColumnNamesCapitalization());
     }
 
+    @Test
     public void testQueryWithParameters() {
         SQLTemplate q1 = new SQLTemplate("E1", "SELECT");
         q1.setName("QName");
@@ -118,6 +124,7 @@ public class SQLTemplateTest extends ServerCase {
         assertEquals(q3.getName(), q4.getName());
     }
 
+    @Test
     public void testSerializability() throws Exception {
         SQLTemplate o = new SQLTemplate("Test", "DO SQL");
         Object clone = Util.cloneViaSerialization(o);
@@ -130,12 +137,14 @@ public class SQLTemplateTest extends ServerCase {
         assertEquals(o.getDefaultTemplate(), c1.getDefaultTemplate());
     }
 
+    @Test
     public void testGetDefaultTemplate() {
         SQLTemplate query = new SQLTemplate();
         query.setDefaultTemplate("AAA # BBB");
         assertEquals("AAA # BBB", query.getDefaultTemplate());
     }
 
+    @Test
     public void testGetTemplate() {
         SQLTemplate query = new SQLTemplate();
 
@@ -156,6 +165,7 @@ public class SQLTemplateTest extends ServerCase {
         assertEquals("123", query.getTemplate("key2"));
     }
 
+    @Test
     public void testSingleParameterSet() throws Exception {
         SQLTemplate query = new SQLTemplate();
 
@@ -179,6 +189,7 @@ public class SQLTemplateTest extends ServerCase {
         assertFalse(it.hasNext());
     }
 
+    @Test
     public void testBatchParameterSet() throws Exception {
         SQLTemplate query = new SQLTemplate();
 

@@ -34,10 +34,11 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.qualified.Qualified1;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime("cayenne-default.xml")
+@CayenneConfiguration("cayenne-default.xml")
 public class ConcurrentPkGeneratorTest extends ServerCase {
 
     @Inject
@@ -46,6 +47,7 @@ public class ConcurrentPkGeneratorTest extends ServerCase {
     /*
      * Attempts to discover any problems regarding thread locking in the PkGenerator
      */
+    @Test
     public void testConcurrentInserts() throws Exception {
 		final DataMap dataMap = runtime.getDataDomain().getDataMap("qualified");
 		

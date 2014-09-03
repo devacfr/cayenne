@@ -28,15 +28,17 @@ import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.annotations.Tag1;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class LifecycleCallbackRegistryTest extends ServerCase {
 
     @Inject
     private ObjectContext context;
 
+    @Test
     public void testAddListener_PostAdd() {
         LifecycleCallbackRegistry registry = new LifecycleCallbackRegistry(context
                 .getEntityResolver());
@@ -61,6 +63,7 @@ public class LifecycleCallbackRegistryTest extends ServerCase {
         assertEquals("e:Painting;", listener.getAndReset());
     }
 
+    @Test
     public void testAddListener_PostAdd_InheritedListenerMethods() {
         LifecycleCallbackRegistry registry = new LifecycleCallbackRegistry(context
                 .getEntityResolver());

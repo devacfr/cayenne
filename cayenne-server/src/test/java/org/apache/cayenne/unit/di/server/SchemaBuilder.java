@@ -84,6 +84,7 @@ public class SchemaBuilder {
     private DataDomain domain;
     private JdbcEventLogger jdbcEventLogger;
 
+
     public SchemaBuilder(@Inject ServerCaseDataSourceFactory dataSourceFactory, @Inject UnitDbAdapter unitDbAdapter,
             @Inject DbAdapter dbAdapter, @Inject JdbcEventLogger jdbcEventLogger) {
         this.dataSourceFactory = dataSourceFactory;
@@ -115,9 +116,10 @@ public class SchemaBuilder {
             in.setSystemId(MAPS_REQUIRING_SCHEMA_SETUP[i]);
             maps[i] = new MapLoader().loadDataMap(in);
         }
+        DefaultEventManager defaultEventManager = new DefaultEventManager(2);
 
         this.domain = new DataDomain("temp");
-        domain.setEventManager(new DefaultEventManager(2));
+        domain.setEventManager(defaultEventManager);
         domain.setEntitySorter(new AshwoodEntitySorter());
         domain.setQueryCache(new MapQueryCache(50));
 
@@ -133,10 +135,13 @@ public class SchemaBuilder {
         } catch (Exception e) {
             throw new RuntimeException("Error rebuilding schema", e);
         }
+        domain.shutdown();
+        defaultEventManager.shutdown();
     }
 
     private void initNode(DataMap map) throws Exception {
-
+        // reset the primary keys cache
+        dbAdapter.getPkGenerator().reset();
         DataNode node = new DataNode(map.getName());
         node.setJdbcEventLogger(jdbcEventLogger);
         node.setAdapter(dbAdapter);

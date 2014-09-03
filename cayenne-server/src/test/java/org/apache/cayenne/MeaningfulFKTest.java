@@ -23,11 +23,12 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.relationship.MeaningfulFK;
 import org.apache.cayenne.testdo.relationship.RelationshipHelper;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.validation.ValidationResult;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+@CayenneConfiguration(ServerCase.RELATIONSHIPS_PROJECT)
 public class MeaningfulFKTest extends ServerCase {
 
     @Inject
@@ -41,6 +42,7 @@ public class MeaningfulFKTest extends ServerCase {
         dbHelper.deleteAll("MEANINGFUL_FK");
     }
 
+    @Test
     public void testValidateForSave1() throws Exception {
         MeaningfulFK testObject = context.newObject(MeaningfulFK.class);
 
@@ -55,6 +57,7 @@ public class MeaningfulFKTest extends ServerCase {
                 validation.getFailures().size());
     }
 
+    @Test
     public void testValidateForSave2() throws Exception {
         MeaningfulFK testObject = context.newObject(MeaningfulFK.class);
 

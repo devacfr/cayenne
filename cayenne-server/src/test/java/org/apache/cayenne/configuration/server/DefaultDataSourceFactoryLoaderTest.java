@@ -20,7 +20,6 @@ package org.apache.cayenne.configuration.server;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import junit.framework.TestCase;
 
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.DataChannelDescriptor;
@@ -40,13 +39,15 @@ import org.apache.cayenne.log.CommonsJdbcEventLogger;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.resource.mock.MockResourceLocator;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 public class DefaultDataSourceFactoryLoaderTest extends TestCase {
 
     private Injector injector;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         Module testModule = new Module() {
 
             @Override
@@ -62,6 +63,7 @@ public class DefaultDataSourceFactoryLoaderTest extends TestCase {
         this.injector = DIBootstrap.createInjector(testModule);
     }
 
+    @Test
     public void testGetDataSourceFactory_Implicit() throws Exception {
 
         DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
@@ -76,6 +78,7 @@ public class DefaultDataSourceFactoryLoaderTest extends TestCase {
         assertTrue(factory instanceof XMLPoolingDataSourceFactory);
     }
 
+    @Test
     public void testGetDataSourceFactory_Explicit() throws Exception {
 
         DataNodeDescriptor nodeDescriptor = new DataNodeDescriptor();
@@ -92,6 +95,7 @@ public class DefaultDataSourceFactoryLoaderTest extends TestCase {
                 ((MockDataSourceFactory1) factory).getInjector());
     }
 
+    @Test
     public void testGetDataSourceFactory_Property() throws Exception {
 
         final RuntimeProperties properties = mock(RuntimeProperties.class);
@@ -107,6 +111,7 @@ public class DefaultDataSourceFactoryLoaderTest extends TestCase {
 
         Module testModule = new Module() {
 
+            @Override
             public void configure(Binder binder) {
                 binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
