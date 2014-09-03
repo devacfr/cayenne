@@ -19,12 +19,21 @@
 package org.apache.cayenne.remote;
 
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.client.ClientCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextDeletionTest extends RemoteCayenneCase {
 
+    /**
+     * @param serializationPolicy
+     */
+    public CayenneContextDeletionTest(int serializationPolicy) {
+        super(serializationPolicy);
+    }
+
+    @Test
     public void testDeletion() {
         ClientMtTable1 object = clientContext.newObject(ClientMtTable1.class);
         clientContext.commitChanges();

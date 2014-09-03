@@ -18,33 +18,39 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.client;
 
-import org.apache.cayenne.di.DIBootstrap;
-import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.di.spi.DefaultScope;
+import org.apache.cayenne.testing.CayenneBlockJUnit4ClassRunner;
+import org.apache.cayenne.testing.ClassMode;
+import org.apache.cayenne.testing.Modules;
+import org.apache.cayenne.testing.TestExecutionListeners;
+import org.apache.cayenne.testing.support.DependencyInjectionTestExecutionListener;
+import org.apache.cayenne.testing.support.DirtiesRuntimeTestExecutionListener;
+import org.apache.cayenne.testing.support.InjectMode;
 import org.apache.cayenne.unit.di.DICase;
-import org.apache.cayenne.unit.di.server.SchemaBuilder;
+import org.apache.cayenne.unit.di.server.SchemaBuilderExecutionListener;
 import org.apache.cayenne.unit.di.server.ServerCaseModule;
+import org.junit.runner.RunWith;
 
-public class ClientCase extends DICase {
+@RunWith(CayenneBlockJUnit4ClassRunner.class)
+@TestExecutionListeners(listeners = {
+// Allows setting client properties
+        ClientRuntimeExecutionListener.class,
+        // Injects dependencies in test class
+        DependencyInjectionTestExecutionListener.class,
+        // Allows recreate new cayenne runtime
+        DirtiesRuntimeTestExecutionListener.class,
+        // Rebuild db schema
+        SchemaBuilderExecutionListener.class })
+@Modules({ ServerCaseModule.class, ClientCaseModule.class })
+@InjectMode(classMode = ClassMode.AfterTestMethod)
+// re-inject dependencies in a test class for each test method (ex: create new
+// DataContext)
+public abstract class ClientCase extends DICase {
 
+    /**
+     * the name of ROP client in DI.
+     */
     public static final String ROP_CLIENT_KEY = "client";
 
     public static final String MULTI_TIER_PROJECT = "cayenne-multi-tier.xml";
-
-    private static final Injector injector;
-
-    static {
-        DefaultScope testScope = new DefaultScope();
-        injector = DIBootstrap.createInjector(
-                new ServerCaseModule(testScope),
-                new ClientCaseModule(testScope));
-       
-        injector.getInstance(SchemaBuilder.class).rebuildSchema();
-    }
-
-    @Override
-    protected Injector getUnitTestInjector() {
-        return injector;
-    }
 
 }

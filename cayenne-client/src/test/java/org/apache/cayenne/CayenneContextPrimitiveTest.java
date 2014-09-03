@@ -30,14 +30,14 @@ import org.apache.cayenne.testdo.mt.ClientMtTablePrimitives;
 import org.apache.cayenne.testdo.mt.MtTablePrimitives;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.client.ClientCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@org.apache.cayenne.testing.CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextPrimitiveTest extends ClientCase {
 
     @Inject
     private CayenneContext context;
-    
+
     @Inject
     private UnitDbAdapter accessStackAdapter;
 
@@ -51,12 +51,12 @@ public class CayenneContextPrimitiveTest extends ClientCase {
         dbHelper.deleteAll("MT_TABLE_PRIMITIVES");
 
         int bool = accessStackAdapter.supportsBoolean() ? Types.BOOLEAN : Types.INTEGER;
-        
+
         tMtTablePrimitives = new TableHelper(dbHelper, "MT_TABLE_PRIMITIVES");
         tMtTablePrimitives.setColumns("ID", "BOOLEAN_COLUMN", "INT_COLUMN").setColumnTypes(
                 Types.INTEGER,
-                bool,
-                Types.INTEGER);
+            bool,
+            Types.INTEGER);
     }
 
     private void createTwoPrimitivesDataSet() throws Exception {
@@ -64,6 +64,7 @@ public class CayenneContextPrimitiveTest extends ClientCase {
         tMtTablePrimitives.insert(2, accessStackAdapter.supportsBoolean() ? false : 0, 5);
     }
 
+    @Test
     public void testSelectPrimitives() throws Exception {
         createTwoPrimitivesDataSet();
 
@@ -78,6 +79,7 @@ public class CayenneContextPrimitiveTest extends ClientCase {
         assertEquals(5, results.get(1).getIntColumn());
     }
 
+    @Test
     public void testCommitChangesPrimitives() throws Exception {
 
         ClientMtTablePrimitives object = context.newObject(ClientMtTablePrimitives.class);

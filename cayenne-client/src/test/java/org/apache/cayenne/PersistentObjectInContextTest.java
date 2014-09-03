@@ -29,11 +29,12 @@ import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.testdo.mt.MtTable2;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.client.ClientCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.PersistentObjectHolder;
+import org.junit.Test;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
 public class PersistentObjectInContextTest extends ClientCase {
 
     @Inject
@@ -65,6 +66,7 @@ public class PersistentObjectInContextTest extends ClientCase {
         tMtTable2.insert(2, 1, "g2");
     }
 
+    @Test
     public void testResolveToManyReverseResolved() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
@@ -89,6 +91,7 @@ public class PersistentObjectInContextTest extends ClientCase {
         }
     }
 
+    @Test
     public void testToOneRelationship() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
@@ -107,6 +110,7 @@ public class PersistentObjectInContextTest extends ClientCase {
         assertEquals("g1", mtTable1.getGlobalAttribute1());
     }
 
+    @Test
     public void testResolveToOneReverseResolved() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 

@@ -26,15 +26,24 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.QueryCacheStrategy;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.client.ClientCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
 public class NestedObjectContextLocalTest extends RemoteCayenneCase {
-    
+
+    /**
+     * @param serializationPolicy
+     */
+    public NestedObjectContextLocalTest(int serializationPolicy) {
+        super(serializationPolicy);
+    }
+
     @Inject
     private ClientRuntime runtime;
 
+    @Test
     public void testLocalCacheStaysLocal() {
 
         SelectQuery query = new SelectQuery(ClientMtTable1.class);
@@ -42,17 +51,13 @@ public class NestedObjectContextLocalTest extends RemoteCayenneCase {
 
         BaseContext child1 = (BaseContext) runtime.newContext(clientContext);
 
-        assertNull(child1.getQueryCache().get(
-                query.getMetaData(child1.getEntityResolver())));
+        assertNull(child1.getQueryCache().get(query.getMetaData(child1.getEntityResolver())));
 
-        assertNull(clientContext.getQueryCache().get(
-                query.getMetaData(clientContext.getEntityResolver())));
+        assertNull(clientContext.getQueryCache().get(query.getMetaData(clientContext.getEntityResolver())));
 
         List<?> results = child1.performQuery(query);
-        assertSame(results, child1.getQueryCache().get(
-                query.getMetaData(child1.getEntityResolver())));
+        assertSame(results, child1.getQueryCache().get(query.getMetaData(child1.getEntityResolver())));
 
-        assertNull(clientContext.getQueryCache().get(
-                query.getMetaData(clientContext.getEntityResolver())));
+        assertNull(clientContext.getQueryCache().get(query.getMetaData(clientContext.getEntityResolver())));
     }
 }

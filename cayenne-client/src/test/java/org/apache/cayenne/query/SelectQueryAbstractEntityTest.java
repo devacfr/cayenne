@@ -27,11 +27,12 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.testdo.mt.MtTable1Subclass1;
 import org.apache.cayenne.testdo.mt.MtTable1Subclass2;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
 public class SelectQueryAbstractEntityTest extends ServerCase {
     
     @Inject
@@ -62,6 +63,7 @@ public class SelectQueryAbstractEntityTest extends ServerCase {
        
     }
     
+    @Test
     public void testSublclassEntitySelect() throws Exception{
         createDataSet();
         
@@ -77,6 +79,7 @@ public class SelectQueryAbstractEntityTest extends ServerCase {
         assertNotNull(sub2List);
     }
     
+    @Test
     public void test1AbstractEntitySelect() throws Exception{
         createDataSet();
 
@@ -92,6 +95,7 @@ public class SelectQueryAbstractEntityTest extends ServerCase {
         }
     }
     
+    @Test
     public void test2AbstractEntitySelect() throws Exception{
         createDataSet();
         

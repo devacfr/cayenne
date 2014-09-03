@@ -29,16 +29,17 @@ import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.testdo.mt.ClientMtTable4;
 import org.apache.cayenne.testdo.mt.ClientMtTable5;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.client.ClientCase;
 import org.apache.cayenne.unit.di.client.ClientRuntimeProperty;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 /**
  * Tests peer context synchronization via ClientChannel events.
  */
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
-@ClientRuntimeProperty({
-        Constants.ROP_CHANNEL_EVENTS_PROPERTY, "true"
+@CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
+@ClientRuntimeProperty({ 
+    Constants.ROP_CHANNEL_EVENTS_PROPERTY, "true"
 })
 public class CayenneContextClientChannelEventsTest extends ClientCase {
 
@@ -49,9 +50,13 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
     private ClientRuntime runtime;
 
     private TableHelper tMtTable1;
+
     private TableHelper tMtTable2;
+
     private TableHelper tMtTable4;
+
     private TableHelper tMtTable5;
+
     private TableHelper tMtJoin45;
 
     @Override
@@ -78,6 +83,7 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
         tMtJoin45.setColumns("TABLE4_ID", "TABLE5_ID");
     }
 
+    @Test
     public void testSyncNewObject() throws Exception {
 
         CayenneContext c1 = (CayenneContext) runtime.newContext();
@@ -103,6 +109,7 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
         assertFalse(c2.internalGraphManager().hasChanges());
     }
 
+    @Test
     public void testSyncNewDeletedObject() throws Exception {
 
         CayenneContext c1 = (CayenneContext) runtime.newContext();
@@ -128,6 +135,7 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
         assertFalse(c2.internalGraphManager().hasChanges());
     }
 
+    @Test
     public void testSyncNewObjectIntoDirtyContext() throws Exception {
 
         CayenneContext c1 = (CayenneContext) runtime.newContext();
@@ -155,6 +163,7 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
         assertTrue(c2.internalGraphManager().hasChanges());
     }
 
+    @Test
     public void testSyncSimpleProperty() throws Exception {
 
         tMtTable1.insert(1, "g1", "s1");
@@ -176,7 +185,7 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
 
         o1.setGlobalAttribute1("X");
         c1.commitChanges();
-        
+
         // let the events propagate to peers
         Thread.sleep(500);
 
@@ -185,6 +194,7 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
         assertFalse(c2.internalGraphManager().hasChanges());
     }
 
+    @Test
     public void testSyncToOneRelationship() throws Exception {
 
         tMtTable1.insert(1, "g1", "s1");
@@ -210,7 +220,7 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
                 new ObjectIdQuery(new ObjectId("MtTable1", "TABLE1_ID", 2)));
         o1.setTable1(o1r);
         c1.commitChanges();
-        
+
         // let the events propagate to peers
         Thread.sleep(500);
 
@@ -220,6 +230,7 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
         assertFalse(c2.internalGraphManager().hasChanges());
     }
 
+    @Test
     public void testSyncToManyRelationship() throws Exception {
         tMtTable1.insert(1, "g1", "s1");
         tMtTable2.insert(1, 1, "g1");
@@ -243,7 +254,7 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
         o1.addToTable2Array(o1r);
 
         c1.commitChanges();
-        
+
         // let the events propagate to peers
         Thread.sleep(500);
 
@@ -253,6 +264,7 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
         assertFalse(c2.internalGraphManager().hasChanges());
     }
 
+    @Test
     public void testSyncToManyRelationship1() throws Exception {
         tMtTable1.insert(1, "g1", "s1");
         tMtTable2.insert(1, 1, "g1");
@@ -286,6 +298,7 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
         assertEquals(2, o2.getTable2Array().size());
     }
 
+    @Test
     public void testSyncManyToManyRelationship() throws Exception {
         tMtTable4.insert(1);
         tMtTable5.insert(1);
@@ -322,6 +335,7 @@ public class CayenneContextClientChannelEventsTest extends ClientCase {
         assertFalse(c2.internalGraphManager().hasChanges());
     }
 
+    @Test
     public void testSyncManyToManyRelationship1() throws Exception {
 
         CayenneContext c1 = (CayenneContext) runtime.newContext();

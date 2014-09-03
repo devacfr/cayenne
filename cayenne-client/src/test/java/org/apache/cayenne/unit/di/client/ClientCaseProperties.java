@@ -25,6 +25,13 @@ public class ClientCaseProperties {
 
     protected Map<String, String> runtimeProperties;
 
+    
+    /**
+     * 
+     */
+    public ClientCaseProperties() {
+    }
+    
     Map<String, String> getRuntimeProperties() {
         return runtimeProperties != null ? runtimeProperties : Collections.EMPTY_MAP;
     }

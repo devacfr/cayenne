@@ -26,9 +26,9 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.unit.di.client.ClientCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@org.apache.cayenne.testing.CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextEJBQLTest extends ClientCase {
 
     @Inject
@@ -53,6 +53,7 @@ public class CayenneContextEJBQLTest extends ClientCase {
         tMtTable1.insert(2, "g2", "s2");
     }
 
+    @Test
     public void testEJBQLSelect() throws Exception {
         createTwoRecords();
 
@@ -62,6 +63,7 @@ public class CayenneContextEJBQLTest extends ClientCase {
         assertEquals(2, results.size());
     }
 
+    @Test
     public void testEJBQLSelectScalar() throws Exception {
         createTwoRecords();
 
@@ -71,11 +73,12 @@ public class CayenneContextEJBQLTest extends ClientCase {
         assertEquals(Long.valueOf(2), results.get(0));
     }
 
+    @Test
     public void testEJBQLSelectMixed() throws Exception {
         createTwoRecords();
 
         EJBQLQuery query = new EJBQLQuery(
-                "SELECT COUNT(a), a, a.serverAttribute1 FROM MtTable1 a Group By a ORDER BY a.serverAttribute1");
+                        "SELECT COUNT(a), a, a.serverAttribute1 FROM MtTable1 a Group By a ORDER BY a.serverAttribute1");
 
         List<Object[]> results = context.performQuery(query);
 

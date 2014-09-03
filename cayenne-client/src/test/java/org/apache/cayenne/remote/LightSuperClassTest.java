@@ -18,26 +18,50 @@
  ****************************************************************/
 package org.apache.cayenne.remote;
 
+import java.util.Arrays;
+
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.RefreshQuery;
 import org.apache.cayenne.query.SelectQuery;
+import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.persistent.Continent;
 import org.apache.cayenne.testdo.persistent.Country;
+import org.apache.cayenne.testing.CayenneConfiguration;
+import org.apache.cayenne.testing.CayenneParameterizedJUnit4SuiteRunner;
 import org.apache.cayenne.unit.di.client.ClientCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Test for entites that are implemented in same class on client and server
  */
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
+@RunWith(CayenneParameterizedJUnit4SuiteRunner.class)
 public class LightSuperClassTest extends RemoteCayenneCase {
 
     @Inject
     private DBHelper dbHelper;
 
     private boolean server;
+
+    @Parameters(name = "server={0},serializationPolicy={1}")
+    public static Iterable<Object[]> data() {
+        return Arrays.asList(new Object[][] { { true, LocalConnection.HESSIAN_SERIALIZATION },
+                { true, LocalConnection.JAVA_SERIALIZATION }, { true, LocalConnection.NO_SERIALIZATION },
+                { false, LocalConnection.HESSIAN_SERIALIZATION }, { false, LocalConnection.JAVA_SERIALIZATION },
+                { false, LocalConnection.NO_SERIALIZATION } });
+    }
+
+    /**
+     *
+     */
+    public LightSuperClassTest(final boolean server, final int serializationPolicy) {
+        super(serializationPolicy);
+        this.server = server;
+    }
 
     @Override
     public void setUpAfterInjection() throws Exception {
@@ -47,25 +71,15 @@ public class LightSuperClassTest extends RemoteCayenneCase {
         dbHelper.deleteAll("COUNTRY");
     }
 
-    @Override
-    public void runBare() throws Throwable {
-        server = true;
-        super.runBare();
-        server = false;
-
-        // testing ROP with all serialization policies
-        runBareSimple();
-    }
-
     private ObjectContext createContext() {
         if (server) {
             return serverContext;
-        }
-        else {
+        } else {
             return createROPContext();
         }
     }
 
+    @Test
     public void testServer() throws Exception {
         ObjectContext context = createContext();
         Continent continent = context.newObject(Continent.class);
@@ -89,7 +103,7 @@ public class LightSuperClassTest extends RemoteCayenneCase {
         context.commitChanges();
         context.performQuery(new RefreshQuery());
 
-        assertEquals(context.performQuery(new SelectQuery(Country.class)).size(), 0);
-        assertEquals(context.performQuery(new SelectQuery(Continent.class)).size(), 1);
+        assertEquals(context.performQuery(new SelectQuery<Country>(Country.class)).size(), 0);
+        assertEquals(context.performQuery(new SelectQuery<Continent>(Continent.class)).size(), 1);
     }
 }
