@@ -36,12 +36,10 @@ public class DefaultUnitTestLifecycleManager implements UnitTestLifecycleManager
         this.scope = scope;
     }
 
-    @Override
     public <T extends TestCase> void setUp(T testCase) {
         injector.injectMembers(testCase);
     }
 
-    @Override
     @BeforeScopeEnd
     public <T extends TestCase> void tearDown(T testCase) {
         scope.shutdown();
