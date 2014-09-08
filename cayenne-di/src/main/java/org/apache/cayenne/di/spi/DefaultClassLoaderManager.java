@@ -22,7 +22,7 @@ import org.apache.cayenne.di.ClassLoaderManager;
 
 /**
  * A {@link ClassLoaderManager} that
- * 
+ *
  * @since 3.2
  */
 public class DefaultClassLoaderManager implements ClassLoaderManager {

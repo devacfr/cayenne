@@ -24,7 +24,6 @@ import javax.inject.Provider;
 
 import org.apache.cayenne.di.DIRuntimeException;
 
-
 /**
  * @since 3.2
  */

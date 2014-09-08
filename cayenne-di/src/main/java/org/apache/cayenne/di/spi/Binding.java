@@ -81,6 +81,8 @@ class Binding<T> {
      */
     private final LifecycleMetadata lifecycleMetadata;
 
+    private boolean lazy = true;
+
     /**
      * Creates new binding instance.
      *
@@ -101,13 +103,32 @@ class Binding<T> {
     }
 
     /**
-     * Gets inidcating whether the binding is scoped
+     * Gets indicating whether the binding is scoped
      *
-     * @return Returns <tt>true</tt> whether this binding is associated to a
+     * @return Returns {@code true} whether this binding is associated to a
      *         scope.
      */
     boolean hasScope() {
         return this.scope != null;
+    }
+
+    /**
+     * Gets indicating whether the binding must be eagerly initialize upon
+     * cayenne startup.
+     *
+     * @return Returns {@code true} whether the future binding instance should
+     *         be initialized upon cayenne startup.
+     */
+    public boolean isEager() {
+        return !lazy;
+    }
+
+    /**
+     * Indicates to eagerly initialize this singleton-scoped binding upon
+     * cayenne startup.
+     */
+    public void asEagerSingleton() {
+        this.lazy = false;
     }
 
     /**
@@ -149,7 +170,6 @@ class Binding<T> {
         }
         // TODO: what happens to the old scoped value? Seems like this leaks
         // scope event listeners and may cause unexpected events...
-        // TODO [devacfr] can be better
         if (scope instanceof DefaultScope && scoped != null) {
             ((DefaultScope) scope).unScope(scoped);
         }
@@ -180,6 +200,10 @@ class Binding<T> {
             applyScope(injector.getSingletonScope());
         }
         return scoped;
+    }
+
+    Key<T> getKey() {
+        return key;
     }
 
     Class<T> getBindingType() {

@@ -25,12 +25,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * An annotation used by objects that want to receive scope ending events from the DI
- * registry.
+ * An annotation used by objects that want to receive scope ending events from
+ * the DI registry.
  * <p>
- * Annotated method must be public and have no parameters. Return type is ignored by the
- * event dispatcher.
- * 
+ * Annotated method must be public and have no parameters. Return type is
+ * ignored by the event dispatcher.
+ *
  * @since 3.1
  */
 @Target(ElementType.METHOD)

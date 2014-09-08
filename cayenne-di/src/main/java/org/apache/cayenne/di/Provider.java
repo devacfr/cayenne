@@ -18,17 +18,15 @@
  ****************************************************************/
 package org.apache.cayenne.di;
 
-import org.apache.cayenne.di.DIRuntimeException;
-
-
 /**
  * A DI object factory interface.
  *
- * @param <T> Type of object the provider creates.
+ * @param <T>
+ *            Type of object the provider creates.
  * @since 3.1
  */
-public interface Provider<T> extends javax.inject.Provider<T>{
+public interface Provider<T> extends javax.inject.Provider<T> {
 
     @Override
-	T get() throws DIRuntimeException;
+    T get() throws DIRuntimeException;
 }

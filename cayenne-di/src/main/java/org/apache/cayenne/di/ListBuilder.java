@@ -20,12 +20,11 @@ package org.apache.cayenne.di;
 
 import java.util.Collection;
 
-import org.apache.cayenne.di.DIRuntimeException;
-
 /**
  * A binding builder for list configurations.
- * 
- * @param <T> A type of list values.
+ *
+ * @param <T>
+ *            A type of list values.
  * @since 3.1
  */
 public interface ListBuilder<T> {
@@ -33,7 +32,7 @@ public interface ListBuilder<T> {
     ListBuilder<T> add(Class<? extends T> interfaceType) throws DIRuntimeException;
 
     ListBuilder<T> add(T value) throws DIRuntimeException;
-    
+
     ListBuilder<T> addAll(Collection<T> values) throws DIRuntimeException;
 
     void in(Scope scope);

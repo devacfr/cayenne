@@ -31,7 +31,7 @@ import org.apache.cayenne.di.Provider;
  * Note: pick the first constructor with all injection-annotated parameters, or
  * the default constructor; constructor with the longest parameter list is
  * preferred if multiple matches are found
- * 
+ *
  * @since 3.1
  */
 class ConstructorInjectingProvider<T> implements Provider<T> {

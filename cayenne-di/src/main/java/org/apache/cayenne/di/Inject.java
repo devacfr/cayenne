@@ -29,14 +29,12 @@ import java.lang.annotation.Target;
  * @since 3.1
  */
 @Retention(RUNTIME)
-@Target( {
-        FIELD, PARAMETER
-})
+@Target({ FIELD, PARAMETER })
 public @interface Inject {
 
     /**
-     * An optional name of the dependency for injecting dependency types that have
-     * multiple bindings in the container.
+     * An optional name of the dependency for injecting dependency types that
+     * have multiple bindings in the container.
      */
     String value() default "";
 }

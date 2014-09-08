@@ -38,14 +38,14 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
         this.injector = injector;
         this.bindingKey = bindingKey;
 
-        // trigger initialization of the ListProvider right away, as we need to bind an
+        // trigger initialization of the ListProvider right away, as we need to
+        // bind an
         // empty list even if the user never calls 'put'
         getListProvider();
     }
 
     @Override
-    public ListBuilder<T> add(Class<? extends T> interfaceType)
-            throws DIRuntimeException {
+    public ListBuilder<T> add(Class<? extends T> interfaceType) throws DIRuntimeException {
         getListProvider().add(injector.getProvider(interfaceType));
         return this;
     }
@@ -83,8 +83,7 @@ class DefaultListBuilder<T> implements ListBuilder<T> {
         if (binding == null) {
             provider = new ListProvider();
             injector.putBinding(bindingKey, provider, List.class);
-        }
-        else {
+        } else {
             provider = (ListProvider) binding.getOriginal();
         }
 

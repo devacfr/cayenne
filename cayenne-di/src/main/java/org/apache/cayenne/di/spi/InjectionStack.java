@@ -25,8 +25,9 @@ import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Key;
 
 /**
- * A helper object that tracks the injection stack to prevent circular dependencies.
- * 
+ * A helper object that tracks the injection stack to prevent circular
+ * dependencies.
+ *
  * @since 3.1
  */
 class InjectionStack {
@@ -52,11 +53,8 @@ class InjectionStack {
         }
 
         if (localStack.contains(bindingKey)) {
-            throw new DIRuntimeException(
-                    "Circular dependency detected when binding a key \"%s\". Nested keys: %s"
-                            + ". To resolve it, you should inject a Provider instead of an object.",
-                    bindingKey,
-                    localStack);
+            throw new DIRuntimeException("Circular dependency detected when binding a key \"%s\". Nested keys: %s"
+                    + ". To resolve it, you should inject a Provider instead of an object.", bindingKey, localStack);
         }
 
         localStack.add(bindingKey);
@@ -66,8 +64,7 @@ class InjectionStack {
         LinkedList<Key<?>> localStack = stack.get();
         if (localStack != null) {
             localStack.removeLast();
-        }
-        else {
+        } else {
             throw new IndexOutOfBoundsException("0");
         }
     }
@@ -77,8 +74,7 @@ class InjectionStack {
         List<Key<?>> localStack = stack.get();
         if (localStack != null) {
             return String.valueOf(localStack);
-        }
-        else {
+        } else {
             return "[]";
         }
     }

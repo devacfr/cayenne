@@ -49,7 +49,7 @@ import org.apache.cayenne.di.DIRuntimeException;
  * {@code PreDestroy}, {@code AfterScopeEnd} is for internal use only.
  *
  * <p>
- * <b>There are two main lifecycles:</b><br>
+ * <b>There are two main lifecycle:</b><br>
  * - Initializing Bean Lifecycle:
  * <ol>
  * <li>Creating new instance bean using the best constructor
@@ -143,7 +143,7 @@ public class LifecycleProcessor {
      * metadata of class {@code clazz}.
      *
      * @param clazz
-     *            the clazz
+     *            the class containing metadata
      * @return Returns new instance {@link LifecycleMetadata} containing
      *         lifecycle (never {@code null}).
      */

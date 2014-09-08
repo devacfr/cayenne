@@ -19,10 +19,11 @@
 package org.apache.cayenne.di;
 
 /**
- * Defines the scope of the instances created by the DI container. I.e. whether instances
- * are shared between the callers, and for how longs or whether they are created anew.
- * Scope object is also used to tie DI-produced instances to the Injector events, such as
- * shutdown. Default scope in Cayenne DI is "singleton".
+ * Defines the scope of the instances created by the DI container. I.e. whether
+ * instances are shared between the callers, and for how longs or whether they
+ * are created anew. Scope object is also used to tie DI-produced instances to
+ * the Injector events, such as shutdown. Default scope in Cayenne DI is
+ * "singleton".
  *
  * @since 3.1
  */
@@ -30,9 +31,12 @@ public interface Scope {
 
     /**
      * Scopes a provider
-     * @param unscoped a given unscoped provider.
-     * @return Returns a new scoped provider which delegates to the given unscoped provider
-     * if doesn't exist in this scope otherwise returns the scoped provider associated to the key.
+     * 
+     * @param unscoped
+     *            a given unscoped provider.
+     * @return Returns a new scoped provider which delegates to the given
+     *         unscoped provider if doesn't exist in this scope otherwise
+     *         returns the scoped provider associated to the key.
      */
     <T> javax.inject.Provider<T> scope(Key<T> key, javax.inject.Provider<T> unscoped);
 }

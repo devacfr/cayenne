@@ -22,24 +22,24 @@ import java.lang.annotation.Annotation;
 import java.util.Map;
 
 /**
- * A facade to the Cayenne DI container. To create an injector use {@link DIBootstrap}
- * static methods.
+ * A facade to the Cayenne DI container. To create an injector use
+ * {@link DIBootstrap} static methods.
  *
  * @since 3.1
  */
 public interface Injector {
 
     /**
-     * Returns a service instance bound in the container for a specific type. Throws
-     *{@link DIRuntimeException} if the type is not bound, or an instance can not be
-     * created.
+     * Returns a service instance bound in the container for a specific type.
+     * Throws {@link DIRuntimeException} if the type is not bound, or an
+     * instance can not be created.
      */
     <T> T getInstance(Class<T> type) throws DIRuntimeException;
 
     /**
-     * Returns a service instance bound in the container for a specific binding key.
-     * Throws {@link DIRuntimeException} if the key is not bound, or an instance can
-     * not be created.
+     * Returns a service instance bound in the container for a specific binding
+     * key. Throws {@link DIRuntimeException} if the key is not bound, or an
+     * instance can not be created.
      */
     <T> T getInstance(Key<T> key) throws DIRuntimeException;
 
@@ -70,14 +70,15 @@ public interface Injector {
     <T> javax.inject.Provider<T> getProvider(Key<T> key) throws DIRuntimeException;
 
     /**
-     * Performs field injection on a given object, ignoring constructor injection. Since
-     * Cayenne DI injector returns fully injected objects, this method is rarely used
-     * directly.
+     * Performs field injection on a given object, ignoring constructor
+     * injection. Since Cayenne DI injector returns fully injected objects, this
+     * method is rarely used directly.
      * <p>
-     * Note that using this method inside a custom DI {@link Provider} will most likely
-     * result in double injection, as custom provider is wrapped in a field-injecting
-     * provider by the DI container. Instead custom providers must initialize object
-     * properties manually, obtaining dependencies from Injector.
+     * Note that using this method inside a custom DI {@link Provider} will most
+     * likely result in double injection, as custom provider is wrapped in a
+     * field-injecting provider by the DI container. Instead custom providers
+     * must initialize object properties manually, obtaining dependencies from
+     * Injector.
      */
     void injectMembers(Object object);
 
