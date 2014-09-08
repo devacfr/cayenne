@@ -102,26 +102,37 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
     }
 
     @Override
-    public void in(Class<? extends Annotation> scopeAnnotation) {
+    public BindingBuilder<T> in(Class<? extends Annotation> scopeAnnotation) {
         Scope scope = this.injector.getScopeBindings().get(scopeAnnotation);
         if (scope == null)
             throw new DIRuntimeException("DO NOT exist declared scope for this '%s' annotation", scopeAnnotation);
         injector.applyBindingScope(bindingKey, scope);
+        return this;
     }
 
     @Override
-    public void in(Scope scope) {
+    public BindingBuilder<T> in(Scope scope) {
         injector.applyBindingScope(bindingKey, scope);
+        return this;
     }
 
     @Override
-    public void withoutScope() {
-        in(injector.getNoScope());
+    public BindingBuilder<T> withoutScope() {
+        return in(injector.getNoScope());
     }
 
     @Override
-    public void inSingletonScope() {
-        in(injector.getSingletonScope());
+    public BindingBuilder<T> inSingletonScope() {
+        return in(injector.getSingletonScope());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public BindingBuilder<T> asEagerSingleton() {
+        injector.asEagerSingleton(bindingKey);
+        return this;
     }
 
     /**

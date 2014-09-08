@@ -56,13 +56,12 @@ public class DefaultConstantBindingTest extends TestCase {
 
             @Override
             public void configure(Binder binder) {
-                binder.bind(ClassA.class).to(ClassA.class);
+                binder.bind(ClassA.class).to(ClassA.class).asEagerSingleton();
                 binder.bindConstant(Key.get(String.class, "jsr330.value")).to(20);
             }
         };
 
-        DefaultInjector injector = new DefaultInjector(module);
-        injector.getInstance(ClassA.class);
+        new DefaultInjector(module);
     }
 
     public static class ClassA {

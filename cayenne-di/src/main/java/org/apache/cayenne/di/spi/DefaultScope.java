@@ -96,12 +96,16 @@ public class DefaultScope implements Scope {
 
     @Override
     public <T> Provider<T> scope(Key<T> key, javax.inject.Provider<T> unscoped) {
-        if (this.providers.containsKey(key)) {
+        if (has(key)) {
             return (Provider<T>) this.providers.get(key);
         }
-        DefaultScopeProvider<T> provider = new DefaultScopeProvider<T>(key, this, unscoped);
+        DefaultScopeProvider<T> provider = new DefaultScopeProvider<T>(key, unscoped);
         this.providers.put(key, provider);
         return provider;
+    }
+
+    public boolean has(Key<?> key) {
+        return this.providers.containsKey(key);
     }
 
 }

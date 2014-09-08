@@ -140,7 +140,7 @@ public class DefaultInjectorScopeTest extends TestCase {
     }
 
     @Test
-    public void bindServiceScopeByAnnotation() {
+    public void bindSpecificScopeByAnnotation() {
         Module module = new Module() {
 
             @Override
@@ -175,15 +175,7 @@ public class DefaultInjectorScopeTest extends TestCase {
             }
         };
 
-        DefaultInjector injector = new DefaultInjector(module);
-
-        MockInterface1 instance1 = injector.getInstance(MockInterface1.class);
-
-        assertNotNull(instance1);
-
-        ServiceScope scope = (ServiceScope) injector.getScopeBindings().get(Service.class);
-        assertNotNull(scope);
-        assertEquals(1, scope.counter);
+        new DefaultInjector(module);
     }
 
     @Test(expected = DIRuntimeException.class)
@@ -204,11 +196,12 @@ public class DefaultInjectorScopeTest extends TestCase {
 
     @Test
     public void justInTimeBindingServiceScopeByAnnotation() {
+        final ServiceScope expectedScope = new ServiceScope();
         Module module = new Module() {
 
             @Override
             public void configure(Binder binder) {
-                binder.bindScope(Service.class, new ServiceScope());
+                binder.bindScope(Service.class, expectedScope);
                 binder.bind(MockInterface1.class).to(MockImplementation1_ServiceScope.class);
             }
         };
@@ -221,6 +214,7 @@ public class DefaultInjectorScopeTest extends TestCase {
 
         ServiceScope scope = (ServiceScope) injector.getScopeBindings().get(Service.class);
         assertNotNull(scope);
+        assertEquals(expectedScope, scope);
         assertEquals(1, scope.counter);
     }
 

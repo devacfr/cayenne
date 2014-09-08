@@ -31,15 +31,13 @@ public class DefaultScopeProvider<T> implements Provider<T> {
 
     private final Key<T> key;
     private final javax.inject.Provider<T> delegate;
-    private final DefaultScope scope;
 
     // presumably "volatile" works in Java 5 and newer to prevent double-checked
     // locking
     private volatile T instance;
 
-    public DefaultScopeProvider(final Key<T> key, final DefaultScope scope, final javax.inject.Provider<T> delegate) {
+    public DefaultScopeProvider(final Key<T> key, final javax.inject.Provider<T> delegate) {
         this.key = key;
-        this.scope = scope;
         this.delegate = delegate;
     }
 
@@ -107,7 +105,7 @@ public class DefaultScopeProvider<T> implements Provider<T> {
      * Allows detach the associated instance to this provider (internal use).
      * <p>
      * Note: used after the reset of associated scope.
-     * 
+     *
      * @see #afterEndScope(DefaultInjector)
      */
     void clear() {

@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.inject.Provider;
 import javax.inject.Singleton;
 
 import org.apache.cayenne.di.DIRuntimeException;
@@ -161,6 +162,15 @@ public class DefaultInjector implements Injector {
         binding.applyScope(scope);
     }
 
+    <T> void asEagerSingleton(Key<T> bindingKey) {
+        Binding<?> binding = bindings.get(bindingKey);
+        if (binding == null) {
+            throw new DIRuntimeException("No existing binding for key " + bindingKey);
+        }
+
+        binding.asEagerSingleton();
+    }
+
     @Override
     public <T> T getInstance(Class<T> type) throws DIRuntimeException {
         return getProvider(type).get();
@@ -226,12 +236,14 @@ public class DefaultInjector implements Injector {
 
     void applyEagerSingleton() {
         for (Binding<?> binding : this.bindings.values()) {
+            Key<?> key = binding.getKey();
             if (!binding.hasScope()) {
-                binding.applyScope(singletonScope);
-                // TODO [devacfr] Here add eager singleton -> difference
-                // between(eager/lazy).
-                // Current implementation is lazy but other DI and JSR-330
-                // specification is inverse.
+                binding.applyScope(this.singletonScope);
+            }
+            if (this.singletonScope.has(key) && binding.isEager()) {
+                Provider<?> provider = this.getProvider(key);
+                // force instantiation.
+                provider.get();
             }
         }
     }

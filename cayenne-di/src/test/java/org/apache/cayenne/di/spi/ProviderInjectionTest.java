@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-
-
 import javax.inject.Inject;
 import javax.inject.Provider;
 
@@ -28,15 +26,20 @@ import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.testing.TestCase;
 import org.junit.Test;
 
+/**
+ * Test different methods to call a provider or a specific provider.
+ * 
+ * @since 3.2
+ */
 public class ProviderInjectionTest extends TestCase {
 
     @Test
-    public void simpleProviderTest() {
+    public void callProviderTest() {
 
         Module module = new Module() {
 
             @Override
-			public void configure(Binder binder) {
+            public void configure(Binder binder) {
                 binder.bind(ClassA.class).toProvider(ProviderA.class);
                 binder.bind(ClassB.class).to(ClassB.class);
             }
@@ -44,66 +47,43 @@ public class ProviderInjectionTest extends TestCase {
 
         DefaultInjector injector = new DefaultInjector(module);
 
+        // access directly instance associate to provider
         ClassA instance = injector.getInstance(ClassA.class);
         assertNotNull(instance);
         assertNotNull(instance.b);
 
+        // call using generic provider interface
         Provider<ClassA> p = injector.getProvider(ClassA.class);
         assertNotNull(p);
-        assertEquals(DefaultScopeProvider.class , p.getClass());
-        
+        assertEquals(DefaultScopeProvider.class, p.getClass());
+
+        // call using specific provider class
         ProviderA providerA = injector.getInstance(ProviderA.class);
         assertNotNull(providerA);
-        assertEquals(ProviderA.class , providerA.getClass());
-    }
-
-    @Test
-    public void simpleCallProviderFirst() {
-
-        Module module = new Module() {
-
-            @Override
-			public void configure(Binder binder) {
-                binder.bind(ClassA.class).toProvider(ProviderA.class);
-                binder.bind(ClassB.class).to(ClassB.class);
-            }
-        };
-
-        DefaultInjector injector = new DefaultInjector(module);
-
-
-        Provider<ClassA> p = injector.getProvider(ClassA.class);
-        assertNotNull(p);
-        assertEquals(DefaultScopeProvider.class , p.getClass());
-
-        // verify injection is done
-        ClassA instance = injector.getInstance(ClassA.class);
-        assertNotNull(instance);
-        assertNotNull(instance.b);
+        assertEquals(ProviderA.class, providerA.getClass());
     }
 
     public static class ClassA {
-    	@Inject
-    	public ClassB b;
+        @Inject
+        public ClassB b;
     }
 
     public static class ClassB {
 
     }
 
-
     public static class ProviderA implements Provider<ClassA> {
 
-    	private ClassA instance;
+        private ClassA instance;
 
-		public ProviderA() {
-			instance = new ClassA();
-		}
+        public ProviderA() {
+            instance = new ClassA();
+        }
 
-    	@Override
-    	public ClassA get() {
-    		return instance;
-    	}
+        @Override
+        public ClassA get() {
+            return instance;
+        }
     }
 
 }
