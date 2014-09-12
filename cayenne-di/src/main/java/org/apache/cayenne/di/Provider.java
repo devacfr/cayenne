@@ -23,8 +23,11 @@ package org.apache.cayenne.di;
  *
  * @param <T>
  *            Type of object the provider creates.
+ * @deprecated Use javax.inject.Provider interface.
  * @since 3.1
+ * @see javax.inject.Provider
  */
+@Deprecated
 public interface Provider<T> extends javax.inject.Provider<T> {
 
     @Override

@@ -21,9 +21,10 @@ package org.apache.cayenne.di.spi;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.inject.Provider;
+
 import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.Key;
-import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.di.Scope;
 
 /**
@@ -94,6 +95,7 @@ public class DefaultScope implements Scope {
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> Provider<T> scope(Key<T> key, javax.inject.Provider<T> unscoped) {
         if (has(key)) {

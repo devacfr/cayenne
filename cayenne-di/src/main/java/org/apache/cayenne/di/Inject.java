@@ -27,6 +27,8 @@ import java.lang.annotation.Target;
 
 /**
  * @since 3.1
+ * @deprecated Use javax.inject.Inject and javax.inject.Named annotations.
+ * @see javax.inject.Inject
  */
 @Retention(RUNTIME)
 @Target({ FIELD, PARAMETER })
