@@ -21,7 +21,7 @@ package org.apache.cayenne.di.mock;
 import javax.inject.Named;
 
 @Named("first")
-public class Mock_JSR330Implementation1 implements MockInterface1 {
+public class Mock_Implementation1_Named implements MockInterface1 {
 
 	public String getName() {
 		return "MyName";

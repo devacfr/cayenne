@@ -28,7 +28,7 @@ import org.apache.cayenne.di.mock.MockImplementation1Alt;
 import org.apache.cayenne.di.mock.MockImplementation1Alt2;
 import org.apache.cayenne.di.mock.MockInterface1;
 import org.apache.cayenne.di.mock.MockInterface1Provider;
-import org.apache.cayenne.di.mock.Mock_JSR330Implementation1;
+import org.apache.cayenne.di.mock.Mock_Implementation1_Named;
 import org.apache.cayenne.di.testing.TestCase;
 import org.junit.Test;
 
@@ -91,11 +91,11 @@ public class DefaultInjectorBindingTest extends TestCase {
         Module module = new Module() {
 
             public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(Mock_JSR330Implementation1.class);
+                binder.bind(MockInterface1.class).to(Mock_Implementation1_Named.class);
                 binder.bind(Key.get(MockInterface1.class, "abc")).to(
-                    Mock_JSR330Implementation1.class);
+                    Mock_Implementation1_Named.class);
                 binder.bind(Key.get(MockInterface1.class, "xyz")).to(
-                    Mock_JSR330Implementation1.class);
+                    Mock_Implementation1_Named.class);
             }
         };
 

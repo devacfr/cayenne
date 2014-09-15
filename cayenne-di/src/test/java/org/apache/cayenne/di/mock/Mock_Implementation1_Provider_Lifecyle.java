@@ -20,10 +20,10 @@ package org.apache.cayenne.di.mock;
 
 import javax.inject.Provider;
 
-public class Mock_JSR330_Implementation1_JSR250_Provider implements Provider<MockInterface1> {
+public class Mock_Implementation1_Provider_Lifecyle implements Provider<MockInterface1> {
 
     @Override
     public MockInterface1 get() {
-        return new Mock_JSR330_Implementation1_PostConstruct();
+        return new Mock_Implementation1_MultiPostConstruct();
     }
 }

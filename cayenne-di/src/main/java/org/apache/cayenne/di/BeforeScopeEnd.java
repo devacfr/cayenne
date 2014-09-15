@@ -24,6 +24,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import javax.annotation.PreDestroy;
+
 /**
  * An annotation used by objects that want to receive scope ending events from
  * the DI registry.
@@ -32,6 +34,8 @@ import java.lang.annotation.Target;
  * ignored by the event dispatcher.
  *
  * @since 3.1
+ * @deprecated use javax.annotation.PreDestroy annotation
+ * @see PreDestroy
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

@@ -23,7 +23,7 @@ import javax.annotation.PreDestroy;
 
 import org.apache.cayenne.di.BeforeScopeEnd;
 
-public class Mock_JSR330_Implementation1_JSR250_ScopeEvent extends
+public class Mock_Implementation1_Lifecycle_ScopeEvent extends
         MockImplementation1_EventAnnotationsBase implements MockInterface1 {
 
 

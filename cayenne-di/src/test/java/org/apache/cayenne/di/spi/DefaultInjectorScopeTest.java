@@ -28,10 +28,10 @@ import org.apache.cayenne.di.mock.MockImplementation1_EventAnnotations;
 import org.apache.cayenne.di.mock.MockImplementation1_Provider;
 import org.apache.cayenne.di.mock.MockImplementation1_ServiceScope;
 import org.apache.cayenne.di.mock.MockInterface1;
-import org.apache.cayenne.di.mock.Mock_JSR330_Implementation1_JSR250_Provider;
-import org.apache.cayenne.di.mock.Mock_JSR330_Implementation1_JSR250_ScopeEvent;
-import org.apache.cayenne.di.mock.Mock_JSR330_Implementation1_PostConstruct;
-import org.apache.cayenne.di.mock.Mock_JSR330_Implementation1_Provider;
+import org.apache.cayenne.di.mock.Mock_Implementation1_Provider_Lifecyle;
+import org.apache.cayenne.di.mock.Mock_Implementation1_Lifecycle_ScopeEvent;
+import org.apache.cayenne.di.mock.Mock_Implementation1_MultiPostConstruct;
+import org.apache.cayenne.di.mock.Mock_Implementation1_Javax_Provider;
 import org.apache.cayenne.di.mock.Service;
 import org.apache.cayenne.di.mock.ServiceScope;
 import org.apache.cayenne.di.testing.TestCase;
@@ -256,7 +256,7 @@ public class DefaultInjectorScopeTest extends TestCase {
 
             @Override
             public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(Mock_JSR330_Implementation1_JSR250_ScopeEvent.class)
+                binder.bind(MockInterface1.class).to(Mock_Implementation1_Lifecycle_ScopeEvent.class)
                         .inSingletonScope();
             }
         };
@@ -291,7 +291,7 @@ public class DefaultInjectorScopeTest extends TestCase {
 
             @Override
             public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(Mock_JSR330_Implementation1_PostConstruct.class)
+                binder.bind(MockInterface1.class).to(Mock_Implementation1_MultiPostConstruct.class)
                         .inSingletonScope();
             }
         };
@@ -302,7 +302,7 @@ public class DefaultInjectorScopeTest extends TestCase {
         assertEquals("XuI", instance1.getName());
         assertTrue(MockImplementation1_EventAnnotations.initialize1);
         assertTrue(MockImplementation1_EventAnnotations.initialize2);
-        assertEquals(1, ((Mock_JSR330_Implementation1_PostConstruct) instance1).initializeCounter);
+        assertEquals(1, ((Mock_Implementation1_MultiPostConstruct) instance1).initializeCounter);
 
         assertFalse(MockImplementation1_EventAnnotations.shutdown1);
         assertFalse(MockImplementation1_EventAnnotations.shutdown2);
@@ -425,7 +425,7 @@ public class DefaultInjectorScopeTest extends TestCase {
 
             @Override
             public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).toProvider(Mock_JSR330_Implementation1_Provider.class).withoutScope();
+                binder.bind(MockInterface1.class).toProvider(Mock_Implementation1_Javax_Provider.class).withoutScope();
             }
         };
 
@@ -450,7 +450,7 @@ public class DefaultInjectorScopeTest extends TestCase {
 
             @Override
             public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).toProviderInstance(new Mock_JSR330_Implementation1_Provider())
+                binder.bind(MockInterface1.class).toProviderInstance(new Mock_Implementation1_Javax_Provider())
                         .withoutScope();
             }
         };
@@ -476,7 +476,7 @@ public class DefaultInjectorScopeTest extends TestCase {
 
             @Override
             public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).toProviderInstance(new Mock_JSR330_Implementation1_JSR250_Provider())
+                binder.bind(MockInterface1.class).toProviderInstance(new Mock_Implementation1_Provider_Lifecyle())
                         .inSingletonScope();
             }
         };
@@ -484,11 +484,11 @@ public class DefaultInjectorScopeTest extends TestCase {
         DefaultInjector injector = new DefaultInjector(module);
 
         MockInterface1 instance1 = injector.getInstance(MockInterface1.class);
-        assertEquals(1, ((Mock_JSR330_Implementation1_PostConstruct) instance1).initializeCounter);
+        assertEquals(1, ((Mock_Implementation1_MultiPostConstruct) instance1).initializeCounter);
         MockInterface1 instance2 = injector.getInstance(MockInterface1.class);
-        assertEquals(1, ((Mock_JSR330_Implementation1_PostConstruct) instance2).initializeCounter);
+        assertEquals(1, ((Mock_Implementation1_MultiPostConstruct) instance2).initializeCounter);
         MockInterface1 instance3 = injector.getInstance(MockInterface1.class);
-        assertEquals(1, ((Mock_JSR330_Implementation1_PostConstruct) instance3).initializeCounter);
+        assertEquals(1, ((Mock_Implementation1_MultiPostConstruct) instance3).initializeCounter);
 
         assertNotNull(instance1);
         assertNotNull(instance2);

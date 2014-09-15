@@ -67,9 +67,9 @@ public interface BindingBuilder<T> {
      * <p>
      * <b>Note</b>
      * </p>
-     * If there are problems with any of the singleton beans, exceptions will
-     * occur at cayenne startup time versus at the time when the singleton may
-     * first be used. Secondly, as many singleton beans are resource manager
+     * First, if there are problems with any of the singleton beans, exceptions
+     * will occur at cayenne startup time versus at the time when the singleton
+     * may first be used. Secondly, as many singleton beans are resource manager
      * instances (like event manager or transaction managers) having the beans
      * start with the initialization of the container avoids any delay when the
      * service provided by the resource manager bean is requested the first

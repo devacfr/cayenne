@@ -18,13 +18,17 @@
  ****************************************************************/
 package org.apache.cayenne.di.mock;
 
-import javax.inject.Provider;
+import javax.annotation.PostConstruct;
 
+public class Mock_Implementation1_MultiPostConstruct extends Mock_Implementation1_Lifecycle_ScopeEvent
+        implements MockInterface1 {
 
-public class Mock_JSR330_Implementation1_Provider implements Provider<MockInterface1> {
+    public int initializeCounter = 0;
 
-    @Override
-	public MockInterface1 get() {
-        return new MockImplementation1();
+    @PostConstruct
+    public void init() {
+        initialize2 = true;
+        initializeCounter++;
     }
+
 }
