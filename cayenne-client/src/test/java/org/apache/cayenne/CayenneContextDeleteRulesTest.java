@@ -25,14 +25,15 @@ import org.apache.cayenne.testdo.mt.ClientMtDeleteDeny;
 import org.apache.cayenne.testdo.mt.ClientMtDeleteNullify;
 import org.apache.cayenne.testdo.mt.ClientMtDeleteRule;
 import org.apache.cayenne.unit.di.client.ClientCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@org.apache.cayenne.testing.CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextDeleteRulesTest extends ClientCase {
 
     @Inject
     private CayenneContext context;
 
+    @Test
     public void testNullifyToOne() {
 
         ClientMtDeleteNullify object = context.newObject(ClientMtDeleteNullify.class);
@@ -52,6 +53,7 @@ public class CayenneContextDeleteRulesTest extends ClientCase {
         context.commitChanges();
     }
 
+    @Test
     public void testDenyToOne() {
 
         ClientMtDeleteDeny object = context.newObject(ClientMtDeleteDeny.class);
@@ -62,8 +64,7 @@ public class CayenneContextDeleteRulesTest extends ClientCase {
         try {
             context.deleteObjects(object);
             fail("Should have thrown an exception");
-        }
-        catch (DeleteDenyException e) {
+        } catch (DeleteDenyException e) {
             // expected
         }
 
@@ -72,6 +73,7 @@ public class CayenneContextDeleteRulesTest extends ClientCase {
         context.commitChanges();
     }
 
+    @Test
     public void testCascadeToOne() {
 
         ClientMtDeleteCascade object = context.newObject(ClientMtDeleteCascade.class);
@@ -91,6 +93,7 @@ public class CayenneContextDeleteRulesTest extends ClientCase {
         context.commitChanges();
     }
 
+    @Test
     public void testCascadeToOneNewObject() {
 
         ClientMtDeleteRule related = context.newObject(ClientMtDeleteRule.class);

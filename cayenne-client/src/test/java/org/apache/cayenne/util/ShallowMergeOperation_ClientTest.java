@@ -33,9 +33,9 @@ import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.client.ClientCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@org.apache.cayenne.testing.CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
 public class ShallowMergeOperation_ClientTest extends ClientCase {
 
     @Inject
@@ -71,6 +71,7 @@ public class ShallowMergeOperation_ClientTest extends ClientCase {
         tMtTable1.insert(33004, "g4", "s4");
     }
 
+    @Test
     public void testMerge_Relationship() throws Exception {
 
         ObjectContext childContext = runtime.newContext(context);
@@ -93,6 +94,7 @@ public class ShallowMergeOperation_ClientTest extends ClientCase {
         });
     }
 
+    @Test
     public void testMerge_NoOverride() throws Exception {
 
         ObjectContext childContext = runtime.newContext(context);
@@ -125,6 +127,7 @@ public class ShallowMergeOperation_ClientTest extends ClientCase {
         });
     }
 
+    @Test
     public void testMerge_PersistenceStates() throws Exception {
 
         createMtTable1DataSet();

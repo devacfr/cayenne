@@ -20,19 +20,28 @@ package org.apache.cayenne.remote;
 
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.client.ClientCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 /**
  * This is a test primarily for CAY-1118
  */
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
 public class RelationshipChangeTest extends RemoteCayenneCase {
 
+    /**
+     * @param serializationPolicy
+     */
+    public RelationshipChangeTest(int serializationPolicy) {
+        super(serializationPolicy);
+    }
+
+    @Test
     public void testNullify() {
         ClientMtTable1 o1 = clientContext.newObject(ClientMtTable1.class);
         ClientMtTable2 o2 = clientContext.newObject(ClientMtTable2.class);
-        
+
         o2.setTable1(o1);
 
         assertEquals(1, o1.getTable2Array().size());
@@ -41,13 +50,14 @@ public class RelationshipChangeTest extends RemoteCayenneCase {
         o2.setTable1(null);
         assertEquals(0, o1.getTable2Array().size());
     }
-    
+
+    @Test
     public void testChange() {
         ClientMtTable1 o1 = clientContext.newObject(ClientMtTable1.class);
         ClientMtTable2 o2 = clientContext.newObject(ClientMtTable2.class);
-        
+
         ClientMtTable1 o3 = clientContext.newObject(ClientMtTable1.class);
-        
+
         o2.setTable1(o1);
 
         assertEquals(1, o1.getTable2Array().size());

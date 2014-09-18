@@ -22,50 +22,60 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.client.ClientCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
 public class NestedObjectContextRollbackTest extends RemoteCayenneCase {
-    
+
     @Inject
     private ClientRuntime runtime;
 
+    /**
+     * @param serializationPolicy
+     */
+    public NestedObjectContextRollbackTest(int serializationPolicy) {
+        super(serializationPolicy);
+    }
+
+    @Test
     public void testRollbackChanges() {
         ObjectContext child1 = runtime.newContext(clientContext);
-        
+
         assertFalse(clientContext.hasChanges());
         assertFalse(child1.hasChanges());
-        
+
         clientContext.newObject(ClientMtTable1.class);
         child1.newObject(ClientMtTable1.class);
-        
+
         assertTrue(clientContext.hasChanges());
         assertTrue(child1.hasChanges());
-        
+
         child1.rollbackChanges();
         assertFalse(clientContext.hasChanges());
         assertFalse(child1.hasChanges());
-        
+
         clientContext.rollbackChanges();
     }
-    
+
+    @Test
     public void testRollbackChangesLocally() {
         ObjectContext child1 = runtime.newContext(clientContext);
-        
+
         assertFalse(clientContext.hasChanges());
         assertFalse(child1.hasChanges());
-        
+
         clientContext.newObject(ClientMtTable1.class);
         child1.newObject(ClientMtTable1.class);
-        
+
         assertTrue(clientContext.hasChanges());
         assertTrue(child1.hasChanges());
-        
+
         child1.rollbackChangesLocally();
         assertTrue(clientContext.hasChanges());
         assertFalse(child1.hasChanges());
-        
+
         clientContext.rollbackChanges();
     }
 }

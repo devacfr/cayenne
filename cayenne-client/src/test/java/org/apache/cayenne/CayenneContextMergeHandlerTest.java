@@ -25,14 +25,15 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.graph.GraphEvent;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.unit.di.client.ClientCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@org.apache.cayenne.testing.CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextMergeHandlerTest extends ClientCase {
 
     @Inject
     protected CayenneContext context;
 
+    @Test
     public void testShouldProcessEvent() {
 
         CayenneContextMergeHandler handler = new CayenneContextMergeHandler(context);
@@ -63,6 +64,7 @@ public class CayenneContextMergeHandlerTest extends ClientCase {
         assertFalse(handler.shouldProcessEvent(e4));
     }
 
+    @Test
     public void testNodePropertyChanged() {
 
         ClientMtTable1 o1 = context.newObject(ClientMtTable1.class);

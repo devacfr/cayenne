@@ -35,9 +35,9 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.unit.di.client.ClientCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@org.apache.cayenne.testing.CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
 public class RemoteIncrementalFaultListTest extends ClientCase {
 
     private static final int COUNT = 25;
@@ -51,7 +51,7 @@ public class RemoteIncrementalFaultListTest extends ClientCase {
     private TableHelper tMTTable;
 
     private RemoteIncrementalFaultList list;
-    private SelectQuery query;
+    private SelectQuery<?> query;
 
     @Override
     protected void setUpAfterInjection() throws Exception {
@@ -94,7 +94,7 @@ public class RemoteIncrementalFaultListTest extends ClientCase {
 
         createObjectsDataSet();
 
-        query = new SelectQuery(ClientMtTable1.class);
+        query = new SelectQuery<ClientMtTable1>(ClientMtTable1.class);
 
         // make sure total number of objects is not divisable
         // by the page size, to test the last smaller page
@@ -104,35 +104,42 @@ public class RemoteIncrementalFaultListTest extends ClientCase {
         list = new RemoteIncrementalFaultList(clientContext, query);
     }
 
+    @Test
     public void testSize() throws Exception {
         prepareList(6);
         assertEquals(COUNT, list.size());
     }
 
+    @Test
     public void testIteratorPageSize1() throws Exception {
         doTestIterator(1);
     }
 
+    @Test
     public void testIteratorPageSize5() throws Exception {
         // size divisiable by page size
         doTestIterator(5);
     }
 
+    @Test
     public void testIteratorPageSize6() throws Exception {
         // size not divisable by page size
         doTestIterator(6);
     }
-
+    
+    @Test
     public void testIteratorPageSize25() throws Exception {
         // size equals to page size
         doTestIterator(COUNT);
     }
 
+    @Test
     public void testIteratorPageSize26() throws Exception {
         // size exceeding page size
         doTestIterator(COUNT + 1);
     }
 
+    @Test
     public void testListIterator() throws Exception {
         prepareList(6);
         ListIterator<?> it = list.listIterator();
@@ -159,6 +166,7 @@ public class RemoteIncrementalFaultListTest extends ClientCase {
         }
     }
 
+    @Test
     public void testUnfetchedObjects() throws Exception {
         prepareList(6);
         assertEquals(COUNT - 6, list.getUnfetchedObjects());
@@ -168,6 +176,7 @@ public class RemoteIncrementalFaultListTest extends ClientCase {
         assertEquals(0, list.getUnfetchedObjects());
     }
 
+    @Test
     public void testPageIndex() throws Exception {
         prepareList(6);
         assertEquals(0, list.pageIndex(0));
@@ -183,6 +192,7 @@ public class RemoteIncrementalFaultListTest extends ClientCase {
         }
     }
 
+    @Test
     public void testPagesRead1() throws Exception {
         prepareList(6);
         assertTrue(list.elements.get(0) instanceof ClientMtTable1);
@@ -195,6 +205,7 @@ public class RemoteIncrementalFaultListTest extends ClientCase {
         assertTrue((list.elements.get(list.size() - 1)) instanceof ClientMtTable1);
     }
 
+    @Test
     public void testGet1() throws Exception {
         prepareList(6);
         assertTrue(list.elements.get(0) instanceof ClientMtTable1);
@@ -207,13 +218,14 @@ public class RemoteIncrementalFaultListTest extends ClientCase {
         assertTrue(list.elements.get(8) instanceof ClientMtTable1);
     }
 
+    @Test
     public void testIndexOf() throws Exception {
         prepareList(6);
 
         Expression qual = ExpressionFactory.matchExp(
                 ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY,
                 "g20");
-        SelectQuery query = new SelectQuery(ClientMtTable1.class, qual);
+        SelectQuery<ClientMtTable1> query = new SelectQuery<ClientMtTable1>(ClientMtTable1.class, qual);
         List<?> artists = list.context.performQuery(query);
 
         assertEquals(1, artists.size());
@@ -223,12 +235,13 @@ public class RemoteIncrementalFaultListTest extends ClientCase {
         assertEquals(-1, list.indexOf(list.context.newObject(ClientMtTable1.class)));
     }
 
+    @Test
     public void testLastIndexOf() throws Exception {
         prepareList(6);
         Expression qual = ExpressionFactory.matchExp(
                 ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY,
                 "g20");
-        SelectQuery query = new SelectQuery(ClientMtTable1.class, qual);
+        SelectQuery<ClientMtTable1> query = new SelectQuery<ClientMtTable1>(ClientMtTable1.class, qual);
         List<?> objects = list.context.performQuery(query);
 
         assertEquals(1, objects.size());

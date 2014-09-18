@@ -34,12 +34,13 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.client.ClientCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.PersistentObjectHolder;
 import org.apache.cayenne.util.PersistentObjectList;
+import org.junit.Test;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
 public class ClientServerChannelQueryTest extends ClientCase {
 
     @Inject(ClientCase.ROP_CLIENT_KEY)
@@ -82,10 +83,11 @@ public class ClientServerChannelQueryTest extends ClientCase {
         tMtTable2.insert(2, 1, "g2");
     }
 
+    @Test
     public void testPaginatedQueryServerCacheOverflow() throws Exception {
         createSevenMtTable1sDataSet();
 
-        SelectQuery query = new SelectQuery(ClientMtTable1.class);
+        SelectQuery<ClientMtTable1> query = new SelectQuery<ClientMtTable1>(ClientMtTable1.class);
         query.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, SortOrder.ASCENDING);
         query.setPageSize(3);
 
@@ -104,6 +106,7 @@ public class ClientServerChannelQueryTest extends ClientCase {
         assertTrue(results.get(3) instanceof ClientMtTable1);
     }
 
+    @Test
     public void testParameterizedMappedToEJBQLQueries() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
@@ -114,6 +117,7 @@ public class ClientServerChannelQueryTest extends ClientCase {
         assertTrue(r1.get(0) instanceof ClientMtTable1);
     }
     
+    @Test
     public void testNamedQuery() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
@@ -124,6 +128,7 @@ public class ClientServerChannelQueryTest extends ClientCase {
         assertTrue(results.get(0) instanceof ClientMtTable1);
     }
 
+    @Test
     public void testSelectQueryEntityNameRoot() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
@@ -135,6 +140,7 @@ public class ClientServerChannelQueryTest extends ClientCase {
         assertTrue(results.get(0) instanceof ClientMtTable1);
     }
 
+    @Test
     public void testSelectQueryClientClassRoot() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
@@ -145,6 +151,7 @@ public class ClientServerChannelQueryTest extends ClientCase {
         assertTrue(results.get(0) instanceof ClientMtTable1);
     }
 
+    @Test
     public void testSelectQuerySimpleQualifier() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
@@ -157,6 +164,7 @@ public class ClientServerChannelQueryTest extends ClientCase {
         assertTrue(results.get(0) instanceof ClientMtTable1);
     }
 
+    @Test
     public void testSelectQueryToManyRelationshipQualifier() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
@@ -168,6 +176,7 @@ public class ClientServerChannelQueryTest extends ClientCase {
         assertTrue(results.get(0) instanceof ClientMtTable1);
     }
 
+    @Test
     public void testSelectQueryOrdering() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
@@ -195,6 +204,7 @@ public class ClientServerChannelQueryTest extends ClientCase {
         assertTrue(o3.getGlobalAttribute1().compareTo(o4.getGlobalAttribute1()) > 0);
     }
 
+    @Test
     public void testSelectQueryPrefetchToOne() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
@@ -217,6 +227,7 @@ public class ClientServerChannelQueryTest extends ClientCase {
         assertNotNull(target);
     }
 
+    @Test
     public void testSelectQueryPrefetchToMany() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 

@@ -18,6 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.remote;
 
+import java.util.Arrays;
+
 import org.apache.cayenne.CayenneContext;
 import org.apache.cayenne.access.ClientServerChannel;
 import org.apache.cayenne.access.DataContext;
@@ -25,34 +27,41 @@ import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.remote.service.LocalConnection;
+import org.apache.cayenne.testing.CayenneParameterizedJUnit4SuiteRunner;
 import org.apache.cayenne.unit.UnitLocalConnection;
 import org.apache.cayenne.unit.di.client.ClientCase;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized.Parameters;
 
+@RunWith(CayenneParameterizedJUnit4SuiteRunner.class)
 public abstract class RemoteCayenneCase extends ClientCase {
 
     protected CayenneContext clientContext;
 
     @Inject
     protected DataContext serverContext;
+    
+    @Parameters(name= "serializationPolicy={0}")
+    public static Iterable<Object[]> serializationPolicy() {
+        return Arrays.asList(new Object[][] { 
+                {LocalConnection.HESSIAN_SERIALIZATION},
+                {LocalConnection.JAVA_SERIALIZATION},
+                {LocalConnection.NO_SERIALIZATION}
+            });
+       }
+
 
     /**
      * Used serialization policy. Per CAY-979 we're testing on all policies
      */
-    private int serializationPolicy;
-
-    @Override
-    public void runBare() throws Throwable {
-        serializationPolicy = LocalConnection.HESSIAN_SERIALIZATION;
-        runBareSimple();
-        serializationPolicy = LocalConnection.JAVA_SERIALIZATION;
-        runBareSimple();
-        serializationPolicy = LocalConnection.NO_SERIALIZATION;
-        runBareSimple();
+    private final int serializationPolicy;
+    
+    
+    public RemoteCayenneCase(final int serializationPolicy) {
+        this.serializationPolicy = serializationPolicy;
     }
 
-    protected void runBareSimple() throws Throwable {
-        super.runBare();
-    }
+
 
     @Override
     public void setUpAfterInjection() throws Exception {

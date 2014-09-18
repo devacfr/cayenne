@@ -24,17 +24,25 @@ import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.client.ClientCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
 public class NestedObjectContextParentEventsTest extends RemoteCayenneCase {
 
     @Inject
     private DBHelper dbHelper;
-    
+
     @Inject
     private ClientRuntime runtime;
+
+    /**
+     * @param serializationPolicy
+     */
+    public NestedObjectContextParentEventsTest(int serializationPolicy) {
+        super(serializationPolicy);
+    }
 
     @Override
     public void setUpAfterInjection() throws Exception {
@@ -44,6 +52,7 @@ public class NestedObjectContextParentEventsTest extends RemoteCayenneCase {
         dbHelper.deleteAll("MT_TABLE1");
     }
 
+    @Test
     public void testParentUpdatedId() throws Exception {
         ObjectContext child = runtime.newContext(clientContext);
 
@@ -51,8 +60,7 @@ public class NestedObjectContextParentEventsTest extends RemoteCayenneCase {
         ac.setGlobalAttribute1("X");
         child.commitChangesToParent();
 
-        ClientMtTable1 ap = (ClientMtTable1) clientContext.getGraphManager().getNode(
-                ac.getObjectId());
+        ClientMtTable1 ap = (ClientMtTable1) clientContext.getGraphManager().getNode(ac.getObjectId());
         assertNotNull(ap);
 
         assertTrue(ap.getObjectId().isTemporary());

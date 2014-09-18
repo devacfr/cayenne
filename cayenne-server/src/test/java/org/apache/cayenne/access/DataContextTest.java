@@ -632,6 +632,7 @@ public class DataContextTest extends ServerCase {
 		 assertEquals(7, count[0]);
 	}
 
+    @Test
     public void testIterateDataRows() throws Exception {
 
         createArtistsDataSet();

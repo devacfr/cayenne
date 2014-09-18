@@ -27,9 +27,9 @@ import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.unit.di.client.ClientCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@org.apache.cayenne.testing.CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextServerDiffsTest extends ClientCase {
 
     @Inject
@@ -38,6 +38,7 @@ public class CayenneContextServerDiffsTest extends ClientCase {
     @Inject
     private CayenneContext context;
 
+    @Test
     public void testReturnDiffInPrePersist() {
 
         LifecycleCallbackRegistry callbackRegistry = clientServerChannel
@@ -48,9 +49,9 @@ public class CayenneContextServerDiffsTest extends ClientCase {
 
             callbackRegistry.addListener(
                     LifecycleEvent.POST_ADD,
-                    MtTable1.class,
-                    new ClientChannelServerDiffsListener1(),
-                    "prePersist");
+                MtTable1.class,
+                new ClientChannelServerDiffsListener1(),
+                "prePersist");
 
             ClientMtTable1 o = context.newObject(ClientMtTable1.class);
             o.setServerAttribute1("YY");
@@ -65,6 +66,7 @@ public class CayenneContextServerDiffsTest extends ClientCase {
         }
     }
 
+    @Test
     public void testReturnDiffInPreUpdate() {
         LifecycleCallbackRegistry callbackRegistry = clientServerChannel
                 .getEntityResolver()
@@ -74,9 +76,9 @@ public class CayenneContextServerDiffsTest extends ClientCase {
 
             callbackRegistry.addListener(
                     LifecycleEvent.PRE_UPDATE,
-                    MtTable1.class,
-                    new ClientChannelServerDiffsListener1(),
-                    "preUpdate");
+                MtTable1.class,
+                new ClientChannelServerDiffsListener1(),
+                "preUpdate");
 
             ClientMtTable1 o = context.newObject(ClientMtTable1.class);
             o.setServerAttribute1("YY");
@@ -96,6 +98,7 @@ public class CayenneContextServerDiffsTest extends ClientCase {
         }
     }
 
+    @Test
     public void testReturnDiffClientArcChanges() {
 
         LifecycleCallbackRegistry callbackRegistry = clientServerChannel
@@ -105,9 +108,9 @@ public class CayenneContextServerDiffsTest extends ClientCase {
         try {
             callbackRegistry.addListener(
                     LifecycleEvent.POST_ADD,
-                    MtTable1.class,
-                    new ClientChannelServerDiffsListener1(),
-                    "prePersist");
+                MtTable1.class,
+                new ClientChannelServerDiffsListener1(),
+                "prePersist");
 
             ClientMtTable1 o = context.newObject(ClientMtTable1.class);
             ClientMtTable2 o1 = context.newObject(ClientMtTable2.class);
@@ -123,6 +126,7 @@ public class CayenneContextServerDiffsTest extends ClientCase {
         }
     }
 
+    @Test
     public void testReturnDiffServerArcChanges() {
 
         LifecycleCallbackRegistry callbackRegistry = clientServerChannel
@@ -132,9 +136,9 @@ public class CayenneContextServerDiffsTest extends ClientCase {
         try {
             callbackRegistry.addListener(
                     LifecycleEvent.POST_ADD,
-                    MtTable1.class,
-                    new ClientChannelServerDiffsListener1(),
-                    "prePersistAddRelationship");
+                MtTable1.class,
+                new ClientChannelServerDiffsListener1(),
+                "prePersistAddRelationship");
 
             ClientMtTable1 o = context.newObject(ClientMtTable1.class);
             ClientMtTable2 o1 = context.newObject(ClientMtTable2.class);

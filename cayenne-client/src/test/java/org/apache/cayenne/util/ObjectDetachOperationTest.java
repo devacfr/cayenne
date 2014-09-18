@@ -28,10 +28,11 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.MtTable1;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.client.ClientCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
 public class ObjectDetachOperationTest extends ClientCase {
 
     @Inject
@@ -51,6 +52,7 @@ public class ObjectDetachOperationTest extends ClientCase {
         tMtTable1.setColumns("TABLE1_ID", "GLOBAL_ATTRIBUTE1", "SERVER_ATTRIBUTE1");
     }
 
+    @Test
     public void testDetachCommitted() {
 
         EntityResolver serverResover = serverContext.getEntityResolver();
@@ -80,6 +82,7 @@ public class ObjectDetachOperationTest extends ClientCase {
         assertNull(co.getObjectContext());
     }
 
+    @Test
     public void testDetachHollow() throws Exception {
 
         tMtTable1.insert(4, "g1", "s1");

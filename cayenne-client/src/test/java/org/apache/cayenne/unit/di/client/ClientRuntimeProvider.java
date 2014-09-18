@@ -33,16 +33,18 @@ import org.apache.cayenne.di.Provider;
 public class ClientRuntimeProvider implements Provider<ClientRuntime> {
 
     @Inject
-    // injecting provider to make this provider independent from scoping of ServerRuntime
+    // injecting provider to make this provider independent from scoping of
+    // ServerRuntime
     protected Provider<ServerRuntime> serverRuntimeProvider;
 
     @Inject
     protected ClientCaseProperties clientCaseProperties;
 
+    @Override
     public ClientRuntime get() throws ConfigurationException {
         Injector serverInjector = serverRuntimeProvider.get().getInjector();
-        return new ClientLocalRuntime(serverInjector, clientCaseProperties
-                .getRuntimeProperties(), new ClientExtraModule(serverInjector));
+        return new ClientLocalRuntime(serverInjector, clientCaseProperties.getRuntimeProperties(),
+                new ClientExtraModule(serverInjector));
     }
 
     class ClientExtraModule implements Module {
@@ -53,20 +55,18 @@ public class ClientRuntimeProvider implements Provider<ClientRuntime> {
             this.serverInjector = serverInjector;
         }
 
+        @Override
         public void configure(Binder binder) {
 
-            // these are the objects overriding standard ClientLocalModule definitions or
+            // these are the objects overriding standard ClientLocalModule
+            // definitions or
             // dependencies needed by such overrides
 
-            // add an interceptor between client and server parts to capture and inspect
+            // add an interceptor between client and server parts to capture and
+            // inspect
             // the traffic
-            binder
-                    .bind(
-                            Key.get(
-                                    DataChannel.class,
-                                    ClientLocalRuntime.CLIENT_SERVER_CHANNEL_KEY))
-                    .toProviderInstance(
-                            new InterceptingClientServerChannelProvider(serverInjector));
+            binder.bind(Key.get(DataChannel.class, ClientLocalRuntime.CLIENT_SERVER_CHANNEL_KEY)).toProviderInstance(
+                    new InterceptingClientServerChannelProvider(serverInjector));
         }
     }
 }

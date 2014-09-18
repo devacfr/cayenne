@@ -26,42 +26,52 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.mt.ClientMtMapToMany;
 import org.apache.cayenne.testdo.mt.ClientMtMapToManyTarget;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime("cayenne-multi-tier.xml")
+@CayenneConfiguration("cayenne-multi-tier.xml")
 public class ROPPrefetchToManyMapTest extends RemoteCayenneCase {
-    
+
     @Inject
     private DBHelper dbHelper;
-    
+
     @Inject
     private DataChannelInterceptor queryInterceptor;
-    
+
+    /**
+     * @param serializationPolicy
+     */
+    public ROPPrefetchToManyMapTest(int serializationPolicy) {
+        super(serializationPolicy);
+    }
+
     @Override
     public void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("MT_MAP_TO_MANY_TARGET");
-        dbHelper.deleteAll("MT_MAP_TO_MANY");        
+        dbHelper.deleteAll("MT_MAP_TO_MANY");
     }
-    
+
+    @Test
     public void test() throws Exception {
         ObjectContext context = createROPContext();
-        
+
         ClientMtMapToMany map = context.newObject(ClientMtMapToMany.class);
         ClientMtMapToManyTarget target = context.newObject(ClientMtMapToManyTarget.class);
         target.setMapToMany(map);
         context.commitChanges();
-        
+
         context.performQuery(new RefreshQuery());
-        
+
         SelectQuery query = new SelectQuery(ClientMtMapToMany.class);
         query.addPrefetch("targets");
-        
+
         final ClientMtMapToMany mapToMany = (ClientMtMapToMany) Cayenne.objectForQuery(context, query);
-        
+
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-            
+
+            @Override
             public void execute() {
                 assertEquals(mapToMany.getTargets().size(), 1);
             }

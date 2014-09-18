@@ -25,15 +25,25 @@ import org.apache.cayenne.exp.Expression;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.testdo.mt.ClientMtTable1Subclass1;
 import org.apache.cayenne.testdo.mt.MtTable1Subclass1;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.client.ClientCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
 public class ValueInjectorTest extends RemoteCayenneCase {
+
 
     @Inject
     protected DataContext serverContext;
 
+    /**
+     * @param serializationPolicy
+     */
+    public ValueInjectorTest(int serializationPolicy) {
+        super(serializationPolicy);
+    }
+    
+    @Test
     public void testServer() {
         ObjEntity entity = serverContext.getEntityResolver().getObjEntity(MtTable1Subclass1.class);
         Expression qualifier = entity.getDeclaredQualifier();
@@ -52,6 +62,7 @@ public class ValueInjectorTest extends RemoteCayenneCase {
         }
     }
 
+    @Test
     public void testClient() {
         ObjectContext context = createROPContext();
         ObjEntity entity = context.getEntityResolver().getObjEntity(ClientMtTable1Subclass1.class);

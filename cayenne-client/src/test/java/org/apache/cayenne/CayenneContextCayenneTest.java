@@ -23,9 +23,9 @@ import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.unit.di.client.ClientCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@org.apache.cayenne.testing.CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextCayenneTest extends ClientCase {
 
     @Inject
@@ -40,6 +40,7 @@ public class CayenneContextCayenneTest extends ClientCase {
         dbHelper.deleteAll("MT_TABLE1");
     }
 
+    @Test
     public void testObjectForPK() throws Exception {
 
         context.performGenericQuery(new SQLTemplate(

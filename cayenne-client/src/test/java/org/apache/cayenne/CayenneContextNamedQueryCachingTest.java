@@ -29,9 +29,9 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.client.ClientCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@org.apache.cayenne.testing.CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextNamedQueryCachingTest extends ClientCase {
 
     @Inject
@@ -60,6 +60,7 @@ public class CayenneContextNamedQueryCachingTest extends ClientCase {
         tMtTable1.insert(3, "g3", "s3");
     }
 
+    @Test
     public void testLocalCache() throws Exception {
         createThreeMtTable1sDataSet();
 
@@ -83,6 +84,7 @@ public class CayenneContextNamedQueryCachingTest extends ClientCase {
         assertEquals(3, result3.size());
     }
 
+    @Test
     public void testLocalCacheParameterized() throws Exception {
         createThreeMtTable1sDataSet();
 
@@ -104,7 +106,7 @@ public class CayenneContextNamedQueryCachingTest extends ClientCase {
                 assertSame(result1, result2);
             }
         });
-        
+
         final List<?> result3 = context.performQuery(q2);
         assertNotSame(result1, result3);
         assertEquals(1, result3.size());
@@ -119,14 +121,15 @@ public class CayenneContextNamedQueryCachingTest extends ClientCase {
                 assertSame(result1, result5);
             }
         });
-    
+
     }
-    
+
+    @Test
     public void testParameterizedMappedToEJBQLQueries() throws Exception {
-        
+
         createThreeMtTable1sDataSet();
         NamedQuery query = new NamedQuery("ParameterizedEJBQLMtQuery", Collections.singletonMap("g", "g1"));
-        
+
         List<?> r1 = context.performQuery(query);
         assertEquals(1, r1.size());
     }

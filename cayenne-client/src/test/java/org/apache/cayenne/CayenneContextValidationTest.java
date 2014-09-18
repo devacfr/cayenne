@@ -24,10 +24,10 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.mt.ClientMtTable1;
 import org.apache.cayenne.testdo.mt.ClientMtTable2;
 import org.apache.cayenne.unit.di.client.ClientCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.validation.ValidationException;
+import org.junit.Test;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@org.apache.cayenne.testing.CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextValidationTest extends ClientCase {
 
     @Inject
@@ -42,6 +42,7 @@ public class CayenneContextValidationTest extends ClientCase {
         dbHelper.deleteAll("MT_TABLE1");
     }
 
+    @Test
     public void testValidate() throws Exception {
 
         ClientMtTable1 o1 = context.newObject(ClientMtTable1.class);
@@ -81,8 +82,7 @@ public class CayenneContextValidationTest extends ClientCase {
         try {
             context.commitChanges();
             fail("Validation failure must have prevented commit");
-        }
-        catch (ValidationException e) {
+        } catch (ValidationException e) {
             // expected
         }
     }

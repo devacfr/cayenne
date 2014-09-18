@@ -28,10 +28,11 @@ import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.mt.ClientMtMapToMany;
 import org.apache.cayenne.testdo.mt.ClientMtMapToManyTarget;
 import org.apache.cayenne.testdo.mt.MtMapToMany;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.client.ClientCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextMapRelationshipTest extends ClientCase {
 
     @Inject
@@ -41,6 +42,7 @@ public class CayenneContextMapRelationshipTest extends ClientCase {
     private DBHelper dbHelper;
 
     private TableHelper tMtMapToMany;
+
     private TableHelper tMtMapToManyTarget;
 
     @Override
@@ -60,6 +62,7 @@ public class CayenneContextMapRelationshipTest extends ClientCase {
         tMtMapToManyTarget.insert(1, 1).insert(2, 1).insert(3, 1).insert(4, 2);
     }
 
+    @Test
     public void testReadToMany() throws Exception {
         createTwoMapToManysWithTargetsDataSet();
 
@@ -79,6 +82,7 @@ public class CayenneContextMapRelationshipTest extends ClientCase {
         assertNotNull(targets.get(new Integer(3)));
     }
 
+    @Test
     public void testAddToMany() throws Exception {
         createTwoMapToManysWithTargetsDataSet();
 

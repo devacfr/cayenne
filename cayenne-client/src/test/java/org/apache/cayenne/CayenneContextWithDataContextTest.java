@@ -45,9 +45,9 @@ import org.apache.cayenne.testdo.mt.MtTable1;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.client.ClientCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ClientCase.MULTI_TIER_PROJECT)
+@org.apache.cayenne.testing.CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
 public class CayenneContextWithDataContextTest extends ClientCase {
 
     @Inject
@@ -103,6 +103,7 @@ public class CayenneContextWithDataContextTest extends ClientCase {
         }
     }
 
+    @Test
     public void testLocalCacheStaysLocal() {
 
         DataContext serverContext = (DataContext) clientServerChannel.getParentChannel();
@@ -122,6 +123,7 @@ public class CayenneContextWithDataContextTest extends ClientCase {
         assertEquals(0, serverContext.getQueryCache().size());
     }
 
+    @Test
     public void testAddToList() throws Exception {
 
         ClientMtTable1 t1 = clientContext.newObject(ClientMtTable1.class);
@@ -140,6 +142,7 @@ public class CayenneContextWithDataContextTest extends ClientCase {
         assertSame(t3, t4.getTable1());
     }
 
+    @Test
     public void testSetValueHolder() throws Exception {
 
         ClientMtTable1 t1 = clientContext.newObject(ClientMtTable1.class);
@@ -150,6 +153,7 @@ public class CayenneContextWithDataContextTest extends ClientCase {
         assertSame(t1, t2.getTable1());
     }
 
+    @Test
     public void testPostAddCallback() throws Exception {
 
         LifecycleCallbackRegistry callbackRegistry = clientServerChannel
@@ -198,6 +202,7 @@ public class CayenneContextWithDataContextTest extends ClientCase {
         }
     }
 
+    @Test
     public void testPostAddOnObjectCallback() throws Exception {
 
         final DataContext serverContext = (DataContext) clientServerChannel.getParentChannel();
@@ -215,18 +220,18 @@ public class CayenneContextWithDataContextTest extends ClientCase {
             final Persistent clientObject = clientContext.newObject(ClientMtTable1.class);
             clientContext.commitChanges();
 
-        new ParallelTestContainer() {
+            new ParallelTestContainer() {
 
-            @Override
-            protected void assertResult() throws Exception {
-            	// find peer
+                @Override
+                protected void assertResult() throws Exception {
+                    // find peer
             	MtTable1 peer = (MtTable1) serverContext.getGraphManager().getNode(
                     clientObject.getObjectId());
 
-            	assertNotNull(peer);
-            	assertTrue(peer.isPrePersisted());
-            }
-        }.runTest(1000);
+                    assertNotNull(peer);
+                    assertTrue(peer.isPrePersisted());
+                }
+            }.runTest(1000);
 
 
         }
@@ -235,6 +240,7 @@ public class CayenneContextWithDataContextTest extends ClientCase {
         }
     }
 
+    @Test
     public void testPreRemoveCallback() throws Exception {
 
         // an exception was triggered within POST_LOAD callback
@@ -288,6 +294,7 @@ public class CayenneContextWithDataContextTest extends ClientCase {
         }
     }
 
+    @Test
     public void testCAY830() throws Exception {
 
         // an exception was triggered within POST_LOAD callback
@@ -341,6 +348,7 @@ public class CayenneContextWithDataContextTest extends ClientCase {
         }
     }
 
+    @Test
     public void testRollbackChanges() throws Exception {
 
         ClientMtTable1 o = clientContext.newObject(ClientMtTable1.class);
@@ -356,6 +364,7 @@ public class CayenneContextWithDataContextTest extends ClientCase {
         assertTrue(clientContext.modifiedObjects().isEmpty());
     }
 
+    @Test
     public void testCreateFault() throws Exception {
         tMtTable1.insert(1, "g1", "s1");
 
@@ -377,6 +386,7 @@ public class CayenneContextWithDataContextTest extends ClientCase {
         assertEquals(PersistenceState.COMMITTED, o.getPersistenceState());
     }
 
+    @Test
     public void testCreateBadFault() throws Exception {
         tMtTable1.insert(1, "g1", "s1");
 
@@ -391,12 +401,12 @@ public class CayenneContextWithDataContextTest extends ClientCase {
         try {
             o.getGlobalAttribute1();
             fail("resolving bad fault should've thrown");
-        }
-        catch (FaultFailureException e) {
+        } catch (FaultFailureException e) {
             // expected
         }
     }
 
+    @Test
     public void testMeaningfulPK() throws Exception {
         deleteAndCreateTwoMeaningfulPKsDataSet();
 
@@ -407,6 +417,7 @@ public class CayenneContextWithDataContextTest extends ClientCase {
         assertEquals(2, results.size());
     }
 
+    @Test
     public void testPrefetchingToOne() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
@@ -440,6 +451,7 @@ public class CayenneContextWithDataContextTest extends ClientCase {
         });
     }
 
+    @Test
     public void testPrefetchingToOneNull() throws Exception {
         tMtTable2.insert(15, null, "g3");
 
@@ -463,6 +475,7 @@ public class CayenneContextWithDataContextTest extends ClientCase {
         });
     }
 
+    @Test
     public void testPrefetchingToMany() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
@@ -497,6 +510,7 @@ public class CayenneContextWithDataContextTest extends ClientCase {
         });
     }
 
+    @Test
     public void testPerformPaginatedQuery() throws Exception {
         createEightMtTable1s();
 
@@ -507,6 +521,7 @@ public class CayenneContextWithDataContextTest extends ClientCase {
         assertTrue(objects instanceof RemoteIncrementalFaultList);
     }
 
+    @Test
     public void testPrefetchingToManyEmpty() throws Exception {
         createTwoMtTable1sAnd2sDataSet();
 
@@ -530,6 +545,7 @@ public class CayenneContextWithDataContextTest extends ClientCase {
         });
     }
 
+    @Test
     public void testOIDQueryInterception() throws Exception {
 
         final ClientMtTable1 o = clientContext.newObject(ClientMtTable1.class);
