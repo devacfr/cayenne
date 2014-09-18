@@ -31,10 +31,11 @@ import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.InsertBatchQuery;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.GeneratedColumnTestEntity;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class BatchActionTest extends ServerCase {
 
     @Inject
@@ -43,6 +44,7 @@ public class BatchActionTest extends ServerCase {
     @Inject
     private AdhocObjectFactory objectFactory;
 
+    @Test
     public void testHasGeneratedKeys1() throws Exception {
         EntityResolver resolver = runtime.getChannel().getEntityResolver();
 
@@ -62,6 +64,7 @@ public class BatchActionTest extends ServerCase {
         assertFalse(new BatchAction(batch2, node, false).hasGeneratedKeys());
     }
 
+    @Test
     public void testHasGeneratedKeys2() throws Exception {
         EntityResolver resolver = runtime.getChannel().getEntityResolver();
 

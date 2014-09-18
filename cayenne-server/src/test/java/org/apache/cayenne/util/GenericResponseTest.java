@@ -23,13 +23,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
+
 
 public class GenericResponseTest extends TestCase {
 
+	@Test
     public void testCreation() throws Exception {
-        List list = new ArrayList();
-        list.add(new HashMap());
+        List<Object> list = new ArrayList<Object>();
+        list.add(new HashMap<Object,Object>());
 
         GenericResponse r = new GenericResponse();
         r.addBatchUpdateCount(new int[] { 1, 2, 3 });
@@ -52,9 +55,10 @@ public class GenericResponseTest extends TestCase {
         assertFalse(r.next());
     }
 
+	@Test
     public void testSerialization() throws Exception {
-        List list = new ArrayList();
-        list.add(new HashMap());
+        List<Object> list = new ArrayList<Object>();
+        list.add(new HashMap<Object,Object>());
 
         GenericResponse r = new GenericResponse();
         r.addBatchUpdateCount(new int[] { 1, 2, 3 });

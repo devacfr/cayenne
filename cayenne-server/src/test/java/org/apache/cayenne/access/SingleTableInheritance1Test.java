@@ -27,13 +27,14 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.inheritance_flat.Group;
 import org.apache.cayenne.testdo.inheritance_flat.Role;
 import org.apache.cayenne.testdo.inheritance_flat.User;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 /**
  * Special test cases per CAY-1378, CAY-1379.
  */
-@UseServerRuntime(ServerCase.INHERTITANCE_SINGLE_TABLE1_PROJECT)
+@CayenneConfiguration(ServerCase.INHERTITANCE_SINGLE_TABLE1_PROJECT)
 public class SingleTableInheritance1Test extends ServerCase {
 
     @Inject
@@ -51,6 +52,7 @@ public class SingleTableInheritance1Test extends ServerCase {
         dbHelper.deleteAll("ROLES");
     }
 
+    @Test
     public void testGroupActions() throws Exception {
 
         User user = context.newObject(User.class);
@@ -80,6 +82,7 @@ public class SingleTableInheritance1Test extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testFlattenedNullifyNullifyDeleteRules() throws Exception {
 
         User user = context.newObject(User.class);

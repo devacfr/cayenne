@@ -29,10 +29,11 @@ import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextOrderingTest extends ServerCase {
 
     @Inject
@@ -51,6 +52,7 @@ public class DataContextOrderingTest extends ServerCase {
         dbHelper.deleteAll("ARTIST");
     }
 
+    @Test
     public void testMultipleOrdering() throws Exception {
 
         Calendar c = Calendar.getInstance();
@@ -82,6 +84,7 @@ public class DataContextOrderingTest extends ServerCase {
         assertSame(a1, list.get(2));
     }
 
+    @Test
     public void testMultipleOrderingInSelectClauseCAY_1074() throws Exception {
 
         Calendar c = Calendar.getInstance();

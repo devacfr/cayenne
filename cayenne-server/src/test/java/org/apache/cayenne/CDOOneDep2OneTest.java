@@ -29,14 +29,16 @@ import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.apache.cayenne.testing.CayenneConfiguration;
+import org.junit.Test;
 
-@UseServerRuntime("cayenne-small-testmap.xml")
+@CayenneConfiguration("cayenne-small-testmap.xml")
 public class CDOOneDep2OneTest extends CayenneDOTestBase {
 
     @Inject
     private ObjectContext context1;
 
+    @Test
     public void testNewAdd1() throws Exception {
         Artist a1 = newArtist();
         PaintingInfo pi1 = newPaintingInfo();
@@ -64,6 +66,7 @@ public class CDOOneDep2OneTest extends CayenneDOTestBase {
     }
 
     /** Tests how primary key is propagated from one new object to another. */
+    @Test
     public void testNewAdd2() throws Exception {
         Artist a1 = this.newArtist();
         Gallery g1 = context.newObject(Gallery.class);
@@ -82,6 +85,7 @@ public class CDOOneDep2OneTest extends CayenneDOTestBase {
         context.commitChanges();
     }
 
+    @Test
     public void testReplace() throws Exception {
         String altPaintingName = "alt painting";
 

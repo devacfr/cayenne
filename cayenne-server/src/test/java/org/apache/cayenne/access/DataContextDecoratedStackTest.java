@@ -35,10 +35,11 @@ import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextDecoratedStackTest extends ServerCase {
 
     @Inject
@@ -56,6 +57,7 @@ public class DataContextDecoratedStackTest extends ServerCase {
         dbHelper.deleteAll("ARTIST");
     }
 
+    @Test
     public void testCommitDecorated() {
         DataDomain dd = runtime.getDataDomain();
         DataChannel decorator = new DataChannelDecorator(dd);
@@ -80,6 +82,7 @@ public class DataContextDecoratedStackTest extends ServerCase {
         assertEquals(new Integer(1), count.get("x"));
     }
 
+    @Test
     public void testGetParentDataDomain() {
         DataDomain dd = runtime.getDataDomain();
         DataChannel decorator = new DataChannelDecorator(dd);

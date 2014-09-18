@@ -22,12 +22,12 @@ package org.apache.cayenne.access;
 import java.util.Collection;
 import java.util.Map;
 
-import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
 
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.query.Query;
+import org.junit.Assert;
 
 public class UnitTestDomain extends DataDomain {
 
@@ -38,7 +38,7 @@ public class UnitTestDomain extends DataDomain {
         super(name);
     }
 
-    public UnitTestDomain(String name, Map properties) {
+    public UnitTestDomain(String name, Map<?,?> properties) {
         super(name, properties);
     }
 

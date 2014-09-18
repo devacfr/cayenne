@@ -30,10 +30,11 @@ import org.apache.cayenne.reflect.ClassDescriptor;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationship.FlattenedTest3;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+@CayenneConfiguration(ServerCase.RELATIONSHIPS_PROJECT)
 public class FlattenedRelationshipInContextTest extends ServerCase {
 
     @Inject
@@ -71,6 +72,7 @@ public class FlattenedRelationshipInContextTest extends ServerCase {
         tFlattenedTest3.insert(1, 1, "ft3");
     }
 
+    @Test
     public void testIsToOneTargetModifiedFlattenedFault1() throws Exception {
 
         createFlattenedTestDataSet();

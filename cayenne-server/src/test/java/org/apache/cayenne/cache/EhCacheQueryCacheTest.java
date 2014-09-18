@@ -24,25 +24,27 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 
-import junit.framework.TestCase;
 import net.sf.ehcache.CacheManager;
 
 import org.apache.cayenne.query.QueryMetadata;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 public class EhCacheQueryCacheTest extends TestCase {
 
     private CacheManager cacheManager;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         cacheManager = new CacheManager();
     }
 
     @Override
-    protected void tearDown() throws Exception {
+    public void tearDown() throws Exception {
         cacheManager.shutdown();
     }
 
+    @Test
     public void testGet() {
 
         EhCacheQueryCache cache = new EhCacheQueryCache(cacheManager);
@@ -57,6 +59,7 @@ public class EhCacheQueryCacheTest extends TestCase {
         assertSame(results, cache.get(md));
     }
 
+    @Test
     public void testGet_WithFactory() {
 
         EhCacheQueryCache cache = new EhCacheQueryCache(cacheManager);
@@ -77,6 +80,7 @@ public class EhCacheQueryCacheTest extends TestCase {
         assertSame(results, cache.get(md));
     }
 
+    @Test
     public void testGet_WithFactory_WithCacheGroups() {
 
         EhCacheQueryCache cache = new EhCacheQueryCache(cacheManager);
@@ -98,6 +102,7 @@ public class EhCacheQueryCacheTest extends TestCase {
         assertSame(results, cache.get(md));
     }
 
+    @Test
     public void testRemoveGroup_WithFactory_WithCacheGroups() {
 
         EhCacheQueryCache cache = new EhCacheQueryCache(cacheManager);

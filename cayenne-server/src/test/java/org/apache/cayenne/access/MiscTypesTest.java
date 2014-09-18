@@ -28,11 +28,12 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.ArraysEntity;
 import org.apache.cayenne.testdo.testmap.CharacterEntity;
 import org.apache.cayenne.testdo.testmap.SerializableEntity;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class MiscTypesTest extends ServerCase {
 
     @Inject
@@ -54,6 +55,7 @@ public class MiscTypesTest extends ServerCase {
         dbHelper.deleteAll("CHARACTER_ENTITY");
     }
 
+    @Test
     public void testSerializable() throws Exception {
         
         // this test requires BLOB support
@@ -77,6 +79,7 @@ public class MiscTypesTest extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testByteArray() {
         ArraysEntity test = context.newObject(ArraysEntity.class);
 
@@ -95,6 +98,7 @@ public class MiscTypesTest extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testCharArray() {
         ArraysEntity test = context.newObject(ArraysEntity.class);
 
@@ -113,6 +117,7 @@ public class MiscTypesTest extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testCharacterArray() {
         ArraysEntity test = context.newObject(ArraysEntity.class);
 
@@ -131,6 +136,7 @@ public class MiscTypesTest extends ServerCase {
         context.commitChanges();
     }
     
+    @Test
     public void testCharacter() {
         CharacterEntity test = context.newObject(CharacterEntity.class);
 
@@ -146,6 +152,7 @@ public class MiscTypesTest extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testByteWrapperArray() {
         ArraysEntity test = context.newObject(ArraysEntity.class);
 

@@ -40,19 +40,18 @@ import org.apache.cayenne.testdo.testmap.ArtGroup;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
 import org.apache.cayenne.testdo.testmap.PaintingInfo;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime("cayenne-small-testmap.xml")
+@CayenneConfiguration("cayenne-small-testmap.xml")
 public class NestedDataContextWriteTest extends ServerCase {
 
     @Inject
     private ServerRuntime runtime;
     
-    @Inject
-    private DataContext context;
 
     @Inject
     private DataChannelInterceptor queryInterceptor;
@@ -125,10 +124,13 @@ public class NestedDataContextWriteTest extends ServerCase {
      */
     // TODO : pluggable retain strategy
     private DataContext createDataContext() {
-        context.getObjectStore().objectMap = new HashMap<Object, Persistent>();
-        return context;
+    	DataContext c = (DataContext)runtime.newContext();
+        c.getObjectStore().objectMap = new HashMap<Object, Persistent>();
+        //c.getObjectStore().changes = new HashMap<Object, ObjectDiff>();
+        return c;
     }
 
+    @Test
     public void testDeleteNew() throws Exception {
         createSingleArtistDataSet();
 
@@ -151,6 +153,7 @@ public class NestedDataContextWriteTest extends ServerCase {
     /**
      * A test case for CAY-698 bug.
      */
+    @Test
     public void testNullifyToOne() throws Exception {
         createNullifyToOneDataSet();
 
@@ -180,6 +183,7 @@ public class NestedDataContextWriteTest extends ServerCase {
         });
     }
 
+    @Test
     public void testCommitChangesToParent() throws Exception {
         createArtistsDataSet();
 
@@ -254,6 +258,7 @@ public class NestedDataContextWriteTest extends ServerCase {
         });
     }
 
+    @Test
     public void testCommitChangesToParentDeleted() throws Exception {
         createArtistsDataSet();
 
@@ -290,6 +295,7 @@ public class NestedDataContextWriteTest extends ServerCase {
         assertEquals("DDD", parentDeleted.getArtistName());
     }
 
+    @Test
     public void testCommitChanges() throws Exception {
         createArtistsDataSet();
 
@@ -356,6 +362,7 @@ public class NestedDataContextWriteTest extends ServerCase {
         assertNotNull(parentHollow);
     }
 
+    @Test
     public void testCommitChangesToParent_MergeProperties() throws Exception {
         createMixedDataSet();
 
@@ -436,6 +443,7 @@ public class NestedDataContextWriteTest extends ServerCase {
         });
     }
 
+    @Test
     public void testCommitChangesToParentPropagatedKey() throws Exception {
         final DataContext context = createDataContext();
         final ObjectContext childContext = runtime.newContext(context);
@@ -476,6 +484,7 @@ public class NestedDataContextWriteTest extends ServerCase {
         });
     }
 
+    @Test
     public void testCommitChangesToParentFlattened() throws Exception {
 
         final DataContext context = createDataContext();
@@ -525,6 +534,7 @@ public class NestedDataContextWriteTest extends ServerCase {
         });
     }
 
+    @Test
     public void testCommitChangesToParentFlattenedMultipleFlush() throws Exception {
         final DataContext context = createDataContext();
         final ObjectContext childContext = runtime.newContext(context);
@@ -622,6 +632,7 @@ public class NestedDataContextWriteTest extends ServerCase {
         });
     }
 
+    @Test
     public void testAddRemove() {
 
         DataContext context = createDataContext();
@@ -648,6 +659,7 @@ public class NestedDataContextWriteTest extends ServerCase {
 
     }
 
+    @Test
     public void testCAY1194() throws Exception {
         DataContext context = createDataContext();
 

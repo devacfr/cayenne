@@ -22,12 +22,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import org.apache.cayenne.log.JdbcEventLogger;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DefaultTransactionManagerTest extends ServerCase {
 
+    @Test
     public void testPerformInTransaction_NoTx() {
 
         final BaseTransaction tx = mock(BaseTransaction.class);
@@ -38,6 +40,7 @@ public class DefaultTransactionManagerTest extends ServerCase {
 
         final Object expectedResult = new Object();
         Object result = txManager.performInTransaction(new TransactionalOperation<Object>() {
+            @Override
             public Object perform() {
                 assertNotNull(BaseTransaction.getThreadTransaction());
                 return expectedResult;
@@ -47,6 +50,7 @@ public class DefaultTransactionManagerTest extends ServerCase {
         assertSame(expectedResult, result);
     }
 
+    @Test
     public void testPerformInTransaction_ExistingTx() {
 
         final BaseTransaction tx1 = mock(BaseTransaction.class);
@@ -61,6 +65,7 @@ public class DefaultTransactionManagerTest extends ServerCase {
 
             final Object expectedResult = new Object();
             Object result = txManager.performInTransaction(new TransactionalOperation<Object>() {
+                @Override
                 public Object perform() {
                     assertSame(tx2, BaseTransaction.getThreadTransaction());
                     return expectedResult;

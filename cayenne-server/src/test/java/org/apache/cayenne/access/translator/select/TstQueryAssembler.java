@@ -25,7 +25,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.cayenne.access.DataNode;
-import org.apache.cayenne.access.translator.select.QueryAssembler;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbRelationship;
 import org.apache.cayenne.map.JoinType;
@@ -69,7 +68,7 @@ public class TstQueryAssembler extends QueryAssembler {
         return attributes;
     }
 
-    public List getValues() {
+    public List<?> getValues() {
         return values;
     }
 }

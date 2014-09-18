@@ -27,13 +27,14 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.MixedPersistenceStrategy;
 import org.apache.cayenne.testdo.testmap.MixedPersistenceStrategy2;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 /**
  * Tests conflicts between field and map-based persistence.
  */
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class MixedPersistenceStrategyTest extends ServerCase {
 
     @Inject
@@ -67,6 +68,7 @@ public class MixedPersistenceStrategyTest extends ServerCase {
         tMixedPersistenceStrategy2.insert(2, 1, "dn2");
     }
 
+    @Test
     public void testConflictingField1() throws Exception {
 
         createConflictingFieldDataSet();
@@ -83,6 +85,7 @@ public class MixedPersistenceStrategyTest extends ServerCase {
     /**
      * This test case reproduces CAY-582 bug.
      */
+    @Test
     public void testConflictingField2() throws Exception {
 
         createConflictingFieldDataSet();

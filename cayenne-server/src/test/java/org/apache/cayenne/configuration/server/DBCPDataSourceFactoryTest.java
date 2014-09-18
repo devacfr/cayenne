@@ -23,15 +23,15 @@ import java.net.URL;
 
 import javax.sql.DataSource;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.server.DBCPDataSourceFactory;
 import org.apache.cayenne.resource.URLResource;
+import org.apache.cayenne.testing.TestCase;
 import org.apache.commons.dbcp.BasicDataSource;
+import org.junit.Test;
 
 public class DBCPDataSourceFactoryTest extends TestCase {
 
+    @Test
     public void testGetDataSource() throws Exception {
 
         String baseUrl = getClass().getPackage().getName().replace('.', '/');
@@ -59,6 +59,7 @@ public class DBCPDataSourceFactoryTest extends TestCase {
         assertEquals("select 1 from xyz;", basicDataSource.getValidationQuery());
     }
 
+    @Test
     public void testGetDataSource_LegacyConfig() throws Exception {
 
         String baseUrl = getClass().getPackage().getName().replace('.', '/');
@@ -86,6 +87,7 @@ public class DBCPDataSourceFactoryTest extends TestCase {
         assertEquals("select 1 from xyz;", basicDataSource.getValidationQuery());
     }
 
+    @Test
     public void testGetDataSource_InvalidLocation() throws Exception {
 
         String baseUrl = getClass().getPackage().getName().replace('.', '/');
@@ -101,8 +103,7 @@ public class DBCPDataSourceFactoryTest extends TestCase {
         try {
             factory.getDataSource(nodeDescriptor);
             fail("didn't throw on abscent config file");
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             // expected
         }
     }

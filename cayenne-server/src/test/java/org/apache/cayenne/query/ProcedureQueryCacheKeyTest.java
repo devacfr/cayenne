@@ -22,15 +22,17 @@ import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class ProcedureQueryCacheKeyTest extends ServerCase {
 
     @Inject
     private ServerRuntime runtime;
 
+    @Test
     public void testNoCache() {
 
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
@@ -47,6 +49,7 @@ public class ProcedureQueryCacheKeyTest extends ServerCase {
         assertNull(md2.getCacheKey());
     }
 
+    @Test
     public void testLocalCache() {
 
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
@@ -60,6 +63,7 @@ public class ProcedureQueryCacheKeyTest extends ServerCase {
         assertNotNull(md1.getCacheKey());
     }
 
+    @Test
     public void testSharedCache() {
 
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
@@ -73,6 +77,7 @@ public class ProcedureQueryCacheKeyTest extends ServerCase {
         assertNotNull(md1.getCacheKey());
     }
 
+    @Test
     public void testNamedQuery() {
 
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
@@ -87,6 +92,7 @@ public class ProcedureQueryCacheKeyTest extends ServerCase {
         assertEquals("proc:", md1.getCacheKey());
     }
 
+    @Test
     public void testCacheFetchOffsetAndLimit() {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         

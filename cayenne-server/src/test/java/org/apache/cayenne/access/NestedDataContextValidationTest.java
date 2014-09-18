@@ -24,11 +24,12 @@ import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.validation.ValidationException;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class NestedDataContextValidationTest extends ServerCase {
 
     @Inject
@@ -49,6 +50,7 @@ public class NestedDataContextValidationTest extends ServerCase {
         dbHelper.deleteAll("ARTIST");
     }
 
+    @Test
     public void testValidateOnCommitToParent() {
         context.setValidatingObjectsOnCommit(true);
 

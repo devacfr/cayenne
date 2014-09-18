@@ -24,17 +24,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 public class ExpressionFactoryExtrasTest extends TestCase {
 
     protected TstTraversalHandler handler;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         handler = new TstTraversalHandler();
     }
 
+    @Test
     public void testMatchAllExp() throws Exception {
         // create expressions and check the counts,
         // leaf count should be (2N) : 2 leafs for each pair
@@ -58,11 +60,11 @@ public class ExpressionFactoryExtrasTest extends TestCase {
             // assert statistics
             handler.assertConsistency();
             assertEquals("Failed: " + exp, 2 * n, handler.getLeafs());
-            assertEquals("Failed: " + exp, n < 2 ? 2 * n : 2 * n + 1, handler
-                    .getNodeCount());
+            assertEquals("Failed: " + exp, n < 2 ? 2 * n : 2 * n + 1, handler.getNodeCount());
         }
     }
 
+    @Test
     public void testJoinExp() throws Exception {
         // create expressions and check the counts,
         // leaf count should be (2N) : 2 leafs for each expression
@@ -85,8 +87,7 @@ public class ExpressionFactoryExtrasTest extends TestCase {
             // assert statistics
             handler.assertConsistency();
             assertEquals("Failed: " + exp, 2 * n, handler.getLeafs());
-            assertEquals("Failed: " + exp, n > 1 ? 2 * n + 1 : 2 * n, handler
-                    .getNodeCount());
+            assertEquals("Failed: " + exp, n > 1 ? 2 * n + 1 : 2 * n, handler.getNodeCount());
         }
     }
 }

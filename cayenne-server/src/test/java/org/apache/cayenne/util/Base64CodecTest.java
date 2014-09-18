@@ -22,7 +22,11 @@ package org.apache.cayenne.util;
 import java.util.Arrays;
 import java.util.Random;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
+
+
+
 
 /**
  * <i>Just like Base64 codec, this test case is borrowed from Apache.</i>
@@ -35,6 +39,7 @@ public class Base64CodecTest extends TestCase {
     /**
      * Test the Base64 implementation
      */
+    @Test
     public void testBase64() {
         String content = "Hello World";
         String encodedContent;
@@ -45,6 +50,7 @@ public class Base64CodecTest extends TestCase {
     /**
      * Tests conditional true branch for "marker0" test.
      */
+    @Test
     public void testDecodePadMarkerIndex2() {
         assertEquals("A", new String(Base64Codec.decodeBase64("QQ==".getBytes())));
     }
@@ -52,22 +58,26 @@ public class Base64CodecTest extends TestCase {
     /**
      * Tests conditional branches for "marker1" test.
      */
+    @Test
     public void testDecodePadMarkerIndex3() {
         assertEquals("AA", new String(Base64Codec.decodeBase64("QUE=".getBytes())));
         assertEquals("AAA", new String(Base64Codec.decodeBase64("QUFB".getBytes())));
     }
 
+    @Test
     public void testDecodePadOnly() {
         assertTrue(Base64Codec.decodeBase64("====".getBytes()).length == 0);
         assertEquals("", new String(Base64Codec.decodeBase64("====".getBytes())));
     }
 
+    @Test
     public void testDecodePadOnlyChunked() {
         assertTrue(Base64Codec.decodeBase64("====\n".getBytes()).length == 0);
         assertEquals("", new String(Base64Codec.decodeBase64("====\n".getBytes())));
     }
 
     // encode/decode random arrays from size 0 to size 11
+    @Test
     public void testEncodeDecodeSmall() {
         for (int i = 0; i < 12; i++) {
             byte[] data = new byte[i];
@@ -83,6 +93,7 @@ public class Base64CodecTest extends TestCase {
     }
 
     // encode/decode a large random array
+    @Test
     public void testEncodeDecodeRandom() {
         for (int i = 1; i < 5; i++) {
             byte[] data = new byte[this.getRandom().nextInt(10000) + 1];
@@ -97,6 +108,7 @@ public class Base64CodecTest extends TestCase {
     /**
      * Tests RFC 2045 section 2.1 CRLF definition.
      */
+    @Test
     public void testRfc2045Section2Dot1CrLfDefinition() {
         assertTrue(Arrays.equals(new byte[] {
                 13, 10
@@ -106,10 +118,12 @@ public class Base64CodecTest extends TestCase {
     /**
      * Tests RFC 2045 section 6.8 chuck size definition.
      */
+    @Test
     public void testRfc2045Section6Dot8ChunkSizeDefinition() {
         assertEquals(76, Base64Codec.CHUNK_SIZE);
     }
 
+    @Test
     public void testSingletons() {
         assertEquals("AA==", new String(Base64Codec.encodeBase64(new byte[] {
             (byte) 0
@@ -428,6 +442,7 @@ public class Base64CodecTest extends TestCase {
         })));
     }
 
+    @Test
     public void testSingletonsChunked() {
         assertEquals("AA==\r\n", new String(Base64Codec.encodeBase64Chunked(new byte[] {
             (byte) 0
@@ -746,6 +761,7 @@ public class Base64CodecTest extends TestCase {
         })));
     }
 
+    @Test
     public void testTriplets() {
         assertEquals("AAAA", new String(Base64Codec.encodeBase64(new byte[] {
                 (byte) 0, (byte) 0, (byte) 0
@@ -941,6 +957,7 @@ public class Base64CodecTest extends TestCase {
         })));
     }
 
+    @Test
     public void testTripletsChunked() {
         assertEquals("AAAA\r\n", new String(Base64Codec.encodeBase64Chunked(new byte[] {
                 (byte) 0, (byte) 0, (byte) 0
@@ -1136,6 +1153,7 @@ public class Base64CodecTest extends TestCase {
         })));
     }
 
+    @Test
     public void testKnownEncodings() {
         assertEquals(
                 "VGhlIHF1aWNrIGJyb3duIGZveCBqdW1wZWQgb3ZlciB0aGUgbGF6eSBkb2dzLg==",
@@ -1171,6 +1189,7 @@ public class Base64CodecTest extends TestCase {
                 new String(Base64Codec.encodeBase64("xyzzy!".getBytes())));
     }
 
+    @Test
     public void testKnownDecodings() {
         assertEquals(
                 "The quick brown fox jumped over the lazy dogs.",
@@ -1200,6 +1219,7 @@ public class Base64CodecTest extends TestCase {
                 new String(Base64Codec.decodeBase64("eHl6enkh".getBytes())));
     }
 
+    @Test
     public void testIgnoringNonBase64InDecode() throws Exception {
         assertEquals(
                 "The quick brown fox jumped over the lazy dogs.",
@@ -1209,6 +1229,7 @@ public class Base64CodecTest extends TestCase {
                                         .getBytes())));
     }
 
+    @Test
     public void testDecodeWithWhitespace() throws Exception {
 
         String orig = "I am a late night coder.";
@@ -1229,6 +1250,7 @@ public class Base64CodecTest extends TestCase {
         assertTrue("Dest string doesn't equals the original", dest.equals(orig));
     }
 
+    @Test
     public void testDiscardWhitespace() throws Exception {
 
         String orig = "I am a late night coder.";

@@ -27,10 +27,11 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class ObjectStoreDiffRetainingTest extends ServerCase {
 
     @Inject
@@ -73,6 +74,7 @@ public class ObjectStoreDiffRetainingTest extends ServerCase {
         tPainting.insert(2000, null, null, 3000, "p1");
     }
 
+    @Test
     public void testSnapshotRetainedOnPropertyModification() throws Exception {
         createMixedDataSet();
 
@@ -85,6 +87,7 @@ public class ObjectStoreDiffRetainingTest extends ServerCase {
         assertNotNull(objectStore.getChangesByObjectId().get(a.getObjectId()));
     }
 
+    @Test
     public void testSnapshotRetainedOnRelAndPropertyModification() throws Exception {
         createMixedDataSet();
 

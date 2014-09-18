@@ -20,15 +20,17 @@
 package org.apache.cayenne.map;
 
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.PEOPLE_PROJECT)
+@CayenneConfiguration(ServerCase.PEOPLE_PROJECT)
 public class EntityResolverInheritanceTest extends ServerCase {
 
     @Inject
     private EntityResolver resolver;
 
+    @Test
     public void testGetAbstractPersonTree() throws Exception {
         EntityInheritanceTree tree = resolver.getInheritanceTree("AbstractPerson");
         assertNotNull(tree);
@@ -36,6 +38,7 @@ public class EntityResolverInheritanceTest extends ServerCase {
         assertSame(resolver.getObjEntity("AbstractPerson"), tree.getEntity());
     }
 
+    @Test
     public void testGetEmployeeTree() throws Exception {
         EntityInheritanceTree tree = resolver.getInheritanceTree("Employee");
         assertNotNull(tree);
@@ -43,12 +46,14 @@ public class EntityResolverInheritanceTest extends ServerCase {
         assertSame(resolver.getObjEntity("Employee"), tree.getEntity());
     }
 
+    @Test
     public void testGetManagerTree() throws Exception {
         EntityInheritanceTree tree = resolver.getInheritanceTree("Manager");
         assertNotNull(tree);
         assertEquals(0, tree.getChildrenCount());
     }
 
+    @Test
     public void testLookupTreeRefresh() throws Exception {
         ObjEntity super1 = new ObjEntity("super1");
         ObjEntity sub1 = new ObjEntity("sub1");

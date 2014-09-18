@@ -25,13 +25,14 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.CayenneTransaction;
 import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class UserTransactionTest extends ServerCase {
 
     @Inject
@@ -40,6 +41,7 @@ public class UserTransactionTest extends ServerCase {
     @Inject
     private JdbcEventLogger logger;
 
+    @Test
     public void testCommit() throws Exception {
 
         Artist a = context.newObject(Artist.class);
@@ -69,31 +71,38 @@ public class UserTransactionTest extends ServerCase {
             this.delegate = delegate;
         }
 
+        @Override
         public void begin() {
             delegate.begin();
         }
 
+        @Override
         public void commit() {
             commitCount++;
             delegate.commit();
         }
 
+        @Override
         public void rollback() {
             delegate.rollback();
         }
 
+        @Override
         public void setRollbackOnly() {
             delegate.setRollbackOnly();
         }
 
+        @Override
         public boolean isRollbackOnly() {
             return delegate.isRollbackOnly();
         }
 
+        @Override
         public Connection getConnection(String name) {
             return delegate.getConnection(name);
         }
 
+        @Override
         public void addConnection(String name, Connection connection) {
             connectionCount++;
             delegate.addConnection(name, connection);

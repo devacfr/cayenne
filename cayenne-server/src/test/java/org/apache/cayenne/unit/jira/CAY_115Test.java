@@ -29,13 +29,14 @@ import org.apache.cayenne.query.SortOrder;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationship.ClobMaster;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 /**
  */
-@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+@CayenneConfiguration(ServerCase.RELATIONSHIPS_PROJECT)
 public class CAY_115Test extends ServerCase {
 
     @Inject
@@ -49,8 +50,8 @@ public class CAY_115Test extends ServerCase {
     
     protected TableHelper tClobMaster;
     protected TableHelper tClobDetail;
-    
-    @Override
+
+
     protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("CLOB_DETAIL");
         dbHelper.deleteAll("CLOB_MASTER");
@@ -78,6 +79,7 @@ public class CAY_115Test extends ServerCase {
         tClobDetail.insert(4, 3, "cd31");
     }
 
+    @Test
     public void testDistinctClobFetch() throws Exception {
         if (!accessStackAdapter.supportsLobInsertsAsStrings()) {
             return;
@@ -99,6 +101,7 @@ public class CAY_115Test extends ServerCase {
         assertEquals(noDistinctResult, distinctResult);
     }
 
+    @Test
     public void testDistinctClobFetchWithToManyJoin() throws Exception {
         if (!accessStackAdapter.supportsLobInsertsAsStrings()) {
             return;

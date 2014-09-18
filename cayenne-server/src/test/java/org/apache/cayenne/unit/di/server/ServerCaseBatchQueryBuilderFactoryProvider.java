@@ -25,8 +25,13 @@ import org.apache.cayenne.di.Provider;
 
 public class ServerCaseBatchQueryBuilderFactoryProvider implements
         Provider<BatchTranslatorFactory> {
+	
+	private BatchTranslatorFactory instance;
+		
 
     public BatchTranslatorFactory get() throws ConfigurationException {
-        return new DefaultBatchTranslatorFactory();
+    	if (instance == null)
+    		instance = new DefaultBatchTranslatorFactory();
+    	return instance;
     }
 }

@@ -29,10 +29,11 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Enum1;
 import org.apache.cayenne.testdo.testmap.EnumEntity;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class EnumTest extends ServerCase {
 
     @Inject
@@ -55,12 +56,14 @@ public class EnumTest extends ServerCase {
         tEnumEntity.insert(2, "one");
     }
 
+    @Test
     public void testInsert() {
         EnumEntity e = context.newObject(EnumEntity.class);
         e.setEnumAttribute(Enum1.one);
         context.commitChanges();
     }
 
+    @Test
     public void testSelectQuery() throws Exception {
         createDataSet();
 
@@ -74,6 +77,7 @@ public class EnumTest extends ServerCase {
         assertSame(Enum1.one, e.getEnumAttribute());
     }
 
+    @Test
     public void testSQLTemplate() throws Exception {
         createDataSet();
 

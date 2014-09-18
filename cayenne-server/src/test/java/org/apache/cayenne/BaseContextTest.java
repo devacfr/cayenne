@@ -18,11 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne;
 
-import static org.mockito.Mockito.mock;
 
 import java.util.Map;
-
-import junit.framework.TestCase;
 
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.CayenneRuntime;
@@ -30,9 +27,12 @@ import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.testing.MockitoTestCase;
+import org.junit.Test;
 
-public class BaseContextTest extends TestCase {
+public class BaseContextTest extends MockitoTestCase {
 
+	@Test
     public void testUserPropertiesLazyInit() {
         BaseContext context = new MockBaseContext();
         assertNull(context.userProperties);
@@ -42,6 +42,7 @@ public class BaseContextTest extends TestCase {
         assertSame(properties, context.getUserProperties());
     }
 
+	@Test
     public void testAttachToRuntimeIfNeeded() {
 
         final DataChannel channel = mock(DataChannel.class);
@@ -77,6 +78,7 @@ public class BaseContextTest extends TestCase {
         }
     }
 
+	@Test
     public void testAttachToRuntimeIfNeeded_NoStack() {
 
         BaseContext context = new MockBaseContext();

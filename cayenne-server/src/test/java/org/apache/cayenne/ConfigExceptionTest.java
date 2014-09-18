@@ -19,33 +19,36 @@
 
 package org.apache.cayenne;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 /**
  */
 public class ConfigExceptionTest extends TestCase {
 
+    @Test
     public void testConstructor1() throws Exception {
         ConfigurationException ex = new ConfigurationException();
         assertNull(ex.getCause());
         assertTrue(ex.getMessage().startsWith(CayenneException.getExceptionLabel()));
     }
 
+    @Test
     public void testConstructor2() throws Exception {
         ConfigurationException ex = new ConfigurationException("abc");
         assertNull(ex.getCause());
         assertEquals(CayenneException.getExceptionLabel() + "abc", ex.getMessage());
     }
 
+    @Test
     public void testConstructor3() throws Exception {
         Throwable cause = new Throwable();
         ConfigurationException ex = new ConfigurationException(cause);
         assertSame(cause, ex.getCause());
-        assertEquals(
-            CayenneException.getExceptionLabel() + cause.toString(),
-            ex.getMessage());
+        assertEquals(CayenneException.getExceptionLabel() + cause.toString(), ex.getMessage());
     }
 
+    @Test
     public void testConstructor4() throws Exception {
         Throwable cause = new Throwable();
         ConfigurationException ex = new ConfigurationException("abc", cause);

@@ -18,51 +18,45 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.map.DbRelationship;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 public class DbArcIdTest extends TestCase {
 
+    @Test
     public void testHashCode() {
 
-        DbArcId id1 = new DbArcId(new ObjectId("x", "k", "v"),
-                new DbRelationship("r1"));
+        DbArcId id1 = new DbArcId(new ObjectId("x", "k", "v"), new DbRelationship("r1"));
         int h1 = id1.hashCode();
         assertEquals(h1, id1.hashCode());
         assertEquals(h1, id1.hashCode());
 
-        DbArcId id1_eq = new DbArcId(new ObjectId("x", "k", "v"),
-                new DbRelationship("r1"));
+        DbArcId id1_eq = new DbArcId(new ObjectId("x", "k", "v"), new DbRelationship("r1"));
         assertEquals(h1, id1_eq.hashCode());
 
-        DbArcId id2 = new DbArcId(new ObjectId("x", "k", "v"),
-                new DbRelationship("r2"));
+        DbArcId id2 = new DbArcId(new ObjectId("x", "k", "v"), new DbRelationship("r2"));
         assertFalse(h1 == id2.hashCode());
 
-        DbArcId id3 = new DbArcId(new ObjectId("y", "k", "v"),
-                new DbRelationship("r1"));
+        DbArcId id3 = new DbArcId(new ObjectId("y", "k", "v"), new DbRelationship("r1"));
         assertFalse(h1 == id3.hashCode());
     }
 
+    @Test
     public void testEquals() {
 
-        DbArcId id1 = new DbArcId(new ObjectId("x", "k", "v"),
-                new DbRelationship("r1"));
+        DbArcId id1 = new DbArcId(new ObjectId("x", "k", "v"), new DbRelationship("r1"));
         assertTrue(id1.equals(id1));
 
-        DbArcId id1_eq = new DbArcId(new ObjectId("x", "k", "v"),
-                new DbRelationship("r1"));
+        DbArcId id1_eq = new DbArcId(new ObjectId("x", "k", "v"), new DbRelationship("r1"));
         assertTrue(id1.equals(id1_eq));
         assertTrue(id1_eq.equals(id1));
 
-        DbArcId id2 = new DbArcId(new ObjectId("x", "k", "v"),
-                new DbRelationship("r2"));
+        DbArcId id2 = new DbArcId(new ObjectId("x", "k", "v"), new DbRelationship("r2"));
         assertFalse(id1.equals(id2));
 
-        DbArcId id3 = new DbArcId(new ObjectId("y", "k", "v"),
-                new DbRelationship("r1"));
+        DbArcId id3 = new DbArcId(new ObjectId("y", "k", "v"), new DbRelationship("r1"));
         assertFalse(id1.equals(id3));
 
         assertFalse(id1.equals(new Object()));

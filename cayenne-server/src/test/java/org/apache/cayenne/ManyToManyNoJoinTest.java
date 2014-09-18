@@ -24,10 +24,11 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.r1.Activity;
 import org.apache.cayenne.testdo.r1.ActivityResult;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+@CayenneConfiguration(ServerCase.RELATIONSHIPS_PROJECT)
 public class ManyToManyNoJoinTest extends ServerCase {
 
     @Inject
@@ -42,6 +43,7 @@ public class ManyToManyNoJoinTest extends ServerCase {
         dbHelper.deleteAll("RESULT");
     }
 
+    @Test
     public void testValidateForSave1() throws Exception {
         ActivityResult result = context.newObject(ActivityResult.class);
         result.setAppointDate(new Date(System.currentTimeMillis()));

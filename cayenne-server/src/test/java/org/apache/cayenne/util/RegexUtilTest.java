@@ -19,10 +19,13 @@
 
 package org.apache.cayenne.util;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
+
 
 public class RegexUtilTest extends TestCase {
 
+	@Test
     public void testSubstBackslashes() {
         assertTrue(RegexUtil.BACKSLASH.matcher("\\").find());
         assertTrue(RegexUtil.BACKSLASH.matcher("abc\\").find());
@@ -37,6 +40,7 @@ public class RegexUtilTest extends TestCase {
         assertEquals("/ab/c", RegexUtil.substBackslashes("\\ab\\c"));
     }
 
+	@Test
     public void testGetPackagePath() {
         assertTrue(RegexUtil.DOT.matcher(".").find());
         assertTrue(RegexUtil.DOT.matcher("abc.aa.aa").find());

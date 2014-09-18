@@ -22,52 +22,41 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class StatementFetchSizeTest extends ServerCase {
 
     @Inject
     private ObjectContext context;
 
+    @Test
     public void test() {
-        SelectQuery query = new SelectQuery(Artist.class);
+        SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
         query.setStatementFetchSize(10);
 
-        assertEquals(10, query
-                .getMetaData(context.getEntityResolver())
-                .getStatementFetchSize());
+        assertEquals(10, query.getMetaData(context.getEntityResolver()).getStatementFetchSize());
         context.performQuery(query);
 
-        SQLTemplate template = new SQLTemplate(
-                Artist.class,
-                "SELECT ARTIST_ID FROM ARTIST");
+        SQLTemplate template = new SQLTemplate(Artist.class, "SELECT ARTIST_ID FROM ARTIST");
         template.setStatementFetchSize(10);
 
-        assertEquals(10, template
-                .getMetaData(context.getEntityResolver())
-                .getStatementFetchSize());
+        assertEquals(10, template.getMetaData(context.getEntityResolver()).getStatementFetchSize());
         context.performQuery(template);
 
         EJBQLQuery ejbql = new EJBQLQuery("select a from Artist a");
         ejbql.setStatementFetchSize(10);
 
-        assertEquals(10, ejbql
-                .getMetaData(context.getEntityResolver())
-                .getStatementFetchSize());
+        assertEquals(10, ejbql.getMetaData(context.getEntityResolver()).getStatementFetchSize());
         context.performQuery(ejbql);
 
         ObjectId id = new ObjectId("Artist", Artist.ARTIST_ID_PK_COLUMN, 1);
-        RelationshipQuery relationshipQuery = new RelationshipQuery(
-                id,
-                Artist.PAINTING_ARRAY_PROPERTY,
-                true);
+        RelationshipQuery relationshipQuery = new RelationshipQuery(id, Artist.PAINTING_ARRAY_PROPERTY, true);
         relationshipQuery.setStatementFetchSize(10);
 
-        assertEquals(10, relationshipQuery
-                .getMetaData(context.getEntityResolver())
-                .getStatementFetchSize());
+        assertEquals(10, relationshipQuery.getMetaData(context.getEntityResolver()).getStatementFetchSize());
         context.performQuery(relationshipQuery);
     }
 }

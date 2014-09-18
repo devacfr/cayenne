@@ -24,10 +24,11 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbKeyGenerator;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class OraclePkGeneratorTest extends ServerCase {
     
     @Inject
@@ -44,11 +45,13 @@ public class OraclePkGeneratorTest extends ServerCase {
         pkGenerator = new OraclePkGenerator(adapter);
     }
 
+    @Test
     public void testSequenceNameDefault() throws Exception {
         DbEntity entity = new DbEntity("TEST_ENTITY");
         assertEquals("pk_test_entity", pkGenerator.sequenceName(entity));
     }
 
+    @Test
     public void testSequenceNameCustom1() throws Exception {
         DbEntity entity = new DbEntity("TEST_ENTITY");
         DbKeyGenerator customGenerator = new DbKeyGenerator();
@@ -58,6 +61,7 @@ public class OraclePkGeneratorTest extends ServerCase {
         assertEquals("custom_generator", pkGenerator.sequenceName(entity));
     }
 
+    @Test
     public void testSequenceNameCustom2() throws Exception {
         DbEntity entity = new DbEntity("TEST_ENTITY");
         DbKeyGenerator customGenerator = new DbKeyGenerator();

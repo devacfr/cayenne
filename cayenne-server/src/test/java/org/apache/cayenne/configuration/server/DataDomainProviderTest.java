@@ -23,8 +23,6 @@ import static org.mockito.Mockito.mock;
 import java.util.Collection;
 import java.util.Collections;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.DataDomain;
@@ -82,9 +80,16 @@ import org.apache.cayenne.resource.ClassLoaderResourceLocator;
 import org.apache.cayenne.resource.Resource;
 import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.resource.mock.MockResource;
+import org.apache.cayenne.testing.TestCase;
+import org.apache.cayenne.tx.DefaultTransactionFactory;
+import org.apache.cayenne.tx.DefaultTransactionManager;
+import org.apache.cayenne.tx.TransactionFactory;
+import org.apache.cayenne.tx.TransactionManager;
+import org.junit.Test;
 
 public class DataDomainProviderTest extends TestCase {
 
+    @Test
     public void testGet() {
 
         // create dependencies
@@ -166,6 +171,7 @@ public class DataDomainProviderTest extends TestCase {
 
                 final ResourceLocator locator = new ClassLoaderResourceLocator(classLoaderManager) {
 
+                    @Override
                     public Collection<Resource> findResources(String name) {
                         // ResourceLocator also used by JdbcAdapter to locate
                         // types.xml... if this is the request we are getting,
@@ -194,6 +200,8 @@ public class DataDomainProviderTest extends TestCase {
                 binder.bind(QueryCache.class).toInstance(mock(QueryCache.class));
                 binder.bind(RowReaderFactory.class).toInstance(mock(RowReaderFactory.class));
                 binder.bind(DataNodeFactory.class).to(DefaultDataNodeFactory.class);
+                binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
+                binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
             }
         };
 
@@ -245,5 +253,7 @@ public class DataDomainProviderTest extends TestCase {
         assertEquals(SkipSchemaUpdateStrategy.class.getName(), node2.getSchemaUpdateStrategy().getClass().getName());
 
         assertNotNull(node2.getAdapter());
+
+        injector.shutdown();
     }
 }

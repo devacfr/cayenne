@@ -21,12 +21,14 @@ package org.apache.cayenne;
 
 import static org.mockito.Mockito.mock;
 
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class PersistentObjectTest extends ServerCase {
 
+	@Test
     public void testObjectContext() {
         ObjectContext context = mock(ObjectContext.class);
         PersistentObject object = new MockPersistentObject();
@@ -36,6 +38,7 @@ public class PersistentObjectTest extends ServerCase {
         assertSame(context, object.getObjectContext());
     }
 
+	@Test
     public void testPersistenceState() {
         PersistentObject object = new MockPersistentObject();
         assertEquals(PersistenceState.TRANSIENT, object.getPersistenceState());
@@ -43,6 +46,7 @@ public class PersistentObjectTest extends ServerCase {
         assertEquals(PersistenceState.DELETED, object.getPersistenceState());
     }
 
+	@Test
     public void testObjectID() {
         ObjectId id = new ObjectId("test");
 

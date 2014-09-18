@@ -40,11 +40,12 @@ import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.DEFAULT_PROJECT)
+@CayenneConfiguration(ServerCase.DEFAULT_PROJECT)
 public class SchemaUpdateStrategyTest extends ServerCase {
 
     @Inject
@@ -59,6 +60,7 @@ public class SchemaUpdateStrategyTest extends ServerCase {
     @Inject
     private JdbcEventLogger jdbcEventLogger;
 
+    @Test
     public void testDBGeneratorStrategy() throws Exception {
 
         String template = "SELECT #result('id' 'int') FROM SUS1";
@@ -86,6 +88,7 @@ public class SchemaUpdateStrategyTest extends ServerCase {
         assertEquals(getNameTablesInDB(dataNode).size(), sizeDB);
     }
 
+    @Test
     public void testThrowOnPartialStrategyTableNoExist() throws Exception {
 
         String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
@@ -111,16 +114,19 @@ public class SchemaUpdateStrategyTest extends ServerCase {
         }
     }
 
+    @Test
     public void testThrowOnPartialStrategyTableExist() throws Exception {
         tableExistfForThrowOnPartialAndMixStrategy(ThrowOnPartialSchemaStrategy.class
                 .getName());
     }
 
+    @Test
     public void testThrowOnPartialStrategyWithOneTable() throws Exception {
         withOneTableForThrowOnPartialAndMixStrategy(ThrowOnPartialSchemaStrategy.class
                 .getName());
     }
 
+    @Test
     public void testMixedStrategyTableNoExist() throws Exception {
 
         String template = "SELECT #result('id' 'int') FROM SUS1";
@@ -152,16 +158,19 @@ public class SchemaUpdateStrategyTest extends ServerCase {
 
     }
 
+    @Test
     public void testMixedStrategyTableExist() throws Exception {
         tableExistfForThrowOnPartialAndMixStrategy(ThrowOnPartialOrCreateSchemaStrategy.class
                 .getName());
     }
 
+    @Test
     public void testMixedStrategyWithOneTable() throws Exception {
         withOneTableForThrowOnPartialAndMixStrategy(ThrowOnPartialOrCreateSchemaStrategy.class
                 .getName());
     };
 
+    @Test
     public void testNoStandartSchema() {
         String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
         SQLTemplate query = new SQLTemplate(Object.class, template);

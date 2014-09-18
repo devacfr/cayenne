@@ -23,15 +23,17 @@ import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class MySQLAdapterTest extends ServerCase {
     
     @Inject
     private AdhocObjectFactory objectFactory;
 
+    @Test
     public void testCreateTableAppendPKClause() {
         MySQLAdapter adapter = objectFactory.newInstance(
                 MySQLAdapter.class, 

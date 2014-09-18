@@ -39,7 +39,7 @@ public class UnitDbAdapterProvider implements Provider<UnitDbAdapter> {
     private DbAdapter adapter;
     private DataSourceInfo dataSourceInfo;
     private Map<String, String> adapterTypesMap;
-
+    
     public UnitDbAdapterProvider(
             @Inject(TEST_ADAPTERS_MAP) Map<String, String> adapterTypesMap,
             @Inject DataSourceInfo dataSourceInfo, @Inject DbAdapter adapter,
@@ -51,7 +51,6 @@ public class UnitDbAdapterProvider implements Provider<UnitDbAdapter> {
     }
 
     public UnitDbAdapter get() throws ConfigurationException {
-
         String testAdapterType = adapterTypesMap
                 .get(dataSourceInfo.getAdapterClassName());
         if (testAdapterType == null) {
@@ -78,9 +77,9 @@ public class UnitDbAdapterProvider implements Provider<UnitDbAdapter> {
 
         try {
             Constructor<UnitDbAdapter> c = type.getConstructor(DbAdapter.class);
-            UnitDbAdapter unitAdapter = c.newInstance(adapter);
-            injector.injectMembers(unitAdapter);
-            return unitAdapter;
+            UnitDbAdapter instance = c.newInstance(adapter);
+            injector.injectMembers(instance);
+            return instance;
         }
         catch (Exception e) {
             throw new ConfigurationException("Error instantiating " + testAdapterType, e);

@@ -22,8 +22,6 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Iterator;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
@@ -35,15 +33,18 @@ import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
 import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.resource.URLResource;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 public class XMLDataChannelDescriptorLoaderTest extends TestCase {
 
     private Injector injector;
 
     @Override
-    protected void setUp() throws Exception {
+    public void setUp() throws Exception {
         Module testModule = new Module() {
 
+            @Override
             public void configure(Binder binder) {
                 binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
@@ -55,6 +56,7 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
         this.injector = DIBootstrap.createInjector(testModule);
     }
 
+    @Test
     public void testLoadEmpty() {
 
         // create and initialize loader instance to test
@@ -71,6 +73,7 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
         assertEquals(testConfigName, tree.getRootNode().getName());
     }
 
+    @Test
     public void testLoad_MissingConfig() throws Exception {
 
         // create and initialize loader instance to test
@@ -85,6 +88,7 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
         }
     }
 
+    @Test
     public void testLoadDataMap() {
 
         // create and initialize loader instance to test
@@ -106,6 +110,7 @@ public class XMLDataChannelDescriptorLoaderTest extends TestCase {
         assertEquals("testConfigMap2", maps.iterator().next().getName());
     }
 
+    @Test
     public void testLoadDataEverything() {
 
         // create and initialize loader instance to test

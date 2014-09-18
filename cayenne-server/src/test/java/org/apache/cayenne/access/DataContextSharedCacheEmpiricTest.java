@@ -32,10 +32,11 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextSharedCacheEmpiricTest extends ServerCase {
 
     private static final String NEW_NAME = "versionX";
@@ -52,6 +53,8 @@ public class DataContextSharedCacheEmpiricTest extends ServerCase {
     private DataContext c1;
     private DataContext c2;
 
+    private final DefaultEventManager eventManager = new DefaultEventManager();
+
     @Override
     protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("PAINTING_INFO");
@@ -63,7 +66,7 @@ public class DataContextSharedCacheEmpiricTest extends ServerCase {
         DataRowStore cache = new DataRowStore(
                 "cacheTest",
                 Collections.EMPTY_MAP,
-                new DefaultEventManager());
+                eventManager);
 
         c1 = new DataContext(runtime.getDataDomain(), 
                 objectStoreFactory.createObjectStore(cache));
@@ -76,6 +79,13 @@ public class DataContextSharedCacheEmpiricTest extends ServerCase {
         tArtist.insert(1, "version1");
     }
 
+    @Override
+    protected void tearDownBeforeInjection() throws Exception {
+        super.tearDownBeforeInjection();
+        eventManager.shutdown();
+    }
+
+    @Test
     public void testSelectSelectCommitRefresh() throws Exception {
 
         SelectQuery query = new SelectQuery(Artist.class);
@@ -96,6 +106,7 @@ public class DataContextSharedCacheEmpiricTest extends ServerCase {
         assertOnCommit(a2);
     }
 
+    @Test
     public void testSelectSelectCommitRefreshReverse() throws Exception {
 
         SelectQuery query = new SelectQuery(Artist.class);
@@ -115,6 +126,7 @@ public class DataContextSharedCacheEmpiricTest extends ServerCase {
         assertOnCommit(a2);
     }
 
+    @Test
     public void testSelectUpdateSelectCommitRefresh() throws Exception {
 
         SelectQuery query = new SelectQuery(Artist.class);

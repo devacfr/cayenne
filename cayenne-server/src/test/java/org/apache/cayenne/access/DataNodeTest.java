@@ -19,20 +19,21 @@
 
 package org.apache.cayenne.access;
 
-import junit.framework.TestCase;
 
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataNodeTest extends ServerCase {
     
     @Inject
     private AdhocObjectFactory objectFactory;
 
+    @Test
     public void testName() throws Exception {
         String tstName = "tst_name";
         DataNode node = new DataNode();
@@ -41,6 +42,7 @@ public class DataNodeTest extends ServerCase {
         assertEquals(tstName, node.getName());
     }
 
+    @Test
     public void testDataSourceLocation() throws Exception {
         String tstName = "tst_name";
         DataNode node = new DataNode();
@@ -49,6 +51,7 @@ public class DataNodeTest extends ServerCase {
         assertEquals(tstName, node.getDataSourceLocation());
     }
 
+    @Test
     public void testDataSourceFactory() throws Exception {
         String tstName = "tst_name";
         DataNode node = new DataNode();
@@ -57,6 +60,7 @@ public class DataNodeTest extends ServerCase {
         assertEquals(tstName, node.getDataSourceFactory());
     }
 
+    @Test
     public void testNodeEntityResolver() {
         DataNode node = new DataNode();
         assertNull(node.getEntityResolver());
@@ -66,6 +70,7 @@ public class DataNodeTest extends ServerCase {
         assertSame(resolver, node.getEntityResolver());
     }
 
+    @Test
     public void testAdapter() throws Exception {
         DataNode node = new DataNode();
 

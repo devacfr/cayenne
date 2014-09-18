@@ -19,35 +19,31 @@
 
 package org.apache.cayenne.exp;
 
-import junit.framework.Assert;
-
 import org.apache.cayenne.TranslationCase;
+import org.junit.Assert;
 
-public class TstExpressionCase extends TranslationCase {    
+public class TstExpressionCase extends TranslationCase {
     protected int totalNodes;
     protected int totalLeaves;
-    
+
     public TstExpressionCase(String rootEntity, Expression cayenneExp, String sqlExp, int totalNodes, int totalLeaves) {
         super(rootEntity, cayenneExp, sqlExp);
         this.totalNodes = totalNodes;
         this.totalLeaves = totalLeaves;
     }
-    
-    
+
     public int getTotalNodes() {
         return totalNodes;
     }
-    
-    
+
     public int getTotalLeaves() {
         return totalLeaves;
     }
-    
-    
+
     public Expression getCayenneExp() {
-        return (Expression)tstObject;
+        return (Expression) tstObject;
     }
-    
+
     public void assertParsedWell(int totalNodes, int totalLeaves) {
         Assert.assertEquals(this.totalNodes, totalNodes);
         Assert.assertEquals(this.totalLeaves, totalLeaves);

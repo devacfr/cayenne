@@ -25,11 +25,12 @@ import java.util.List;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class PkGeneratorTest extends ServerCase {
 
     @Inject
@@ -53,6 +54,7 @@ public class PkGeneratorTest extends ServerCase {
         pkGenerator.reset();
     }
 
+    @Test
     public void testGeneratePkForDbEntity() throws Exception {
         List<Object> pkList = new ArrayList<Object>();
 

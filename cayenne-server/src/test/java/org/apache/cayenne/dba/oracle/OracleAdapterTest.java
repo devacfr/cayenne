@@ -26,10 +26,11 @@ import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.query.InsertBatchQuery;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class OracleAdapterTest extends ServerCase {
 
     @Inject
@@ -38,6 +39,7 @@ public class OracleAdapterTest extends ServerCase {
     @Inject
     private AdhocObjectFactory objectFactory;
 
+    @Test
     public void testUpdatesLOBColumns() throws Exception {
         DataMap map = runtime.getDataDomain().getDataMap("tstmap");
         assertTrue(OracleAdapter.updatesLOBColumns(new InsertBatchQuery(map
@@ -48,6 +50,7 @@ public class OracleAdapterTest extends ServerCase {
                 .getDbEntity("ARTIST"), 1)));
     }
 
+    @Test
     public void testTimestampMapping() throws Exception {
         
         OracleAdapter adapter = objectFactory.newInstance(

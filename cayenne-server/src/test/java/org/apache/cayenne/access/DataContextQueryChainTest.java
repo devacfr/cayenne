@@ -27,10 +27,11 @@ import org.apache.cayenne.query.QueryChain;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextQueryChainTest extends ServerCase {
 
     @Inject
@@ -49,6 +50,7 @@ public class DataContextQueryChainTest extends ServerCase {
         dbHelper.deleteAll("ARTIST");
     }
 
+    @Test
     public void testSelectQuery() {
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("X");

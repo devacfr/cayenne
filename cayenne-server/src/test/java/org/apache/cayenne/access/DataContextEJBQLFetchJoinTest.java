@@ -36,12 +36,13 @@ import org.apache.cayenne.testdo.testmap.ArtistExhibit;
 import org.apache.cayenne.testdo.testmap.Exhibit;
 import org.apache.cayenne.testdo.testmap.Gallery;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextEJBQLFetchJoinTest extends ServerCase {
 
     @Inject
@@ -118,6 +119,7 @@ public class DataContextEJBQLFetchJoinTest extends ServerCase {
         tArtistExhibit.insert(1, 2);
     }
 
+    @Test
     public void testFetchJoinForOneEntity() throws Exception {
         createOneFetchJoinDataSet();
 
@@ -151,6 +153,7 @@ public class DataContextEJBQLFetchJoinTest extends ServerCase {
         });
     }
 
+    @Test
     public void testSeveralFetchJoins() throws Exception {
         createMultipleFetchJoinsDataSet();
 
@@ -206,6 +209,7 @@ public class DataContextEJBQLFetchJoinTest extends ServerCase {
         });
     }
 
+    @Test
     public void testSeveralEntitiesFetchJoins() throws Exception {
         createMultipleFetchJoinsDataSet();
 
@@ -228,6 +232,7 @@ public class DataContextEJBQLFetchJoinTest extends ServerCase {
         });
     }
 
+    @Test
     public void testSeveralEntitiesAndScalarFetchInnerJoins() throws Exception {
         createMultipleFetchJoinsDataSet();
 
@@ -307,6 +312,7 @@ public class DataContextEJBQLFetchJoinTest extends ServerCase {
         });
     }
 
+    @Test
     public void testSeveralEntitiesAndScalarFetchOuterJoins() throws Exception {
         createMultipleFetchJoinsDataSet();
 

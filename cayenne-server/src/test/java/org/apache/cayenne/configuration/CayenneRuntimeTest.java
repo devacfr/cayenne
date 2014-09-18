@@ -21,11 +21,12 @@ package org.apache.cayenne.configuration;
 import static org.mockito.Mockito.mock;
 
 import org.apache.cayenne.di.Injector;
-
-import junit.framework.TestCase;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 public class CayenneRuntimeTest extends TestCase {
 
+    @Test
     public void testBindThreadInjector() {
 
         Injector injector = mock(Injector.class);
@@ -35,8 +36,7 @@ public class CayenneRuntimeTest extends TestCase {
         try {
             CayenneRuntime.bindThreadInjector(injector);
             assertSame(injector, CayenneRuntime.getThreadInjector());
-        }
-        finally {
+        } finally {
             CayenneRuntime.bindThreadInjector(null);
         }
 

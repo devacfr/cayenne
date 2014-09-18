@@ -67,9 +67,10 @@ public abstract class MergeCase extends ServerCase {
     private static List<String> TABLE_NAMES = Arrays.asList("ARTIST",
             "PAINTING", "NEW_TABLE", "NEW_TABLE2");
 
+
     @Override
     protected void setUpAfterInjection() throws Exception {
-
+    	super.setUpAfterInjection();
         dbHelper.deleteAll("ARTIST_GROUP");
         dbHelper.update("ARTGROUP").set("PARENT_GROUP_ID", null, Types.INTEGER).execute();
         dbHelper.deleteAll("ARTGROUP");

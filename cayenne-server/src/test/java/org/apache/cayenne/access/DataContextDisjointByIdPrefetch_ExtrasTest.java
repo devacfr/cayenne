@@ -40,12 +40,13 @@ import org.apache.cayenne.testdo.testmap.Ball;
 import org.apache.cayenne.testdo.testmap.Box;
 import org.apache.cayenne.testdo.testmap.BoxInfo;
 import org.apache.cayenne.testdo.testmap.Thing;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextDisjointByIdPrefetch_ExtrasTest extends ServerCase {
 
     @Inject
@@ -191,6 +192,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasTest extends ServerCase {
         context.invalidateObjects(invalidate);
     }
 
+    @Test
     public void testFlattenedRelationship() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
@@ -218,6 +220,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasTest extends ServerCase {
         });
     }
 
+    @Test
     public void testFlattenedMultiColumnRelationship() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
@@ -245,6 +248,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasTest extends ServerCase {
         });
     }
 
+    @Test
     public void testLongFlattenedRelationship() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
@@ -272,6 +276,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasTest extends ServerCase {
         });
     }
 
+    @Test
     public void testMultiColumnRelationship() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
@@ -295,6 +300,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasTest extends ServerCase {
         });
     }
 
+    @Test
     public void testJointPrefetchInParent() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
@@ -326,6 +332,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasTest extends ServerCase {
         });
     }
 
+    @Test
     public void testJointPrefetchInChild() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 

@@ -26,20 +26,21 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.cayenne.access.translator.batch.UpdateBatchTranslator;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.query.UpdateBatchQuery;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.LOCKING_PROJECT)
+@CayenneConfiguration(ServerCase.LOCKING_PROJECT)
 public class UpdateBatchTranslatorTest extends ServerCase {
 
     @Inject
@@ -54,18 +55,20 @@ public class UpdateBatchTranslatorTest extends ServerCase {
     @Inject
     private AdhocObjectFactory objectFactory;
 
+    @Test
     public void testConstructor() throws Exception {
         DbAdapter adapter = objectFactory.newInstance(DbAdapter.class, JdbcAdapter.class.getName());
         UpdateBatchTranslator builder = new UpdateBatchTranslator(mock(UpdateBatchQuery.class), adapter, null);
         assertSame(adapter, builder.adapter);
     }
 
+    @Test
     public void testCreateSqlString() throws Exception {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
 
-        List idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
-        List updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
+        List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
+        List<DbAttribute> updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
 
         UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes,
                 Collections.<String> emptySet(), 1);
@@ -77,15 +80,16 @@ public class UpdateBatchTranslatorTest extends ServerCase {
         assertEquals("UPDATE " + entity.getName() + " SET DESCRIPTION = ? WHERE LOCKING_TEST_ID = ?", generatedSql);
     }
 
+    @Test
     public void testCreateSqlStringWithNulls() throws Exception {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
 
-        List idAttributes = Arrays.asList(entity.getAttribute("LOCKING_TEST_ID"), entity.getAttribute("NAME"));
+        List<DbAttribute> idAttributes = Arrays.asList(entity.getAttribute("LOCKING_TEST_ID"), entity.getAttribute("NAME"));
 
-        List updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
+        List<DbAttribute> updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
 
-        Collection nullAttributes = Collections.singleton("NAME");
+        Collection<String> nullAttributes = Collections.singleton("NAME");
 
         UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes, nullAttributes, 1);
 
@@ -98,14 +102,15 @@ public class UpdateBatchTranslatorTest extends ServerCase {
                 generatedSql);
     }
 
+    @Test
     public void testCreateSqlStringWithIdentifiersQuote() throws Exception {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
         try {
 
             entity.getDataMap().setQuotingSQLIdentifiers(true);
-            List idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
-            List updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
+            List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
+            List<DbAttribute> updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
 
             UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes,
                     Collections.<String> emptySet(), 1);
@@ -126,17 +131,18 @@ public class UpdateBatchTranslatorTest extends ServerCase {
         }
     }
 
+    @Test
     public void testCreateSqlStringWithNullsWithIdentifiersQuote() throws Exception {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
         try {
 
             entity.getDataMap().setQuotingSQLIdentifiers(true);
-            List idAttributes = Arrays.asList(entity.getAttribute("LOCKING_TEST_ID"), entity.getAttribute("NAME"));
+            List<DbAttribute> idAttributes = Arrays.asList(entity.getAttribute("LOCKING_TEST_ID"), entity.getAttribute("NAME"));
 
-            List updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
+            List<DbAttribute> updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
 
-            Collection nullAttributes = Collections.singleton("NAME");
+            Collection<String> nullAttributes = Collections.singleton("NAME");
 
             UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes,
                     nullAttributes, 1);

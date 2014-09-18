@@ -21,10 +21,12 @@ package org.apache.cayenne.configuration;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 public class DefaultRuntimePropertiesTest extends TestCase {
 
+    @Test
     public void testGet_FromMap() {
         Map<String, String> propertiesMap = new HashMap<String, String>();
         propertiesMap.put("key1", "v1");
@@ -34,6 +36,7 @@ public class DefaultRuntimePropertiesTest extends TestCase {
         assertNull(properties.get("key2"));
     }
 
+    @Test
     public void testGet_FromSystem() {
 
         String userDir = System.getProperty("user.dir");
@@ -45,6 +48,7 @@ public class DefaultRuntimePropertiesTest extends TestCase {
         assertEquals(userDir, properties.get("user.dir"));
     }
 
+    @Test
     public void testGet_FromSystemOverridesMap() {
 
         String userDir = System.getProperty("user.dir");

@@ -19,7 +19,6 @@
 package org.apache.cayenne.configuration.web;
 
 import static org.mockito.Mockito.mock;
-import junit.framework.TestCase;
 
 import org.apache.cayenne.BaseContext;
 import org.apache.cayenne.DataChannel;
@@ -30,6 +29,8 @@ import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 import com.mockrunner.mock.web.MockHttpServletRequest;
 import com.mockrunner.mock.web.MockHttpServletResponse;
@@ -37,24 +38,27 @@ import com.mockrunner.mock.web.MockHttpSession;
 
 public class ServletContextHandlerTest extends TestCase {
 
+    @Test
     public void testRequestStart_bindContext() {
 
         Module module = new Module() {
 
+            @Override
             public void configure(Binder binder) {
 
                 binder.bind(DataChannel.class).to(MockDataChannel.class);
-                binder.bind(ObjectContextFactory.class).toInstance(
-                        new ObjectContextFactory() {
+                binder.bind(ObjectContextFactory.class).toInstance(new ObjectContextFactory() {
 
-                            public ObjectContext createContext(DataChannel parent) {
-                                return mock(ObjectContext.class);
-                            }
+                    @Override
+                    public ObjectContext createContext(DataChannel parent) {
+                        return mock(ObjectContext.class);
+                    }
 
-                            public ObjectContext createContext() {
-                                return mock(ObjectContext.class);
-                            }
-                        });
+                    @Override
+                    public ObjectContext createContext() {
+                        return mock(ObjectContext.class);
+                    }
+                });
             }
         };
         Injector injector = DIBootstrap.createInjector(module);
@@ -80,8 +84,7 @@ public class ServletContextHandlerTest extends TestCase {
             try {
                 BaseContext.getThreadObjectContext();
                 fail("thread context not null");
-            }
-            catch (IllegalStateException e) {
+            } catch (IllegalStateException e) {
                 // expected
             }
 
@@ -97,8 +100,7 @@ public class ServletContextHandlerTest extends TestCase {
             try {
                 BaseContext.getThreadObjectContext();
                 fail("thread context not null");
-            }
-            catch (IllegalStateException e) {
+            } catch (IllegalStateException e) {
                 // expected
             }
 
@@ -115,12 +117,10 @@ public class ServletContextHandlerTest extends TestCase {
             try {
                 BaseContext.getThreadObjectContext();
                 fail("thread context not null");
-            }
-            catch (IllegalStateException e) {
+            } catch (IllegalStateException e) {
                 // expected
             }
-        }
-        finally {
+        } finally {
             BaseContext.bindThreadObjectContext(null);
         }
     }

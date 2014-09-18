@@ -30,15 +30,16 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.relationship.ReflexiveAndToOne;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 /**
  * Testing qualifier translator correctness on reflexive relationships.
  */
 // TODO: this is really a qualifier translator general test... need to
 // find an appropriate place in unit tests..
-@UseServerRuntime(ServerCase.RELATIONSHIPS_PROJECT)
+@CayenneConfiguration(ServerCase.RELATIONSHIPS_PROJECT)
 public class CAY_194Test extends ServerCase {
 
     @Inject
@@ -47,8 +48,10 @@ public class CAY_194Test extends ServerCase {
     @Inject
     private DBHelper dbHelper;
 
+
     @Override
-    protected void setUpAfterInjection() throws Exception {
+    public void setUp() throws Exception {
+    	super.setUp();
         TableHelper tReflexive = new TableHelper(dbHelper, "REFLEXIVE_AND_TO_ONE");
         tReflexive.setColumns("REFLEXIVE_AND_TO_ONE_ID", "PARENT_ID");
 
@@ -58,6 +61,7 @@ public class CAY_194Test extends ServerCase {
         dbHelper.deleteAll("TO_ONEFK1");
     }
 
+    @Test
     public void testQualifyOnToMany() {
 
         ReflexiveAndToOne ox = context.newObject(ReflexiveAndToOne.class);

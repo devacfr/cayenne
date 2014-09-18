@@ -25,10 +25,11 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class ObjectStoreGCTest extends ServerCase {
 
     @Inject
@@ -46,6 +47,7 @@ public class ObjectStoreGCTest extends ServerCase {
         dbHelper.deleteAll("ARTIST");
     }
 
+    @Test
     public void testReleaseUnreferenced() throws Exception {
         context.performGenericQuery(new SQLTemplate(
                 Artist.class,
@@ -66,6 +68,7 @@ public class ObjectStoreGCTest extends ServerCase {
         }.runTest(2000);
     }
 
+    @Test
     public void testRetainUnreferencedNew() throws Exception {
         assertEquals(0, context.getObjectStore().registeredObjectsCount());
         Artist a = context.newObject(Artist.class);
@@ -96,6 +99,7 @@ public class ObjectStoreGCTest extends ServerCase {
 
     }
 
+    @Test
     public void testRetainUnreferencedModified() throws Exception {
         context.performGenericQuery(new SQLTemplate(
                 Artist.class,

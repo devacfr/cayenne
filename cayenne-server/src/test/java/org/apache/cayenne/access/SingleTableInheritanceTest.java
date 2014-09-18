@@ -43,12 +43,14 @@ import org.apache.cayenne.testdo.inherit.Manager;
 import org.apache.cayenne.testdo.inherit.PersonNotes;
 import org.apache.cayenne.testdo.inherit.RelatedEntity;
 import org.apache.cayenne.testdo.inherit.SubEntity;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.UnitTestClosure;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Ignore;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.PEOPLE_PROJECT)
+@CayenneConfiguration(ServerCase.PEOPLE_PROJECT)
 public class SingleTableInheritanceTest extends ServerCase {
 
     @Inject
@@ -151,11 +153,12 @@ public class SingleTableInheritanceTest extends ServerCase {
         tPerson.insert(9, "Kelly", "EM", 100000, null, 1);
     }
 
+    @Test
     public void testMatchingOnSuperAttributes() throws Exception {
         create2PersonDataSet();
 
         // fetch on leaf, but match on a super attribute
-        SelectQuery select = new SelectQuery(Manager.class);
+        SelectQuery<Manager> select = new SelectQuery<Manager>(Manager.class);
         select.andQualifier(ExpressionFactory
                 .matchExp(AbstractPerson.NAME_PROPERTY, "E2"));
 
@@ -164,11 +167,12 @@ public class SingleTableInheritanceTest extends ServerCase {
         assertEquals("E2", results.get(0).getName());
     }
 
+    @Test
     public void testMatchingOnSuperAttributesWithPrefetch() throws Exception {
         create2PersonDataSet();
 
         // fetch on leaf, but match on a super attribute
-        SelectQuery select = new SelectQuery(Employee.class);
+        SelectQuery<Employee> select = new SelectQuery<Employee>(Employee.class);
         select.addPrefetch(Employee.TO_DEPARTMENT_PROPERTY);
         select.andQualifier(ExpressionFactory
                 .matchExp(AbstractPerson.NAME_PROPERTY, "E2"));
@@ -178,11 +182,12 @@ public class SingleTableInheritanceTest extends ServerCase {
         assertEquals("E2", results.get(0).getName());
     }
 
+    @Test
     public void testPaginatedQueries() throws Exception {
 
         create5PersonDataSet();
 
-        SelectQuery select = new SelectQuery(AbstractPerson.class);
+        SelectQuery<AbstractPerson> select = new SelectQuery<AbstractPerson>(AbstractPerson.class);
         select.addOrdering(
                 "db:" + AbstractPerson.PERSON_ID_PK_COLUMN,
                 SortOrder.ASCENDING);
@@ -200,6 +205,7 @@ public class SingleTableInheritanceTest extends ServerCase {
         assertTrue(results.get(4) instanceof Employee);
     }
 
+    @Test
     public void testRelationshipToAbstractSuper() {
         context
                 .performGenericQuery(new SQLTemplate(
@@ -216,6 +222,7 @@ public class SingleTableInheritanceTest extends ServerCase {
         assertTrue(note.getPerson() instanceof Employee);
     }
 
+    @Test
     public void testRelationshipAbstractFromSuperPrefetchingJoint() {
         context
                 .performGenericQuery(new SQLTemplate(
@@ -229,7 +236,7 @@ public class SingleTableInheritanceTest extends ServerCase {
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (4, 'BB', 3)"));
 
-        SelectQuery query = new SelectQuery(AbstractPerson.class);
+        SelectQuery<AbstractPerson> query = new SelectQuery<AbstractPerson>(AbstractPerson.class);
         query.addPrefetch(AbstractPerson.NOTES_PROPERTY).setSemantics(
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
@@ -255,6 +262,7 @@ public class SingleTableInheritanceTest extends ServerCase {
         });
     }
 
+    @Test
     public void testRelationshipAbstractFromSuperPrefetchingDisjoint() {
         context
                 .performGenericQuery(new SQLTemplate(
@@ -268,7 +276,7 @@ public class SingleTableInheritanceTest extends ServerCase {
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (4, 'BB', 3)"));
 
-        SelectQuery query = new SelectQuery(AbstractPerson.class);
+        SelectQuery<AbstractPerson> query = new SelectQuery<AbstractPerson>(AbstractPerson.class);
         query.addPrefetch(AbstractPerson.NOTES_PROPERTY);
 
         final AbstractPerson person = (AbstractPerson) Cayenne.objectForQuery(
@@ -292,6 +300,7 @@ public class SingleTableInheritanceTest extends ServerCase {
         });
     }
 
+    @Test
     public void testRelationshipAbstractToSuperPrefetchingDisjoint() {
         context
                 .performGenericQuery(new SQLTemplate(
@@ -306,7 +315,7 @@ public class SingleTableInheritanceTest extends ServerCase {
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (3, 'BB', 2)"));
 
-        SelectQuery query = new SelectQuery(PersonNotes.class);
+        SelectQuery<PersonNotes> query = new SelectQuery<PersonNotes>(PersonNotes.class);
         query.addPrefetch(PersonNotes.PERSON_PROPERTY);
         query.addOrdering(PersonNotes.NOTES_PROPERTY, SortOrder.ASCENDING);
 
@@ -322,6 +331,7 @@ public class SingleTableInheritanceTest extends ServerCase {
         });
     }
 
+    @Test
     public void testRelationshipAbstractToSuperPrefetchingJoint() {
         context
                 .performGenericQuery(new SQLTemplate(
@@ -332,7 +342,7 @@ public class SingleTableInheritanceTest extends ServerCase {
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (3, 'AA', 3)"));
 
-        SelectQuery query = new SelectQuery(PersonNotes.class);
+        SelectQuery<PersonNotes> query = new SelectQuery<PersonNotes>(PersonNotes.class);
         query.addPrefetch(PersonNotes.PERSON_PROPERTY).setSemantics(
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
@@ -347,6 +357,7 @@ public class SingleTableInheritanceTest extends ServerCase {
 
     }
 
+    @Test
     public void testSave() throws Exception {
         ClientCompany company = context.newObject(ClientCompany.class);
         company.setName("Boeing");
@@ -363,7 +374,8 @@ public class SingleTableInheritanceTest extends ServerCase {
         context.commitChanges();
         context.invalidateObjects(company, rep, employee);
 
-        SelectQuery query = new SelectQuery(CustomerRepresentative.class);
+        SelectQuery<CustomerRepresentative> query = 
+        		new SelectQuery<CustomerRepresentative>(CustomerRepresentative.class);
         List<?> reps = context2.performQuery(query);
 
         assertEquals(1, reps.size());
@@ -373,10 +385,11 @@ public class SingleTableInheritanceTest extends ServerCase {
     /**
      * Tests that to-one relationship produces correct subclass.
      */
+    @Test
     public void testEmployeeAddress() throws Exception {
         createEmployeeAddressDataSet();
 
-        List<?> addresses = context.performQuery(new SelectQuery(Address.class));
+        List<?> addresses = context.performQuery(new SelectQuery<Address>(Address.class));
 
         assertEquals(1, addresses.size());
         Address address = (Address) addresses.get(0);
@@ -386,10 +399,11 @@ public class SingleTableInheritanceTest extends ServerCase {
     /**
      * Tests that to-one relationship produces correct subclass.
      */
+    @Test
     public void testManagerAddress() throws Exception {
         createManagerAddressDataSet();
 
-        List<?> addresses = context.performQuery(new SelectQuery(Address.class));
+        List<?> addresses = context.performQuery(new SelectQuery<Address>(Address.class));
 
         assertEquals(1, addresses.size());
         Address address = (Address) addresses.get(0);
@@ -398,6 +412,7 @@ public class SingleTableInheritanceTest extends ServerCase {
         assertSame(Manager.class, e.getClass());
     }
 
+    @Test
     public void testCAY592() throws Exception {
         createManagerAddressDataSet();
 
@@ -421,6 +436,7 @@ public class SingleTableInheritanceTest extends ServerCase {
     /**
      * Tests that to-one relationship produces correct subclass.
      */
+    @Test
     public void testRepCompany() throws Exception {
         createRepCompanyDataSet();
 
@@ -436,6 +452,7 @@ public class SingleTableInheritanceTest extends ServerCase {
     /**
      * Tests that to-many relationship produces correct subclasses.
      */
+    @Test
     public void testDepartmentEmployees() throws Exception {
         createDepartmentEmployeesDataSet();
 
@@ -449,6 +466,7 @@ public class SingleTableInheritanceTest extends ServerCase {
         assertEquals(1, countObjectOfClass(employees, Manager.class));
     }
 
+    @Test
     public void testSelectInheritanceResolving() throws Exception {
         createSelectDataSet();
 
@@ -465,6 +483,7 @@ public class SingleTableInheritanceTest extends ServerCase {
      * Test for CAY-1008: Reverse relationships may not be correctly set if inheritance is
      * used.
      */
+    @Test
     public void testCAY1008() {
         RelatedEntity related = context.newObject(RelatedEntity.class);
 
@@ -486,6 +505,8 @@ public class SingleTableInheritanceTest extends ServerCase {
     /**
      * Test for CAY-1009: Bogus runtime relationships can mess up commit.
      */
+    @Ignore
+    @Test
     public void testCAY1009() {
 
         // We should have only one relationship. DirectToSubEntity -> SubEntity.

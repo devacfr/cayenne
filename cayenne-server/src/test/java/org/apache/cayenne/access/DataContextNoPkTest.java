@@ -29,10 +29,11 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.NoPkTestEntity;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextNoPkTest extends ServerCase {
 
     @Inject
@@ -50,6 +51,7 @@ public class DataContextNoPkTest extends ServerCase {
         noPkTestTable.insert(2);
     }
 
+    @Test
     public void testNoPkFetchObjects() throws Exception {
         try {
             List objects = context.performQuery(new SelectQuery(NoPkTestEntity.class));
@@ -62,6 +64,7 @@ public class DataContextNoPkTest extends ServerCase {
         }
     }
 
+    @Test
     public void testNoPkFetchDataRows() throws Exception {
         SelectQuery query = new SelectQuery(NoPkTestEntity.class);
         query.setFetchingDataRows(true);

@@ -18,7 +18,8 @@
  ****************************************************************/
 package org.apache.cayenne.access;
 
-import junit.framework.TestCase;
+import java.net.URL;
+import java.util.ArrayList;
 
 import org.apache.cayenne.configuration.ConfigurationNameMapper;
 import org.apache.cayenne.configuration.ConfigurationTree;
@@ -40,9 +41,8 @@ import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.map.Relationship;
 import org.apache.cayenne.map.naming.LegacyNameGenerator;
 import org.apache.cayenne.resource.URLResource;
-
-import java.net.URL;
-import java.util.ArrayList;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 public class ManyToManyCandidateEntityTest extends TestCase {
 
@@ -52,6 +52,7 @@ public class ManyToManyCandidateEntityTest extends TestCase {
     public void setUp() throws Exception {
         Module testModule = new Module() {
 
+            @Override
             public void configure(Binder binder) {
                 binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
                 binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
@@ -74,18 +75,21 @@ public class ManyToManyCandidateEntityTest extends TestCase {
         map = tree.getRootNode().getDataMap(testConfigName);
     }
 
+    @Test
     public void testMatchingForManyToManyEntity() throws Exception {
         ObjEntity manyToManyEntity = map.getObjEntity("Table1Table2");
 
         assertNotNull(ManyToManyCandidateEntity.build(manyToManyEntity));
     }
 
+    @Test
     public void testMatchingForNotManyToManyEntity() throws Exception {
         ObjEntity entity = map.getObjEntity("Table1");
 
         assertNull(ManyToManyCandidateEntity.build(entity));
     }
 
+    @Test
     public void testOptimisationForManyToManyEntity() {
         ObjEntity manyToManyEntity = map.getObjEntity("Table1Table2");
 

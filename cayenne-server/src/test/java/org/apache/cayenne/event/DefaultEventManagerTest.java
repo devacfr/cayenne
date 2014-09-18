@@ -36,13 +36,19 @@ public class DefaultEventManagerTest extends TestCase implements EventListener {
     public int numberOfReceivedEvents;
 
     // the event manager used for testing
-    private EventManager eventManager;
+    private DefaultEventManager eventManager;
 
     @Override
     public void setUp() {
         eventManager = new DefaultEventManager();
         numberOfReceivedEvents = 0;
         numberOfReceivedEventsForClass = 0;
+    }
+
+    @Override
+    protected void tearDown() throws Exception {
+        super.tearDown();
+        eventManager.shutdown();
     }
 
     public void testSubjectListenerWouldRegisterListener() {

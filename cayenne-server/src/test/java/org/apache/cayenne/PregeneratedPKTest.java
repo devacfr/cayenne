@@ -25,8 +25,9 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 /**
  * This test case ensures that PK pre-generated for the entity manually before commit is
@@ -35,7 +36,7 @@ import org.apache.cayenne.unit.di.server.UseServerRuntime;
 // TODO: 1/16/2006 - the algorithm used to generate the PK may be included in
 // DataObjectUtils to pull the PK on demand. A caveat - we need to analyze DataObject in
 // question to see if a PK is numeric and not propagated.
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class PregeneratedPKTest extends ServerCase {
 
     @Inject
@@ -55,6 +56,7 @@ public class PregeneratedPKTest extends ServerCase {
         dbHelper.deleteAll("GALLERY");
     }
 
+    @Test
     public void testLongPk() throws Exception {
         Artist a = context.newObject(Artist.class);
         a.setArtistName("XXX");

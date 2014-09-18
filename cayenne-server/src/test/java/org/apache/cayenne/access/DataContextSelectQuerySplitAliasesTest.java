@@ -26,10 +26,11 @@ import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextSelectQuerySplitAliasesTest extends ServerCase {
 
     @Inject
@@ -72,6 +73,7 @@ public class DataContextSelectQuerySplitAliasesTest extends ServerCase {
         tPainting.insert(3, 2, "X");
     }
 
+    @Test
     public void testAliasPathSplits_SinglePath() throws Exception {
         createTwoArtistsTwoPaintingsDataSet();
 
@@ -85,6 +87,7 @@ public class DataContextSelectQuerySplitAliasesTest extends ServerCase {
         assertEquals("AA", artists.get(0).getArtistName());
     }
 
+    @Test
     public void testAliasPathSplits_SplitJoin() throws Exception {
         createTwoArtistsThreePaintingsDataSet();
 

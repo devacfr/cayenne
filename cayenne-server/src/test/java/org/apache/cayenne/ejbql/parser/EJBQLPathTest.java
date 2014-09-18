@@ -18,10 +18,12 @@
  ****************************************************************/
 package org.apache.cayenne.ejbql.parser;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 public class EJBQLPathTest extends TestCase {
 
+    @Test
     public void testGetAbsolutePath() {
         EJBQLPath path = new EJBQLPath(-1);
         EJBQLIdentifier id = new EJBQLIdentifier(-1);
@@ -29,7 +31,7 @@ public class EJBQLPathTest extends TestCase {
 
         EJBQLIdentificationVariable c1 = new EJBQLIdentificationVariable(-1);
         c1.setText("y");
-        
+
         path.jjtAddChild(id, 0);
         path.jjtAddChild(c1, 1);
         assertEquals("x.y", path.getAbsolutePath());

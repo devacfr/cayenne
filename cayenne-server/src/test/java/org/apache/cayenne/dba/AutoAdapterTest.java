@@ -29,15 +29,17 @@ import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.log.NoopJdbcEventLogger;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class AutoAdapterTest extends ServerCase {
 
     @Inject
     private DataNode dataNode;
 
+    @Test
     public void testGetAdapter_Proxy() throws Exception {
         Provider<DbAdapter> adapterProvider = mock(Provider.class);
         when(adapterProvider.get()).thenReturn(dataNode.getAdapter());

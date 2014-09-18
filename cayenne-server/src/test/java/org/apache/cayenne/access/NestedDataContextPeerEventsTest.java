@@ -26,10 +26,11 @@ import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.test.parallel.ParallelTestContainer;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class NestedDataContextPeerEventsTest extends ServerCase {
 
 	@Inject
@@ -38,6 +39,7 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
 	@Inject
 	private ServerRuntime runtime;
 
+	@Test
 	public void testPeerObjectUpdatedTempOID() throws Exception {
 
 		ObjectContext peer1 = runtime.newContext(context);
@@ -66,6 +68,7 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
 		}.runTest(2000);
 	}
 
+	@Test
 	public void testPeerObjectUpdatedSimpleProperty() throws Exception {
 		Artist a = context.newObject(Artist.class);
 		a.setArtistName("X");
@@ -95,6 +98,7 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
 
 	}
 
+	@Test
 	public void testPeerObjectUpdatedToOneRelationship() throws Exception {
 
 		Artist a = context.newObject(Artist.class);
@@ -135,6 +139,7 @@ public class NestedDataContextPeerEventsTest extends ServerCase {
 
 	}
 
+	@Test
 	public void testPeerObjectUpdatedToManyRelationship() throws Exception {
 
 		Artist a = context.newObject(Artist.class);

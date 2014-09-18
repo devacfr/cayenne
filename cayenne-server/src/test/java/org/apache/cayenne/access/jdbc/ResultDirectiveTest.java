@@ -38,13 +38,14 @@ import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 /**
  * Test for Result directive to check if we could use ResultDitrective optionally.
  */
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class ResultDirectiveTest extends ServerCase {
 
     @Inject
@@ -56,8 +57,10 @@ public class ResultDirectiveTest extends ServerCase {
     @Inject
     private JdbcAdapter dbAdapter;
 
+
     @Override
-    protected void setUpAfterInjection() throws Exception {
+    public void setUp() throws Exception {
+    	super.setUp();
         dbHelper.deleteAll("PAINTING_INFO");
         dbHelper.deleteAll("PAINTING");
         dbHelper.deleteAll("PAINTING1");
@@ -68,6 +71,7 @@ public class ResultDirectiveTest extends ServerCase {
         dbHelper.deleteAll("GALLERY");
     }
 
+    @Test
     public void testWithoutResultDirective() throws Exception {
         String sql = "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST";
         Map<String, Object> artist = insertArtist();
@@ -77,6 +81,7 @@ public class ResultDirectiveTest extends ServerCase {
         assertEquals(artist.get("ARTIST_NAME"), selectResult.get("ARTIST_NAME"));
     }
 
+    @Test
     public void testWithOnlyResultDirective() throws Exception {
         String sql = "SELECT #result('ARTIST_ID' 'java.lang.Integer'),"
                 + " #result('ARTIST_NAME' 'java.lang.String')"
@@ -91,6 +96,7 @@ public class ResultDirectiveTest extends ServerCase {
                 .trim());
     }
 
+    @Test
     public void testWithMixedDirectiveUse1() throws Exception {
         String sql = "SELECT ARTIST_ID,"
                 + " #result('ARTIST_NAME' 'java.lang.String')"
@@ -105,6 +111,7 @@ public class ResultDirectiveTest extends ServerCase {
                 .trim());
     }
 
+    @Test
     public void testWithMixedDirectiveUse2() throws Exception {
         String sql = "SELECT #result('ARTIST_ID' 'java.lang.Integer'),"
                 + " ARTIST_NAME "
@@ -153,7 +160,7 @@ public class ResultDirectiveTest extends ServerCase {
         
         SQLTemplateAction action = new SQLTemplateAction(template, node);
 
-        Connection c = runtime
+        Connection c = ((ServerRuntime)runtime)
                 .getDataDomain()
                 .getDataNodes()
                 .iterator()
@@ -174,9 +181,8 @@ public class ResultDirectiveTest extends ServerCase {
         }
 
         MockOperationObserver observer = new MockOperationObserver();
-        SelectQuery query = new SelectQuery(Artist.class);
-        runtime
-                .getDataDomain()
+        SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
+        runtime.getDataDomain()
                 .performQueries(Collections.singletonList(query), observer);
 
         List<?> data = observer.rowsForQuery(query);

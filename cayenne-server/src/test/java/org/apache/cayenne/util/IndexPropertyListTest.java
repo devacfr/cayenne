@@ -23,10 +23,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import junit.framework.TestCase;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
+
 
 public class IndexPropertyListTest extends TestCase {
 
+	@Test
     public void testSort() {
 
         IndexedObject o1 = new IndexedObject(1);
@@ -34,7 +37,7 @@ public class IndexPropertyListTest extends TestCase {
         IndexedObject o3 = new IndexedObject(3);
         IndexedObject o4 = new IndexedObject(4);
 
-        List list1 = Arrays.asList(o2, o4, o3, o1);
+        List<IndexedObject> list1 = Arrays.asList(o2, o4, o3, o1);
 
         IndexPropertyList indexedList = new IndexPropertyList("order", list1, true);
         // sort should be done implictly on get...
@@ -43,7 +46,7 @@ public class IndexPropertyListTest extends TestCase {
         assertEquals(o3, indexedList.get(2));
         assertEquals(o4, indexedList.get(3));
 
-        List list2 = Arrays.asList(o2, o4, o3, o1);
+        List<IndexedObject> list2 = Arrays.asList(o2, o4, o3, o1);
         IndexPropertyList indexedUnsortedList = new IndexPropertyList(
                 "order",
                 list2,
@@ -55,13 +58,14 @@ public class IndexPropertyListTest extends TestCase {
         assertEquals(o1, indexedUnsortedList.get(3));
     }
 
+	@Test
     public void testAppend() {
         IndexedObject o1 = new IndexedObject(1);
         IndexedObject o2 = new IndexedObject(2);
         IndexedObject o3 = new IndexedObject(3);
         IndexedObject o4 = new IndexedObject(4);
 
-        List list1 = new ArrayList(Arrays.asList(o2, o4, o3, o1));
+        List<IndexedObject> list1 = new ArrayList<IndexedObject>(Arrays.asList(o2, o4, o3, o1));
 
         IndexPropertyList indexedList = new IndexPropertyList("order", list1, true);
 
@@ -72,13 +76,14 @@ public class IndexPropertyListTest extends TestCase {
         assertTrue(o4.getOrder() < o5.getOrder());
     }
 
+	@Test
     public void testInsert() {
         IndexedObject o1 = new IndexedObject(1);
         IndexedObject o2 = new IndexedObject(2);
         IndexedObject o3 = new IndexedObject(3);
         IndexedObject o4 = new IndexedObject(4);
 
-        List list1 = new ArrayList(Arrays.asList(o2, o4, o3, o1));
+        List<IndexedObject> list1 = new ArrayList<IndexedObject>(Arrays.asList(o2, o4, o3, o1));
 
         IndexPropertyList indexedList = new IndexPropertyList("order", list1, true);
 

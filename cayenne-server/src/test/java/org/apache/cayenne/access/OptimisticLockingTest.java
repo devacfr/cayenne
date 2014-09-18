@@ -31,10 +31,11 @@ import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;
 import org.apache.cayenne.testdo.locking.RelLockingTestEntity;
 import org.apache.cayenne.testdo.locking.SimpleLockingTestEntity;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.LOCKING_PROJECT)
+@CayenneConfiguration(ServerCase.LOCKING_PROJECT)
 public class OptimisticLockingTest extends ServerCase {
 
     @Inject
@@ -117,6 +118,7 @@ public class OptimisticLockingTest extends ServerCase {
         tSimpleLockingTest.delete().execute();
     }
 
+    @Test
     public void testSuccessSimpleLockingOnDelete() throws Exception {
         createSimpleLockingDataSet();
 
@@ -134,6 +136,7 @@ public class OptimisticLockingTest extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testSuccessSimpleLockingOnDeleteFollowedByInvalidate() throws Exception {
         createSimpleLockingDataSet();
 
@@ -152,6 +155,7 @@ public class OptimisticLockingTest extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testSuccessSimpleLockingOnDeleteFollowedByForgetSnapshot()
             throws Exception {
         createSimpleLockingDataSet();
@@ -171,6 +175,7 @@ public class OptimisticLockingTest extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testSuccessSimpleLockingOnDeletePrecededByInvalidate() throws Exception {
         createSimpleLockingDataSet();
 
@@ -189,6 +194,7 @@ public class OptimisticLockingTest extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testSuccessSimpleLockingOnDeletePrecededByForgetSnapshot()
             throws Exception {
         createSimpleLockingDataSet();
@@ -208,6 +214,7 @@ public class OptimisticLockingTest extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testFailSimpleLockingOnDelete() throws Exception {
         createSimpleLockingDataSet();
 
@@ -235,6 +242,7 @@ public class OptimisticLockingTest extends ServerCase {
         }
     }
 
+    @Test
     public void testSuccessSimpleLockingOnUpdate() throws Exception {
         createSimpleLockingDataSet();
 
@@ -253,6 +261,7 @@ public class OptimisticLockingTest extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testSuccessSimpleLockingOnUpdateFollowedByInvalidate() throws Exception {
         createSimpleLockingDataSet();
 
@@ -272,6 +281,7 @@ public class OptimisticLockingTest extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testSuccessSimpleLockingOnUpdatePrecededByInvalidate() throws Exception {
         createSimpleLockingDataSet();
 
@@ -291,6 +301,7 @@ public class OptimisticLockingTest extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testSuccessSimpleLockingOnUpdateFollowedByForgetSnapshot()
             throws Exception {
         createSimpleLockingDataSet();
@@ -311,6 +322,7 @@ public class OptimisticLockingTest extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testSuccessSimpleLockingOnUpdatePrecededByForgetSnapshot()
             throws Exception {
         createSimpleLockingDataSet();
@@ -331,6 +343,7 @@ public class OptimisticLockingTest extends ServerCase {
         context.commitChanges();
     }
 
+    @Test
     public void testFailSimpleLocking() throws Exception {
         createSimpleLockingDataSet();
 
@@ -359,6 +372,7 @@ public class OptimisticLockingTest extends ServerCase {
         }
     }
 
+    @Test
     public void testFailLockingOnNull() throws Exception {
         createLockingOnNullDataSet();
 
@@ -388,6 +402,7 @@ public class OptimisticLockingTest extends ServerCase {
         }
     }
 
+    @Test
     public void testSuccessLockingOnMixed() throws Exception {
         createLockingOnMixedDataSet();
 
@@ -412,6 +427,7 @@ public class OptimisticLockingTest extends ServerCase {
         // this requires refactoring of ContextCommit.
     }
 
+    @Test
     public void testFailLockingOnToOne() throws Exception {
         createLockingOnToOneDataSet();
 
@@ -446,6 +462,7 @@ public class OptimisticLockingTest extends ServerCase {
         }
     }
 
+    @Test
     public void testFailRetrieveRow() throws Exception {
         createSimpleLockingDataSet();
 
@@ -471,6 +488,7 @@ public class OptimisticLockingTest extends ServerCase {
         }
     }
 
+    @Test
     public void testFailRetrieveDeletedRow() throws Exception {
         createSimpleLockingDataSet();
 

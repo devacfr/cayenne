@@ -20,19 +20,33 @@
 package org.apache.cayenne;
 
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
 import org.apache.cayenne.testdo.testmap.Painting1;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class CDOMany2OneNoRevTest extends ServerCase {
 
     @Inject
     private ObjectContext context;
 
-    public void testNewAdd() throws Exception {
+    @Inject
+    private DBHelper dbHelper;
 
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        // [devacfr] To resolve conflict (Something wrong depending the order execution)
+        // between cached primary key and the real primary keys in database
+        dbHelper.deleteAll("PAINTING");
+        dbHelper.deleteAll("ARTIST");
+    }
+    
+    @Test
+    public void testNewAdd() throws Exception {
+       
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("a");
         Painting1 p1 = context.newObject(Painting1.class);

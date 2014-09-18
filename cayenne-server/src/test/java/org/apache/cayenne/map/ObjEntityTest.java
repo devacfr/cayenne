@@ -33,11 +33,12 @@ import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.exp.parser.ASTObjPath;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
 import org.apache.cayenne.util.Util;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class ObjEntityTest extends ServerCase {
 
     @Inject
@@ -58,6 +59,7 @@ public class ObjEntityTest extends ServerCase {
         dbHelper.deleteAll("ARTIST");
     }
 
+    @Test
     public void testGetAttributeWithOverrides() {
 
         DataMap map = new DataMap("dm");
@@ -91,6 +93,7 @@ public class ObjEntityTest extends ServerCase {
         assertSame(subEntity, a3.getEntity());
     }
 
+    @Test
     public void testGetPrimaryKeys() {
         ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
         Collection<ObjAttribute> pks = artistE.getPrimaryKeys();
@@ -129,6 +132,7 @@ public class ObjEntityTest extends ServerCase {
         assertTrue(clientMeaningfulPKE.getAttributes().contains(clientmpk));
     }
 
+    @Test
     public void testAttributes() {
         ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
         ObjAttribute attr = artistE.getAttribute("artistName");
@@ -137,6 +141,7 @@ public class ObjEntityTest extends ServerCase {
         assertEquals(attr.isMandatory(), attr.getDbAttribute().isMandatory());
     }
 
+    @Test
     public void testLastPathComponent() {
         ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
 
@@ -164,6 +169,7 @@ public class ObjEntityTest extends ServerCase {
         assertEquals("toGallery", lastAliasedRelationship.getRelationship().getName());
     }
 
+    @Test
     public void testGeneric() {
         ObjEntity e1 = new ObjEntity("e1");
         assertTrue(e1.isGeneric());
@@ -184,6 +190,7 @@ public class ObjEntityTest extends ServerCase {
         assertTrue(e1.isGeneric());
     }
 
+    @Test
     public void testServerOnly() {
         ObjEntity e1 = new ObjEntity("e1");
 
@@ -192,6 +199,7 @@ public class ObjEntityTest extends ServerCase {
         assertTrue(e1.isServerOnly());
     }
 
+    @Test
     public void testClientAllowed() {
         ObjEntity e1 = new ObjEntity("e1");
 
@@ -209,6 +217,7 @@ public class ObjEntityTest extends ServerCase {
         assertFalse(e1.isClientAllowed());
     }
 
+    @Test
     public void testGetPrimaryKeyNames() {
         ObjEntity entity = new ObjEntity("entity");
         DbEntity dbentity = new DbEntity("dbe");
@@ -244,6 +253,7 @@ public class ObjEntityTest extends ServerCase {
         assertTrue(entity.getPrimaryKeyNames().contains(pk2.getName()));
     }
 
+    @Test
     public void testGetClientEntity() {
 
         DataMap map = new DataMap();

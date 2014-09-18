@@ -28,15 +28,17 @@ import org.apache.cayenne.testdo.inheritance_flat.Role;
 import org.apache.cayenne.testdo.inheritance_flat.User;
 import org.apache.cayenne.testdo.inheritance_flat.UserProperties;
 import org.apache.cayenne.testdo.testmap.annotations.Tag2;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.INHERTITANCE_SINGLE_TABLE1_PROJECT)
+@CayenneConfiguration(ServerCase.INHERTITANCE_SINGLE_TABLE1_PROJECT)
 public class LifecycleCallbackRegistry_InheritanceTest extends ServerCase {
 
     @Inject
     private ObjectContext context;
 
+    @Test
     public void testAddListener_PostAdd_EntityInheritance() {
         LifecycleCallbackRegistry registry = new LifecycleCallbackRegistry(context
                 .getEntityResolver());

@@ -22,21 +22,22 @@ import javax.naming.InitialContext;
 import javax.naming.NameNotFoundException;
 
 import org.apache.cayenne.configuration.DataNodeDescriptor;
-import org.apache.cayenne.configuration.server.JNDIDataSourceFactory;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.JNDISetup;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 import com.mockrunner.mock.jdbc.MockDataSource;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class JNDIDataSourceFactoryTest extends ServerCase {
     
     @Inject
     private Injector injector;
 
+    @Test
     public void testGetDataSource_NameBound() throws Exception {
 
         DataNodeDescriptor descriptor = new DataNodeDescriptor();
@@ -60,6 +61,7 @@ public class JNDIDataSourceFactoryTest extends ServerCase {
         }
     }
 
+    @Test
     public void testGetDataSource_NameBoundWithPrefix() throws Exception {
 
         DataNodeDescriptor descriptor = new DataNodeDescriptor();
@@ -83,6 +85,7 @@ public class JNDIDataSourceFactoryTest extends ServerCase {
         }
     }
 
+    @Test
     public void testGetDataSource_NameNotBound() throws Exception {
 
         DataNodeDescriptor descriptor = new DataNodeDescriptor();

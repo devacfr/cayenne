@@ -29,15 +29,17 @@ import org.apache.cayenne.reflect.PropertyVisitor;
 import org.apache.cayenne.reflect.SingletonFaultFactory;
 import org.apache.cayenne.reflect.ToManyProperty;
 import org.apache.cayenne.reflect.ToOneProperty;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataObjectDescriptorFactoryTest extends ServerCase {
 
     @Inject
     private EntityResolver resolver;
 
+    @Test
     public void testVisitDeclaredProperties_IterationOrder() {
 
         DataObjectDescriptorFactory factory = new DataObjectDescriptorFactory(
@@ -74,6 +76,7 @@ public class DataObjectDescriptorFactoryTest extends ServerCase {
 
     }
 
+    @Test
     public void testVisitProperties_IterationOrder() {
 
         DataObjectDescriptorFactory factory = new DataObjectDescriptorFactory(

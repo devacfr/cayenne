@@ -19,14 +19,16 @@
 
 package org.apache.cayenne.unit.jira;
 
-import junit.framework.TestCase;
 
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 /**
  */
 public class CAY_10062004_ExpTest extends TestCase {
 
+	@Test
     public void testDeepCopy() throws Exception {
 
         Expression parsed = Expression
@@ -37,6 +39,7 @@ public class CAY_10062004_ExpTest extends TestCase {
         assertEquals(parsed.toString(), finalExpression.toString());
     }
 
+	@Test
     public void testAndExpOrExp() throws Exception {
 
         Expression parsed = Expression

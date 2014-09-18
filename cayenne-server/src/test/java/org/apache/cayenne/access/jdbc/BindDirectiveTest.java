@@ -45,14 +45,15 @@ import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
 import org.apache.cayenne.unit.di.server.ServerCaseDataSourceFactory;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
 /**
  * Tests BindDirective for passed null parameters and for not passed parameters
  */
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class BindDirectiveTest extends ServerCase {
 
     @Inject
@@ -70,15 +71,18 @@ public class BindDirectiveTest extends ServerCase {
     @Inject
     private JdbcEventLogger logger;
 
+
     @Override
-    protected void setUpAfterInjection() throws Exception {
+    public void setUp() throws Exception {
+    	super.setUp();
         dbHelper.deleteAll("PAINTING_INFO");
         dbHelper.deleteAll("PAINTING");
         dbHelper.deleteAll("ARTIST_EXHIBIT");
         dbHelper.deleteAll("ARTIST_GROUP");
         dbHelper.deleteAll("ARTIST");
     }
-
+    
+    @Test
     public void testBindTimestamp() throws Exception {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", new Integer(1));
@@ -96,6 +100,7 @@ public class BindDirectiveTest extends ServerCase {
         assertEquals(Date.class, row.get("DATE_OF_BIRTH").getClass());
     }
 
+    @Test
     public void testBindSQLDate() throws Exception {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", new Integer(1));
@@ -113,6 +118,7 @@ public class BindDirectiveTest extends ServerCase {
         assertEquals(Date.class, row.get("DATE_OF_BIRTH").getClass());
     }
 
+    @Test
     public void testBindUtilDate() throws Exception {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", new Integer(1));
@@ -130,6 +136,7 @@ public class BindDirectiveTest extends ServerCase {
         assertEquals(Date.class, row.get("DATE_OF_BIRTH").getClass());
     }
 
+    @Test
     public void testBindingForCollection() throws Exception {
 
         // insert 3 artists
@@ -156,6 +163,7 @@ public class BindDirectiveTest extends ServerCase {
         assertEquals(2, result.size());
     }
 
+    @Test
     public void testBindForPassedNullParam() throws Exception {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", new Long(1));
@@ -171,6 +179,7 @@ public class BindDirectiveTest extends ServerCase {
         assertNull(row.get("DATE_OF_BIRTH"));
     }
 
+    @Test
     public void testBindWithJDBCForPassedNullParam() throws Exception {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", new Long(1));
@@ -186,6 +195,7 @@ public class BindDirectiveTest extends ServerCase {
         assertNull(row.get("DATE_OF_BIRTH"));
     }
 
+    @Test
     public void testBindForNotPassedParam() throws Exception {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", new Long(1));
@@ -200,6 +210,7 @@ public class BindDirectiveTest extends ServerCase {
         assertNull(row.get("DATE_OF_BIRTH"));
     }
 
+    @Test
     public void testBindWithJDBCForNotPassedParam() throws Exception {
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("id", new Long(1));

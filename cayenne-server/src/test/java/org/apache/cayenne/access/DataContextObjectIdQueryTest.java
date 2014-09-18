@@ -28,10 +28,11 @@ import org.apache.cayenne.query.ObjectIdQuery;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextObjectIdQueryTest extends ServerCase {
 
     @Inject
@@ -50,6 +51,7 @@ public class DataContextObjectIdQueryTest extends ServerCase {
         dbHelper.deleteAll("ARTIST");
     }
 
+    @Test
     public void testRefreshNullifiedValuesNew() {
 
         Artist a = context.newObject(Artist.class);
@@ -73,6 +75,7 @@ public class DataContextObjectIdQueryTest extends ServerCase {
         assertEquals("X", a1.getArtistName());
     }
 
+    @Test
     public void testNoRefreshValuesNew() {
 
         Artist a = context.newObject(Artist.class);
@@ -94,6 +97,7 @@ public class DataContextObjectIdQueryTest extends ServerCase {
         assertEquals("X", a1.getArtistName());
     }
 
+    @Test
     public void testRefreshNullifiedValuesExisting() {
 
         SQLTemplate insert = new SQLTemplate(

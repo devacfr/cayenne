@@ -26,13 +26,14 @@ import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testdo.testmap.Artist;
+import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.tx.BaseTransaction;
 import org.apache.cayenne.tx.CayenneTransaction;
 import org.apache.cayenne.tx.Transaction;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.unit.di.server.UseServerRuntime;
+import org.junit.Test;
 
-@UseServerRuntime(ServerCase.TESTMAP_PROJECT)
+@CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class TransactionThreadTest extends ServerCase {
 
     @Inject
@@ -53,6 +54,7 @@ public class TransactionThreadTest extends ServerCase {
         dbHelper.deleteAll("ARTIST");
     }
 
+    @Test
     public void testThreadConnectionReuseOnSelect() throws Exception {
 
         ConnectionCounterTx t = new ConnectionCounterTx(new CayenneTransaction(logger));
@@ -83,30 +85,37 @@ public class TransactionThreadTest extends ServerCase {
             this.delegate = delegate;
         }
 
+        @Override
         public void begin() {
             delegate.begin();
         }
 
+        @Override
         public void commit() {
             delegate.commit();
         }
 
+        @Override
         public void rollback() {
             delegate.rollback();
         }
 
+        @Override
         public void setRollbackOnly() {
             delegate.setRollbackOnly();
         }
 
+        @Override
         public boolean isRollbackOnly() {
             return delegate.isRollbackOnly();
         }
 
+        @Override
         public Connection getConnection(String name) {
             return delegate.getConnection(name);
         }
 
+        @Override
         public void addConnection(String name, Connection connection) {
             if (connectionCount++ > 0) {
                 fail("Invalid attempt to add connection");
