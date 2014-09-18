@@ -94,8 +94,12 @@ public abstract class MergeCase extends ServerCase {
         assertTokensAndExecute(0, 0);
     }
 
-    protected DbMerger createMerger() {
-        return new DbMerger() {
+    protected DbMerger createMerger(MergerFactory mergerFactory) {
+        return createMerger(mergerFactory, null);
+    }
+
+    protected DbMerger createMerger(MergerFactory mergerFactory, ValueForNullProvider valueForNullProvider) {
+        return new DbMerger(mergerFactory, valueForNullProvider, null) {
 
             @Override
             public boolean includeTableName(String tableName) {
@@ -105,7 +109,7 @@ public abstract class MergeCase extends ServerCase {
     }
 
     protected List<MergerToken> createMergeTokens() {
-        return createMerger().createMergeTokens(node, map);
+        return createMerger(node.getAdapter().mergerFactory()).createMergeTokens(node, map);
     }
 
     /**

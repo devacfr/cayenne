@@ -36,7 +36,7 @@ import org.junit.Test;
 public class DropRelationshipToModelTest extends MergeCase {
 
 	@Test
-    public void testForreignKey() throws Exception {
+    public void testForeignKey() throws Exception {
         dropTableIfPresent("NEW_TABLE");
         dropTableIfPresent("NEW_TABLE2");
 
@@ -141,14 +141,15 @@ public class DropRelationshipToModelTest extends MergeCase {
         // try do use the merger to remove the relationship in the model
         tokens = createMergeTokens();
         assertTokens(tokens, 2, 0);
-        // TODO: reversing the following two tokens should also reverse the
-        // order
+        // TODO: reversing the following two tokens should also reverse the order
         MergerToken token0 = tokens.get(0).createReverse(mergerFactory());
         MergerToken token1 = tokens.get(1).createReverse(mergerFactory());
-        assertTrue(token0 instanceof DropColumnToModel);
-        assertTrue(token1 instanceof DropRelationshipToModel);
-        execute(token1);
+        if (!(token0 instanceof DropRelationshipToModel && token1 instanceof DropColumnToModel
+            || token1 instanceof DropRelationshipToModel && token0 instanceof DropColumnToModel)) {
+            fail();
+        }
         execute(token0);
+        execute(token1);
 
         // check after merging
         assertNull(dbEntity2.getAttribute(e2col2.getName()));
@@ -175,5 +176,4 @@ public class DropRelationshipToModelTest extends MergeCase {
         assertTokensAndExecute(2, 0);
         assertTokensAndExecute(0, 0);
     }
-
 }
