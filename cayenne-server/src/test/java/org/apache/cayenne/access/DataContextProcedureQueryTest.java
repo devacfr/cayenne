@@ -409,6 +409,7 @@ public class DataContextProcedureQueryTest extends ServerCase {
             return context.performQuery(q);
         } finally {
             BaseTransaction.bindThreadTransaction(null);
+            t.commit();
         }
     }
 

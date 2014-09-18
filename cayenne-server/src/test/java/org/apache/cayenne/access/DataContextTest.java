@@ -614,43 +614,41 @@ public class DataContextTest extends ServerCase {
     @Test
     public void testIterate() throws Exception {
 
-        createArtistsDataSet();
+		createArtistsDataSet();
 
-        SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
+		SelectQuery<Artist> q1 = new SelectQuery<Artist>(Artist.class);
+		
+		final int[] count = new int[1];
+		
+		context.iterate(q1, new ResultIteratorCallback<Artist>() {
 
-        context.iterate(q1, new ResultIteratorCallback<Artist>() {
-            public void iterate(ResultIterator<Artist> it) {
-                int count = 0;
+			@Override
+			public void next(Artist object) {
+				assertNotNull(object.getArtistName());
+				count[0]++;
+			}
+		});
+		
+		 assertEquals(7, count[0]);
+	}
 
-                for (Artist a : it) {
-                    assertNotNull(a.getArtistName());
-                    count++;
-                }
-
-                assertEquals(7, count);
-            }
-        });
-    }
-
-    @Test
     public void testIterateDataRows() throws Exception {
 
         createArtistsDataSet();
 
         SelectQuery<DataRow> q1 = SelectQuery.dataRowQuery(Artist.class, null);
-
+        final int[] count = new int[1];
+        
         context.iterate(q1, new ResultIteratorCallback<DataRow>() {
-            public void iterate(ResultIterator<DataRow> it) {
-                int count = 0;
-
-                for (DataRow a : it) {
-                    assertNotNull(a.get("ARTIST_ID"));
-                    count++;
-                }
-
-                assertEquals(7, count);
-            }
+        	
+        	@Override
+        	public void next(DataRow object) {
+        		 assertNotNull(object.get("ARTIST_ID"));
+                 count[0]++;
+        	}
         });
+        
+        assertEquals(7, count[0]);
     }
 
     @Test
