@@ -26,14 +26,23 @@ public class MockImplementation1_EventAnnotationsBase {
     public static boolean shutdown2;
     public static boolean shutdown3;
 
+    public static boolean initialize1;
+	public static boolean initialize2;
+
     public static void reset() {
         shutdown1 = false;
         shutdown2 = false;
         shutdown3 = false;
+        initialize1 = false;
+        initialize2 = false;
     }
+
 
     @BeforeScopeEnd
     public void onShutdown3() {
         shutdown3 = true;
     }
+
+
 }
+

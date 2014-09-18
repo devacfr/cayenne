@@ -18,13 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.di;
 
-import org.apache.cayenne.di.DIRuntimeException;
-
+import java.lang.annotation.Annotation;
 
 /**
  * A binding builder that helps with fluent binding creation.
- * 
- * @param <T> An interface type of the service being bound.
+ *
+ * @param <T>
+ *            An interface type of the service being bound.
  * @since 3.1
  */
 public interface BindingBuilder<T> {
@@ -33,27 +33,47 @@ public interface BindingBuilder<T> {
 
     BindingBuilder<T> toInstance(T instance) throws DIRuntimeException;
 
-    BindingBuilder<T> toProvider(Class<? extends Provider<? extends T>> providerType)
+    BindingBuilder<T> toProvider(Class<? extends javax.inject.Provider<? extends T>> providerType)
             throws DIRuntimeException;
 
-    BindingBuilder<T> toProviderInstance(Provider<? extends T> provider)
-            throws DIRuntimeException;
+    BindingBuilder<T> toProviderInstance(Provider<? extends T> provider) throws DIRuntimeException;
+
+    BindingBuilder<T> toProviderInstance(javax.inject.Provider<? extends T> provider) throws DIRuntimeException;
+
+    BindingBuilder<T> in(Class<? extends Annotation> scopeAnnotation);
 
     /**
-     * Sets the scope of a bound instance. This method is used to change the default scope
-     * which is usually a singleton to a custom scope.
+     * Sets the scope of a bound instance. This method is used to change the
+     * default scope which is usually a singleton to a custom scope.
      */
-    void in(Scope scope);
+    BindingBuilder<T> in(Scope scope);
 
     /**
-     * Sets the scope of a bound instance to singleton. Singleton is normally the default,
-     * so calling this method explicitly is rarely needed.
+     * Sets the scope of a bound instance to singleton. Singleton is normally
+     * the default, so calling this method explicitly is rarely needed.
      */
-    void inSingletonScope();
+    BindingBuilder<T> inSingletonScope();
 
     /**
-     * Sets the scope of a bound instance to "no scope". This means that a new instance of
-     * an object will be created on every call to {@link Injector#getInstance(Class)}.
+     * Sets the scope of a bound instance to "no scope". This means that a new
+     * instance of an object will be created on every call to
+     * {@link Injector#getInstance(Class)}.
      */
-    void withoutScope();
+    BindingBuilder<T> withoutScope();
+
+    /**
+     * Indicates to eagerly initialize this singleton-scoped binding upon
+     * cayenne startup.
+     * <p>
+     * <b>Note</b>
+     * </p>
+     * First, if there are problems with any of the singleton beans, exceptions
+     * will occur at cayenne startup time versus at the time when the singleton
+     * may first be used. Secondly, as many singleton beans are resource manager
+     * instances (like event manager or transaction managers) having the beans
+     * start with the initialization of the container avoids any delay when the
+     * service provided by the resource manager bean is requested the first
+     * time.
+     */
+    BindingBuilder<T> asEagerSingleton();
 }

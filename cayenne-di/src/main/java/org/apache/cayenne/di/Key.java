@@ -19,9 +19,9 @@
 package org.apache.cayenne.di;
 
 /**
- * An object that encapsulates a key used to store and lookup DI bindings. Key is made of
- * a binding type and an optional binding name.
- * 
+ * An object that encapsulates a key used to store and lookup DI bindings. Key
+ * is made of a binding type and an optional binding name.
+ *
  * @since 3.1
  */
 public class Key<T> {
@@ -38,9 +38,9 @@ public class Key<T> {
     }
 
     /**
-     * Creates a key for a named binding of a given type. 'bindingName' that is an empty
-     * String is treated the same way as a null 'bindingName'. In both cases a nameless
-     * binding key is created.
+     * Creates a key for a named binding of a given type. 'bindingName' that is
+     * an empty String is treated the same way as a null 'bindingName'. In both
+     * cases a nameless binding key is created.
      */
     public static <T> Key<T> get(Class<T> type, String bindingName) {
         return new Key<T>(type, bindingName);
@@ -53,14 +53,14 @@ public class Key<T> {
 
         this.type = type;
 
-        // will use type name in comparisons to ensure the key works across ClassLoaders.
+        // will use type name in comparisons to ensure the key works across
+        // ClassLoaders.
         this.typeName = type.getName();
 
-        // empty non-null binding names are often passed from annotation defaults and are
+        // empty non-null binding names are often passed from annotation
+        // defaults and are
         // treated as null
-        this.bindingName = bindingName != null && bindingName.length() > 0
-                ? bindingName
-                : null;
+        this.bindingName = bindingName != null && bindingName.length() > 0 ? bindingName : null;
     }
 
     public Class<T> getType() {
@@ -68,8 +68,8 @@ public class Key<T> {
     }
 
     /**
-     * Returns an optional name of the binding used to distinguish multiple bindings of
-     * the same object type.
+     * Returns an optional name of the binding used to distinguish multiple
+     * bindings of the same object type.
      */
     public String getBindingName() {
         return bindingName;
@@ -93,8 +93,7 @@ public class Key<T> {
             // bindingName can be null, so take this into account
             if (bindingName != null) {
                 return bindingName.equals(key.bindingName);
-            }
-            else {
+            } else {
                 return key.bindingName == null;
             }
         }

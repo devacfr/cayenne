@@ -36,7 +36,7 @@ class Decoration<T> {
     void after(DecoratorProvider<T> decoratorProvider) {
         decorators.add(decoratorProvider);
     }
-    
+
     List<DecoratorProvider<T>> decorators() {
         return decorators;
     }

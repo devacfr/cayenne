@@ -18,52 +18,91 @@
  ****************************************************************/
 package org.apache.cayenne.di;
 
+import java.lang.annotation.Annotation;
+
 /**
- * An object passed to a {@link Module} by the DI container during initialization, that
- * provides the API for the module to bind its services to the container. Note that the
- * default {@link Scope} of the bound objects is normally "singleton" and can be changed
- * to "no scope" or a custom scope via a corresponding method of a binding builder. E.g.
- * see {@link BindingBuilder#in(Scope)}.
- * 
+ * An object passed to a {@link Module} by the DI container during
+ * initialization, that provides the API for the module to bind its services to
+ * the container. Note that the default {@link Scope} of the bound objects is
+ * normally "singleton" and can be changed to "no scope" or a custom scope via a
+ * corresponding method of a binding builder. E.g. see
+ * {@link BindingBuilder#in(Scope)}.
+ *
  * @since 3.1
  */
 public interface Binder {
 
+    void bindScope(Class<? extends Annotation> scopeAnnotation, Scope scope);
+
     /**
-     * Starts an unnamed binding of a specific interface. Binding should continue using
-     * returned BindingBuilder.
+     * Starts an unnamed binding of a specific interface. Binding should
+     * continue using returned BindingBuilder.
      */
     <T> BindingBuilder<T> bind(Class<T> interfaceType);
 
     /**
-     * Starts a binding of a specific interface based on a provided binding key. This
-     * method is more generic than {@link #bind(Class)} and allows to create named
-     * bindings in addition to default ones. Binding should continue using returned
-     * BindingBuilder.
+     * Starts a binding of a specific interface based on a provided binding key.
+     * This method is more generic than {@link #bind(Class)} and allows to
+     * create named bindings in addition to default ones. Binding should
+     * continue using returned BindingBuilder.
      */
     <T> BindingBuilder<T> bind(Key<T> key);
 
     /**
-     * Starts a binding of a java.util.Map&lt;String, ?&gt; distinguished by its binding name.
-     * Map binding should continue using returned MapBuilder. This is somewhat equivalent
-     * of using "bind(Map.class, bindingName)", however returned MapBuilder provides extra
-     * DI capabilities.
+     * Starts a binding of a java.util.Map&lt;String, ?&gt; distinguished by its
+     * binding name. Map binding should continue using returned MapBuilder. This
+     * is somewhat equivalent of using "bind(Map.class, bindingName)", however
+     * returned MapBuilder provides extra DI capabilities.
      */
     <T> MapBuilder<T> bindMap(String bindingName);
 
     /**
-     * Starts a binding of a java.util.List&lt;?&gt; distinguished by its binding name. List
-     * binding should continue using returned ListBuilder. This is somewhat equivalent of
-     * using "bind(List.class, bindingName)", however returned ListBuilder provides extra
-     * DI capabilities.
+     * Starts a binding of a java.util.List&lt;?&gt; distinguished by its
+     * binding name. List binding should continue using returned ListBuilder.
+     * This is somewhat equivalent of using "bind(List.class, bindingName)",
+     * however returned ListBuilder provides extra DI capabilities.
      */
     <T> ListBuilder<T> bindList(String bindingName);
-    
+
+    /**
+     * Starts a binding of a constant value distinguished by its binding
+     * {@code name} parameter.
+     * <p>
+     * note: there is not conversion type, the value should be same type than
+     * method parameter or field of class.
+     *
+     * @param type
+     *            the type of value
+     * @param name
+     *            the binding name associated to this constant.
+     * @return Returns a new {@link ConstantBindingBuilder builder} instance
+     *         allowing to associate a value.
+     *
+     * @since 3.2
+     */
+    <T> ConstantBindingBuilder<T> bindConstant(Class<T> type, String name);
+
+    /**
+     * Starts a binding of a constant value distinguished by its binding
+     * {@code key} parameter.
+     * <p>
+     * note: there is not conversion type, the value should be same type than
+     * method parameter or field of class.
+     *
+     * @param key
+     *            the key representing the binding.
+     * @return Returns a new {@link ConstantBindingBuilder builder} instance
+     *         allowing to associate a value.
+     *
+     * @since 3.2
+     */
+    <T> ConstantBindingBuilder<T> bindConstant(Key<T> key);
+
     /**
      * @since 3.2
      */
     <T> DecoratorBuilder<T> decorate(Class<T> interfaceType);
-    
+
     /**
      * @since 3.2
      */

@@ -20,26 +20,26 @@ package org.apache.cayenne.di;
 
 import java.util.Collection;
 
-import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.spi.DefaultInjector;
 
 /**
  * A class that bootstraps the Cayenne DI container.
- * 
+ *
  * @since 3.1
  */
 public class DIBootstrap {
 
     /**
-     * Creates and returns an injector instance working with the set of provided modules.
+     * Creates and returns an injector instance working with the set of provided
+     * modules.
      */
-    public static Injector createInjector(Module... modules)
-            throws DIRuntimeException {
+    public static Injector createInjector(Module... modules) throws DIRuntimeException {
         return new DefaultInjector(modules);
     }
 
     /**
-     * Creates and returns an injector instance working with the set of provided modules.
+     * Creates and returns an injector instance working with the set of provided
+     * modules.
      */
     public static Injector createInjector(Collection<Module> modules) {
         Module[] moduleArray = modules.toArray(new Module[modules.size()]);

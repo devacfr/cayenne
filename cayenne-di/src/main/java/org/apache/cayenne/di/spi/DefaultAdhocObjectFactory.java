@@ -18,18 +18,19 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
+import javax.inject.Provider;
+
 import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.di.Provider;
 
 /**
  * A default implementation of {@link AdhocObjectFactory} that creates objects
  * using default no-arg constructor and injects dependencies into annotated
  * fields. Note that constructor injection is not supported by this factory.
- * 
+ *
  * @since 3.1
  */
 public class DefaultAdhocObjectFactory implements AdhocObjectFactory {

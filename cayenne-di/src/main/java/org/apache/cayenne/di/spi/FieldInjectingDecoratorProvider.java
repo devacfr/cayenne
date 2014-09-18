@@ -21,7 +21,6 @@ package org.apache.cayenne.di.spi;
 import java.lang.reflect.Field;
 
 import org.apache.cayenne.di.DIRuntimeException;
-import org.apache.cayenne.di.Provider;
 
 /**
  * @since 3.2
@@ -40,7 +39,7 @@ class FieldInjectingDecoratorProvider<T> implements DecoratorProvider<T> {
     }
 
     @Override
-    public Provider<T> get(final Provider<T> undecorated) throws DIRuntimeException {
+    public javax.inject.Provider<T> get(final javax.inject.Provider<T> undecorated) throws DIRuntimeException {
         return new FieldInjectingProvider<T>(delegate.get(undecorated), injector) {
 
             @Override

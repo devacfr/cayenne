@@ -18,17 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
+import javax.inject.Provider;
+
 import org.apache.cayenne.di.DIRuntimeException;
-import org.apache.cayenne.di.Provider;
 
 /**
  * A wrapper around a provider that itself generates providers.
- * 
+ *
  * @since 3.1
  */
 class CustomProvidersProvider<T> implements Provider<T> {
 
-    private Provider<Provider<? extends T>> providerOfProviders;
+    private final Provider<Provider<? extends T>> providerOfProviders;
 
     CustomProvidersProvider(Provider<Provider<? extends T>> providerOfProviders) {
         this.providerOfProviders = providerOfProviders;

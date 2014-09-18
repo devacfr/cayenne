@@ -16,27 +16,35 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.di;
+package org.apache.cayenne.di.mock;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.PARAMETER;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
+import org.apache.cayenne.di.BeforeScopeEnd;
 
-/**
- * @since 3.1
- * @deprecated Use javax.inject.Inject and javax.inject.Named annotations.
- * @see javax.inject.Inject
- */
-@Retention(RUNTIME)
-@Target({ FIELD, PARAMETER })
-public @interface Inject {
+public class Mock_Implementation1_Lifecycle_ScopeEvent extends
+        MockImplementation1_EventAnnotationsBase implements MockInterface1 {
 
-    /**
-     * An optional name of the dependency for injecting dependency types that
-     * have multiple bindings in the container.
-     */
-    String value() default "";
+
+
+    @Override
+	public String getName() {
+        return "XuI";
+    }
+
+    @PostConstruct
+    public void initialize() {
+    	initialize1 = true;
+    }
+
+    @PreDestroy
+    public void onShutdown1() {
+        shutdown1 = true;
+    }
+
+    @BeforeScopeEnd
+    public void onShutdown2() {
+        shutdown2 = true;
+    }
 }

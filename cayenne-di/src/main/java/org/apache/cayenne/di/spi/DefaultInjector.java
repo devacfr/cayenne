@@ -18,20 +18,25 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
+import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import javax.inject.Provider;
+import javax.inject.Singleton;
 
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.di.Scope;
+import org.apache.cayenne.di.spi.LifecycleProcessor.LifecycleMetadata;
 
 /**
  * A default Cayenne implementations of a DI injector.
- * 
+ *
  * @since 3.1
  */
 public class DefaultInjector implements Injector {
@@ -40,14 +45,23 @@ public class DefaultInjector implements Injector {
     private Scope noScope;
 
     private Map<Key<?>, Binding<?>> bindings;
+
+    private Map<Class<? extends Annotation>, Scope> scopes;
+
     private Map<Key<?>, Decoration<?>> decorations;
+
     private InjectionStack injectionStack;
+
     private Scope defaultScope;
 
-    public DefaultInjector(Module... modules) throws DIRuntimeException {
+    private final LifecycleProcessor lifecycleProcessor;
 
-        this.singletonScope = new DefaultScope();
+    public DefaultInjector(Module... modules) throws DIRuntimeException {
+        this.lifecycleProcessor = new LifecycleProcessor();
+        this.singletonScope = new DefaultScope(this);
         this.noScope = NoScope.INSTANCE;
+        scopes = new HashMap<Class<? extends Annotation>, Scope>();
+        scopes.put(Singleton.class, this.singletonScope);
 
         // this is intentionally hardcoded and is not configurable
         this.defaultScope = singletonScope;
@@ -67,8 +81,8 @@ public class DefaultInjector implements Injector {
             for (Module module : modules) {
                 module.configure(binder);
             }
-            
             applyDecorators();
+            applyEagerSingleton();
         }
     }
 
@@ -76,21 +90,40 @@ public class DefaultInjector implements Injector {
         return injectionStack;
     }
 
-    <T> Binding<T> getBinding(Key<T> key) throws DIRuntimeException {
+    public <T> Binding<T> getBinding(Key<T> key) throws DIRuntimeException {
 
         if (key == null) {
             throw new NullPointerException("Null key");
         }
 
-        // may return null - this is intentionally allowed in this non-public method
+        // may return null - this is intentionally allowed in this non-public
+        // method
         return (Binding<T>) bindings.get(key);
     }
 
-    <T> void putBinding(Key<T> bindingKey, Provider<T> provider) {
-        // TODO: andrus 11/15/2009 - report overriding existing binding??
-        bindings.put(bindingKey, new Binding<T>(provider, defaultScope));
+    <T> void putBinding(Key<T> bindingKey, javax.inject.Provider<T> provider, Class<?> implementationClass) {
+        Class<? extends Annotation> scopeAnnotation = DIUtil.findScopeAnnotation(implementationClass);
+        Scope scope = null;
+        Binding<T> binging = new Binding<T>(bindingKey, provider, implementationClass, this);
+        if (scopeAnnotation != null) {
+            scope = this.scopes.get(scopeAnnotation);
+            if (scope == null) {
+                throw new DIRuntimeException("Any declared scope does not exist for this '%s' annotation",
+                        scopeAnnotation);
+            }
+            binging.applyScope(scope);
+        } else {
+            // lazy default scope set, wait the binding is complete see
+            // #applyEagerSingleton method.
+        }
+        bindings.put(bindingKey, binging);
     }
-    
+
+    public void putScope(Class<? extends Annotation> scopeAnnotation, Scope scope) {
+        this.scopes.put(scopeAnnotation, scope);
+
+    }
+
     <T> void putDecorationAfter(Key<T> bindingKey, DecoratorProvider<T> decoratorProvider) {
 
         Decoration<T> decoration = (Decoration<T>) decorations.get(bindingKey);
@@ -101,7 +134,7 @@ public class DefaultInjector implements Injector {
 
         decoration.after(decoratorProvider);
     }
-    
+
     <T> void putDecorationBefore(Key<T> bindingKey, DecoratorProvider<T> decoratorProvider) {
 
         Decoration<T> decoration = (Decoration<T>) decorations.get(bindingKey);
@@ -113,17 +146,29 @@ public class DefaultInjector implements Injector {
         decoration.before(decoratorProvider);
     }
 
-    <T> void changeBindingScope(Key<T> bindingKey, Scope scope) {
+    <T> void applyBindingScope(Key<T> bindingKey, Scope scope) {
         if (scope == null) {
             scope = noScope;
         }
-
         Binding<?> binding = bindings.get(bindingKey);
         if (binding == null) {
             throw new DIRuntimeException("No existing binding for key " + bindingKey);
         }
 
-        binding.changeScope(scope);
+        if (binding.hasScope()) {
+            throw new DIRuntimeException("Binding '%s' is already scoped", bindingKey);
+        }
+
+        binding.applyScope(scope);
+    }
+
+    <T> void asEagerSingleton(Key<T> bindingKey) {
+        Binding<?> binding = bindings.get(bindingKey);
+        if (binding == null) {
+            throw new DIRuntimeException("No existing binding for key " + bindingKey);
+        }
+
+        binding.asEagerSingleton();
     }
 
     @Override
@@ -137,12 +182,12 @@ public class DefaultInjector implements Injector {
     }
 
     @Override
-    public <T> Provider<T> getProvider(Class<T> type) throws DIRuntimeException {
+    public <T> javax.inject.Provider<T> getProvider(Class<T> type) throws DIRuntimeException {
         return getProvider(Key.get(type));
     }
 
     @Override
-    public <T> Provider<T> getProvider(Key<T> key) throws DIRuntimeException {
+    public <T> javax.inject.Provider<T> getProvider(Key<T> key) throws DIRuntimeException {
 
         if (key == null) {
             throw new NullPointerException("Null key");
@@ -151,24 +196,30 @@ public class DefaultInjector implements Injector {
         Binding<T> binding = (Binding<T>) bindings.get(key);
 
         if (binding == null) {
-            throw new DIRuntimeException(
-                    "DI container has no binding for key %s",
-                    key);
+            throw new DIRuntimeException("DI container has no binding for key %s", key);
         }
-
         return binding.getScoped();
     }
 
     @Override
     public void injectMembers(Object object) {
-        Provider<Object> provider0 = new InstanceProvider<Object>(object);
-        Provider<Object> provider1 = new FieldInjectingProvider<Object>(provider0, this);
+        javax.inject.Provider<Object> provider0 = new InstanceProvider<Object>(object);
+        javax.inject.Provider<Object> provider1 = new FieldInjectingProvider<Object>(provider0, this);
         provider1.get();
+    }
+
+    @Override
+    public Map<Class<? extends Annotation>, Scope> getScopeBindings() {
+        return Collections.unmodifiableMap(this.scopes);
     }
 
     @Override
     public void shutdown() {
         singletonScope.shutdown();
+        bindings.clear();
+        decorations.clear();
+        injectionStack.reset();
+        lifecycleProcessor.clear();
     }
 
     DefaultScope getSingletonScope() {
@@ -178,7 +229,25 @@ public class DefaultInjector implements Injector {
     Scope getNoScope() {
         return noScope;
     }
-    
+
+    LifecycleMetadata findLifecycleMetadata(Class<?> cls) {
+        return this.lifecycleProcessor.findLifecycleMetadata(cls);
+    }
+
+    void applyEagerSingleton() {
+        for (Binding<?> binding : this.bindings.values()) {
+            Key<?> key = binding.getKey();
+            if (!binding.hasScope()) {
+                binding.applyScope(this.singletonScope);
+            }
+            if (this.singletonScope.has(key) && binding.isEager()) {
+                Provider<?> provider = this.getProvider(key);
+                // force instantiation.
+                provider.get();
+            }
+        }
+    }
+
     void applyDecorators() {
         for (Entry<Key<?>, Decoration<?>> e : decorations.entrySet()) {
 
@@ -191,4 +260,5 @@ public class DefaultInjector implements Injector {
             b.decorate(e.getValue());
         }
     }
+
 }

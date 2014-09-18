@@ -20,8 +20,9 @@ package org.apache.cayenne.di.spi;
 
 import java.lang.reflect.Type;
 
+import javax.inject.Provider;
+
 import org.apache.cayenne.di.DIRuntimeException;
-import org.apache.cayenne.di.Provider;
 
 /**
  * @since 3.2

@@ -18,10 +18,9 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-import junit.framework.TestCase;
 
-import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Binder;
+import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.mock.MockImplementation1_DepOn2;
 import org.apache.cayenne.di.mock.MockImplementation1_DepOn2Constructor;
@@ -33,9 +32,12 @@ import org.apache.cayenne.di.mock.MockImplementation3;
 import org.apache.cayenne.di.mock.MockInterface1;
 import org.apache.cayenne.di.mock.MockInterface2;
 import org.apache.cayenne.di.mock.MockInterface3;
+import org.apache.cayenne.di.testing.TestCase;
+import org.junit.Test;
 
 public class DefaultInjectorCircularInjectionTest extends TestCase {
 
+    @Test
     public void testFieldInjection_CircularDependency() {
 
         Module module = new Module() {
@@ -60,6 +62,7 @@ public class DefaultInjectorCircularInjectionTest extends TestCase {
         }
     }
 
+    @Test
     public void testProviderInjection_CircularDependency() {
 
         Module module = new Module() {
@@ -77,6 +80,7 @@ public class DefaultInjectorCircularInjectionTest extends TestCase {
         assertEquals("MockImplementation2Name", service.getName());
     }
 
+    @Test
     public void testConstructorInjection_CircularDependency() {
 
         Module module = new Module() {
@@ -103,6 +107,7 @@ public class DefaultInjectorCircularInjectionTest extends TestCase {
         }
     }
 
+    @Test
     public void testConstructorInjection_WithFieldInjectionDeps() {
 
         Module module = new Module() {

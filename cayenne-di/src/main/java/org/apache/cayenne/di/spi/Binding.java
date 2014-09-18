@@ -20,66 +20,230 @@ package org.apache.cayenne.di.spi;
 
 import java.util.List;
 
-import org.apache.cayenne.di.Provider;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Provider;
+
+import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Scope;
+import org.apache.cayenne.di.spi.LifecycleProcessor.LifecycleMetadata;
 
 /**
- * A binding encapsulates DI provider scoping settings and allows to change them as many
- * times as needed.
- * 
+ * A binding encapsulates DI provider scoping settings and allows to change them
+ * as many times as needed.
+ * <p>
+ * <b>Note</b>:
+ * <p>
+ * the binding can be scoped only once, likewise for the decorator.
+ *
  * @since 3.1
  */
 class Binding<T> {
 
-    private Provider<T> original;
+    /**
+     * The binding key.
+     */
+    private final Key<T> key;
+
+    /**
+     * The original binding provider (never {@code null}).
+     */
+    private final Provider<T> original;
+
+    /**
+     * Decorated provider which delegates the original provider.
+     */
     private Provider<T> decorated;
+
+    /**
+     * Scoped provider which delegate the original or decorated provider (never
+     * {@code null}).
+     */
     private Provider<T> scoped;
+
+    /**
+     * Instance of injector.
+     */
+    private final DefaultInjector injector;
+
+    /**
+     * The current scope associated.
+     */
     private Scope scope;
 
-    Binding(Provider<T> provider, Scope initialScope) {
+    /**
+     *
+     */
+    private final Class<?> implementedType;
+
+    /**
+     *
+     */
+    private final LifecycleMetadata lifecycleMetadata;
+
+    private boolean lazy = true;
+
+    /**
+     * Creates new binding instance.
+     *
+     * @param key
+     *            the binding key.
+     * @param provider
+     *            the original provider (never {@code null}).
+     * @param injector
+     *            the associated injector (never {@code null}).
+     */
+    Binding(final Key<T> key, final Provider<T> provider, final Class<?> implementedType, final DefaultInjector injector) {
+        this.key = key;
         this.original = provider;
         this.decorated = provider;
-        
-        changeScope(initialScope);
+        this.injector = injector;
+        this.implementedType = implementedType;
+        this.lifecycleMetadata = injector.findLifecycleMetadata(implementedType);
     }
 
-    void changeScope(Scope scope) {
-        if (scope == null) {
-            scope = NoScope.INSTANCE;
-        }
+    /**
+     * Gets indicating whether the binding is scoped
+     *
+     * @return Returns {@code true} whether this binding is associated to a
+     *         scope.
+     */
+    boolean hasScope() {
+        return this.scope != null;
+    }
 
-        // TODO: what happens to the old scoped value? Seems like this leaks
-        // scope event listeners and may cause unexpected events...
-        
-        this.scoped = scope.scope(original);
+    /**
+     * Gets indicating whether the binding must be eagerly initialize upon
+     * cayenne startup.
+     *
+     * @return Returns {@code true} whether the future binding instance should
+     *         be initialized upon cayenne startup.
+     */
+    public boolean isEager() {
+        return !lazy;
+    }
+
+    /**
+     * Indicates to eagerly initialize this singleton-scoped binding upon
+     * cayenne startup.
+     */
+    public void asEagerSingleton() {
+        this.lazy = false;
+    }
+
+    /**
+     * Allows to apply a specific scope
+     *
+     * @param scope
+     *            the scope to apply
+     */
+    void applyScope(Scope scope) {
+        if (hasScope()) {
+            throw new RuntimeException("the binding " + key + " is already scoped");
+        }
+        this.scoped = scope.scope(key, original);
         this.scope = scope;
     }
-    
-    void decorate(Decoration<T> decoration) {
 
+    /**
+     * Apply the decoration to this binding.
+     *
+     * @param decoration
+     *            containing list of decorators apply to.
+     */
+    void decorate(Decoration<T> decoration) {
         List<DecoratorProvider<T>> decorators = decoration.decorators();
         if (decorators.isEmpty()) {
             return;
         }
 
-        Provider<T> provider = this.original;
+        javax.inject.Provider<T> provider = this.original;
         for (DecoratorProvider<T> decoratorProvider : decorators) {
             provider = decoratorProvider.get(provider);
         }
 
         this.decorated = provider;
 
+        // set default scope
+        if (scope == null) {
+            this.scope = injector.getSingletonScope();
+        }
         // TODO: what happens to the old scoped value? Seems like this leaks
         // scope event listeners and may cause unexpected events...
+        if (scope instanceof DefaultScope && scoped != null) {
+            ((DefaultScope) scope).unScope(scoped);
+        }
 
-        this.scoped = scope.scope(decorated);
+        this.scoped = scope.scope(key, decorated);
     }
 
+    /**
+     * Gets the original {@link Provider} associated to this binding
+     *
+     * @return Returns the original {@link Provider} (never {@code null}).
+     */
     Provider<T> getOriginal() {
         return original;
     }
 
+    /**
+     * Gets the scoped {@link Provider} associated to this binding.
+     * <p>
+     * Note : if any scope is defined for this binding, The default scope is
+     * associated to it.
+     *
+     * @return Returns the scoped {@link Provider} (never {@code null}).
+     */
     Provider<T> getScoped() {
+        // set default scope
+        if (!hasScope()) {
+            applyScope(injector.getSingletonScope());
+        }
         return scoped;
     }
+
+    Key<T> getKey() {
+        return key;
+    }
+
+    Class<T> getBindingType() {
+        return key.getType();
+    }
+
+    /**
+     * @return the implementedType
+     */
+    Class<?> getImplementedType() {
+        return implementedType;
+    }
+
+    /**
+     * Performs methods that need to be executed after dependency injection is
+     * done to perform any initialization.
+     *
+     * @see PostConstruct
+     */
+    void doInitialize(Object bean) {
+        lifecycleMetadata.invokeInitMethods(bean);
+    }
+
+    /**
+     * Performs methods that need to be executed to signal to associated object
+     * is in the process of being removed by the DI container (typically used to
+     * release resources that it has been holding).
+     *
+     * @see PreDestroy
+     */
+    void doPreDestroy(Object bean) {
+        lifecycleMetadata.invokePreDestroyMethods(bean);
+    }
+
+    /**
+     * Performs methods that need to be executed to signal to associated object
+     * is removed by the DI container.
+     */
+    void doPostDestroy(Object bean) {
+        lifecycleMetadata.invokePostDestroyMethods(bean);
+    }
+
 }

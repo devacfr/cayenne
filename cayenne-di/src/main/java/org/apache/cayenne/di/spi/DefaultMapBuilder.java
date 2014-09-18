@@ -24,7 +24,6 @@ import java.util.Map.Entry;
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.MapBuilder;
-import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.di.Scope;
 
 /**
@@ -39,14 +38,14 @@ class DefaultMapBuilder<T> implements MapBuilder<T> {
         this.injector = injector;
         this.bindingKey = bindingKey;
 
-        // trigger initialization of the MapProvider right away, as we need to bind an
+        // trigger initialization of the MapProvider right away, as we need to
+        // bind an
         // empty map even if the user never calls 'put'
         getMapProvider();
     }
 
     @Override
-    public MapBuilder<T> put(String key, Class<? extends T> interfaceType)
-            throws DIRuntimeException {
+    public MapBuilder<T> put(String key, Class<? extends T> interfaceType) throws DIRuntimeException {
 
         // TODO: andrus 11/15/2009 - report overriding the key??
         getMapProvider().put(key, injector.getProvider(interfaceType));
@@ -56,8 +55,8 @@ class DefaultMapBuilder<T> implements MapBuilder<T> {
     @Override
     public MapBuilder<T> put(String key, T value) throws DIRuntimeException {
 
-        Provider<T> provider0 = new InstanceProvider<T>(value);
-        Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
+        javax.inject.Provider<T> provider0 = new InstanceProvider<T>(value);
+        javax.inject.Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
 
         // TODO: andrus 11/15/2009 - report overriding the key??
         getMapProvider().put(key, provider1);
@@ -71,8 +70,8 @@ class DefaultMapBuilder<T> implements MapBuilder<T> {
 
         for (Entry<String, T> entry : map.entrySet()) {
 
-            Provider<T> provider0 = new InstanceProvider<T>(entry.getValue());
-            Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
+            javax.inject.Provider<T> provider0 = new InstanceProvider<T>(entry.getValue());
+            javax.inject.Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
             provider.put(entry.getKey(), provider1);
         }
 
@@ -85,9 +84,8 @@ class DefaultMapBuilder<T> implements MapBuilder<T> {
         Binding<Map<String, ?>> binding = injector.getBinding(bindingKey);
         if (binding == null) {
             provider = new MapProvider();
-            injector.putBinding(bindingKey, provider);
-        }
-        else {
+            injector.putBinding(bindingKey, provider, Map.class);
+        } else {
             provider = (MapProvider) binding.getOriginal();
         }
 
@@ -96,6 +94,6 @@ class DefaultMapBuilder<T> implements MapBuilder<T> {
 
     @Override
     public void in(Scope scope) {
-        injector.changeBindingScope(bindingKey, scope);
+        injector.applyBindingScope(bindingKey, scope);
     }
 }

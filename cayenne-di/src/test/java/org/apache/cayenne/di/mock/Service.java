@@ -16,27 +16,16 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.di;
+package org.apache.cayenne.di.mock;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
 
-/**
- * @since 3.1
- * @deprecated Use javax.inject.Inject and javax.inject.Named annotations.
- * @see javax.inject.Inject
- */
+import javax.inject.Scope;
+
+@Scope
+@Documented
 @Retention(RUNTIME)
-@Target({ FIELD, PARAMETER })
-public @interface Inject {
-
-    /**
-     * An optional name of the dependency for injecting dependency types that
-     * have multiple bindings in the container.
-     */
-    String value() default "";
-}
+public @interface Service {}

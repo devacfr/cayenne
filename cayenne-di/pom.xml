@@ -21,7 +21,17 @@
 	<packaging>jar</packaging>
 	<name>Cayenne Dependency Injection Container</name>
 	<description>Cayenne Dependency Injection Container</description>
+    
+    <properties>
+        <javax.inject.version>1</javax.inject.version>
+    </properties>
+    
 	<dependencies>
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>${javax.inject.version}</version>
+        </dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
