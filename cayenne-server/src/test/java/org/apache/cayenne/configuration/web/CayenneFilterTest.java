@@ -19,14 +19,16 @@
 package org.apache.cayenne.configuration.web;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.ModuleCollection;
 import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Key;
+import org.apache.cayenne.di.Module;
 import org.apache.cayenne.testing.TestCase;
-import org.junit.Test;
 
 import com.mockrunner.mock.web.MockFilterChain;
 import com.mockrunner.mock.web.MockFilterConfig;
@@ -36,7 +38,6 @@ import com.mockrunner.mock.web.MockServletContext;
 
 public class CayenneFilterTest extends TestCase {
 
-    @Test
     public void testInitWithFilterName() throws Exception {
 
         MockFilterConfig config = new MockFilterConfig();
@@ -59,7 +60,6 @@ public class CayenneFilterTest extends TestCase {
         assertEquals(Arrays.asList("abc.xml"), locations);
     }
 
-    @Test
     public void testInitWithLocation() throws Exception {
 
         MockFilterConfig config = new MockFilterConfig();
@@ -80,7 +80,6 @@ public class CayenneFilterTest extends TestCase {
         assertEquals(Arrays.asList("xyz"), locations);
     }
 
-    @Test
     public void testInitWithStandardModules() throws Exception {
 
         MockFilterConfig config = new MockFilterConfig();
@@ -100,15 +99,18 @@ public class CayenneFilterTest extends TestCase {
                 Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
         assertEquals(Arrays.asList("cayenne-abc.xml"), locations);
-        assertEquals(2, runtime.getModules().length);
-        assertTrue(runtime.getModules()[0] instanceof ServerModule);
-        assertTrue(runtime.getModules()[1] instanceof WebModule);
+        Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
+        assertEquals(2, modules.size());
+
+        Object[] marray = modules.toArray();
+
+        assertTrue(marray[0] instanceof ServerModule);
+        assertTrue(marray[1] instanceof WebModule);
 
         RequestHandler handler = runtime.getInjector().getInstance(RequestHandler.class);
         assertTrue(handler instanceof SessionContextRequestHandler);
     }
 
-    @Test
     public void testInitWithExtraModules() throws Exception {
 
         MockFilterConfig config = new MockFilterConfig();
@@ -125,18 +127,19 @@ public class CayenneFilterTest extends TestCase {
         CayenneRuntime runtime = WebUtil.getCayenneRuntime(context);
         assertNotNull(runtime);
 
-        assertEquals(4, runtime.getModules().length);
+        Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
+        assertEquals(4, modules.size());
 
-        assertTrue(runtime.getModules()[0] instanceof ServerModule);
-        assertTrue(runtime.getModules()[1] instanceof WebModule);
-        assertTrue(runtime.getModules()[2] instanceof MockModule1);
-        assertTrue(runtime.getModules()[3] instanceof MockModule2);
+        Object[] marray = modules.toArray();
+        assertTrue(marray[0] instanceof ServerModule);
+        assertTrue(marray[1] instanceof WebModule);
+        assertTrue(marray[2] instanceof MockModule1);
+        assertTrue(marray[3] instanceof MockModule2);
 
         RequestHandler handler = runtime.getInjector().getInstance(RequestHandler.class);
         assertTrue(handler instanceof MockRequestHandler);
     }
 
-    @Test
     public void testDoFilter() throws Exception {
         MockFilterConfig config = new MockFilterConfig();
         config.setFilterName("abc");

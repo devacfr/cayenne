@@ -18,10 +18,14 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.cayenne.DataChannel;
@@ -30,6 +34,7 @@ import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.Constants;
+import org.apache.cayenne.configuration.ModuleCollection;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Key;
@@ -44,216 +49,162 @@ import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.tx.TransactionalOperation;
 import org.junit.Test;
 
-public class ServerRuntimeTest extends TestCase {
+public class ServerRuntimeTest {
 
-    @Test
-    public void testPerformInTransaction() {
+	@Test
+	public void testPerformInTransaction() {
 
-        final BaseTransaction tx = mock(BaseTransaction.class);
-        final TransactionFactory txFactory = mock(TransactionFactory.class);
-        when(txFactory.createTransaction()).thenReturn(tx);
+		final BaseTransaction tx = mock(BaseTransaction.class);
+		final TransactionFactory txFactory = mock(TransactionFactory.class);
+		when(txFactory.createTransaction()).thenReturn(tx);
 
-        Module module = new Module() {
-
-            @Override
-            public void configure(Binder binder) {
-                binder.bind(TransactionFactory.class).toInstance(txFactory);
-            }
-        };
-
-        ServerRuntime runtime = new ServerRuntime("xxxx", module);
-        try {
-
-            final Object expectedResult = new Object();
-            Object result = runtime.performInTransaction(new TransactionalOperation<Object>() {
-                @Override
-                public Object perform() {
-                    assertSame(tx, BaseTransaction.getThreadTransaction());
-                    return expectedResult;
-                }
-            });
-
-            assertSame(expectedResult, result);
-        } finally {
-            runtime.shutdown();
-        }
-
-    }
-
-    @Test
-    public void testDefaultConstructor_SingleLocation() {
-        final DataDomain domain = mock(DataDomain.class);
-        Module module = new Module() {
+		Module module = new Module() {
 
             @Override
-            public void configure(Binder binder) {
-                binder.bind(DataDomain.class).toInstance(domain);
-            }
-        };
-        ServerRuntime runtime = new ServerRuntime("xxxx", module);
-        try {
-            List<?> locations = runtime.getInjector().getInstance(
-                    Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
+			public void configure(Binder binder) {
+				binder.bind(TransactionFactory.class).toInstance(txFactory);
+			}
+		};
 
-            assertEquals(Arrays.asList("xxxx"), locations);
+		ServerRuntime runtime = new ServerRuntime("xxxx", module);
+		try {
 
-            assertEquals(2, runtime.getModules().length);
+			final Object expectedResult = new Object();
+			Object result = runtime.performInTransaction(new TransactionalOperation<Object>() {
+				public Object perform() {
+					assertSame(tx, BaseTransaction.getThreadTransaction());
+					return expectedResult;
+				}
+			});
 
-            Module m0 = runtime.getModules()[0];
-            assertTrue(m0 instanceof ServerModule);
-            assertEquals("xxxx", ((ServerModule) m0).configurationLocations[0]);
-        } finally {
-            runtime.shutdown();
-        }
-    }
+			assertSame(expectedResult, result);
+		} finally {
+			runtime.shutdown();
+		}
 
-    @Test
-    public void testDefaultConstructor_MultipleLocations() {
-        final DataDomain domain = mock(DataDomain.class);
+	}
 
-        Module module = new Module() {
+	@Test
+	public void testDefaultConstructor_SingleLocation() {
+		ServerRuntime runtime = new ServerRuntime("xxxx");
 
-            @Override
-            public void configure(Binder binder) {
-                binder.bind(DataDomain.class).toInstance(domain);
-            }
-        };
+		List<?> locations = runtime.getInjector().getInstance(
+				Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
-        ServerRuntime runtime = new ServerRuntime(new String[] { "xxxx", "yyyy" }, module);
-        try {
-            List<?> locations = runtime.getInjector().getInstance(
-                    Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
+		assertEquals(Arrays.asList("xxxx"), locations);
 
-            assertEquals(Arrays.asList("xxxx", "yyyy"), locations);
+		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
+		assertEquals(1, modules.size());
+		Module m0 = modules.iterator().next();
+		assertTrue(m0 instanceof ServerModule);
+		assertEquals("xxxx", ((ServerModule) m0).configurationLocations[0]);
+	}
 
-            assertEquals(2, runtime.getModules().length);
+	@Test
+	public void testDefaultConstructor_MultipleLocations() {
+		ServerRuntime runtime = new ServerRuntime(new String[] { "xxxx", "yyyy" });
 
-            Module m0 = runtime.getModules()[0];
-            assertTrue(m0 instanceof ServerModule);
-            assertEquals("xxxx", ((ServerModule) m0).configurationLocations[0]);
-            assertEquals("yyyy", ((ServerModule) m0).configurationLocations[1]);
-        } finally {
-            runtime.shutdown();
-        }
-    }
+		List<?> locations = runtime.getInjector().getInstance(
+				Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
-    @Test
-    public void testConstructor_Modules() {
-        final DataDomain domain = mock(DataDomain.class);
+		assertEquals(Arrays.asList("xxxx", "yyyy"), locations);
 
-        Module module = new Module() {
+		assertTrue(runtime.getModule() instanceof ModuleCollection);
 
-            @Override
-            public void configure(Binder binder) {
-                binder.bind(DataDomain.class).toInstance(domain);
-            }
-        };
+		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
+		assertEquals(1, modules.size());
+		Module m0 = modules.iterator().next();
+		assertTrue(m0 instanceof ServerModule);
 
-        final boolean[] configured = new boolean[2];
-        Module m1 = new Module() {
+		assertEquals("xxxx", ((ServerModule) m0).configurationLocations[0]);
+		assertEquals("yyyy", ((ServerModule) m0).configurationLocations[1]);
+	}
 
-            @Override
-            public void configure(Binder binder) {
-                configured[0] = true;
-            }
-        };
+	@Test
+	public void testConstructor_Modules() {
 
-        Module m2 = new Module() {
+		final boolean[] configured = new boolean[2];
 
-            @Override
-            public void configure(Binder binder) {
-                configured[1] = true;
-            }
-        };
+		Module m1 = new Module() {
 
-        ServerRuntime runtime = new ServerRuntime("xxxx", module, m1, m2);
-        try {
-            assertEquals(4, runtime.getModules().length);
+			public void configure(Binder binder) {
+				configured[0] = true;
+			}
+		};
 
-            assertTrue(configured[0]);
-            assertTrue(configured[1]);
-        } finally {
-            runtime.shutdown();
-        }
-    }
+		Module m2 = new Module() {
 
-    @Test
-    public void testGetDataChannel_CustomModule() {
-        final DataDomain domain = mock(DataDomain.class);
+			public void configure(Binder binder) {
+				configured[1] = true;
+			}
+		};
 
-        final DataChannel channel = new DataChannel() {
+		ServerRuntime runtime = new ServerRuntime("xxxx", m1, m2);
 
-            @Override
-            public EntityResolver getEntityResolver() {
-                return null;
-            }
+		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
+		assertEquals(3, modules.size());
 
-            @Override
-            public EventManager getEventManager() {
-                return null;
-            }
+		assertTrue(configured[0]);
+		assertTrue(configured[1]);
+	}
 
-            @Override
-            public QueryResponse onQuery(ObjectContext originatingContext, Query query) {
-                return null;
-            }
+	@Test
+	public void testGetDataChannel_CustomModule() {
+		final DataChannel channel = new DataChannel() {
 
-            @Override
-            public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType) {
-                return null;
-            }
-        };
 
-        Module module = new Module() {
+			public EntityResolver getEntityResolver() {
+				return null;
+			}
 
-            @Override
-            public void configure(Binder binder) {
-                binder.bind(DataChannel.class).toInstance(channel);
-                binder.bind(DataDomain.class).toInstance(domain);
-            }
-        };
+			public EventManager getEventManager() {
+				return null;
+			}
 
-        ServerRuntime runtime = new ServerRuntime("Yuis", module);
-        try {
-            assertSame(channel, runtime.getChannel());
-        } finally {
-            runtime.shutdown();
-        }
-    }
+			public QueryResponse onQuery(ObjectContext originatingContext, Query query) {
+				return null;
+			}
 
-    @Test
-    public void testGetObjectContext_CustomModule() {
-        final DataDomain domain = mock(DataDomain.class);
+			public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType) {
+				return null;
+			}
+		};
 
-        final ObjectContext context = new DataContext();
-        final ObjectContextFactory factory = new ObjectContextFactory() {
+		Module module = new Module() {
 
-            @Override
-            public ObjectContext createContext(DataChannel parent) {
-                return context;
-            }
+			public void configure(Binder binder) {
+				binder.bind(DataChannel.class).toInstance(channel);
+			}
+		};
 
-            @Override
-            public ObjectContext createContext() {
-                return context;
-            }
-        };
+		ServerRuntime runtime = new ServerRuntime("Yuis", module);
+		assertSame(channel, runtime.getChannel());
+	}
 
-        Module module = new Module() {
+	@Test
+	public void testGetObjectContext_CustomModule() {
+		final ObjectContext context = new DataContext();
+		final ObjectContextFactory factory = new ObjectContextFactory() {
 
-            @Override
-            public void configure(Binder binder) {
-                binder.bind(ObjectContextFactory.class).toInstance(factory);
-                binder.bind(DataDomain.class).toInstance(domain);
-            }
-        };
 
-        ServerRuntime runtime = new ServerRuntime("mnYw", module);
-        try {
-            assertSame(context, runtime.newContext());
-            assertSame(context, runtime.newContext());
-        } finally {
-            runtime.shutdown();
-        }
-    }
+			public ObjectContext createContext(DataChannel parent) {
+				return context;
+			}
+
+			public ObjectContext createContext() {
+				return context;
+			}
+		};
+
+		Module module = new Module() {
+
+			public void configure(Binder binder) {
+				binder.bind(ObjectContextFactory.class).toInstance(factory);
+			}
+		};
+
+		ServerRuntime runtime = new ServerRuntime("mnYw", module);
+		assertSame(context, runtime.newContext());
+		assertSame(context, runtime.newContext());
+	}
 }

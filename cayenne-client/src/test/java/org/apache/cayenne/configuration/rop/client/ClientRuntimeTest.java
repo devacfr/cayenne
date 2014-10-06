@@ -24,11 +24,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.CayenneContext;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
+import org.apache.cayenne.configuration.ModuleCollection;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.event.DefaultEventManager;
@@ -36,23 +35,30 @@ import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.remote.ClientChannel;
 import org.apache.cayenne.remote.ClientConnection;
 import org.apache.cayenne.remote.MockClientConnection;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 public class ClientRuntimeTest extends TestCase {
 
+    @Test
     public void testDefaultConstructor() {
-        ClientRuntime runtime = new ClientRuntime(Collections.EMPTY_MAP);
-        assertEquals(1, runtime.getModules().length);
+        ClientRuntime runtime = new ClientRuntime(Collections.<String, String> emptyMap());
 
-        Module m0 = runtime.getModules()[0];
-        assertTrue(m0 instanceof ClientModule);
+        Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
+        assertEquals(1, modules.size());
+        Object[] marray = modules.toArray();
+
+        assertTrue(marray[0] instanceof ClientModule);
     }
 
+    @Test
     public void testConstructor_Modules() {
 
         final boolean[] configured = new boolean[2];
 
         Module m1 = new Module() {
 
+            @Override
             public void configure(Binder binder) {
                 configured[0] = true;
             }
@@ -60,6 +66,7 @@ public class ClientRuntimeTest extends TestCase {
 
         Module m2 = new Module() {
 
+            @Override
             public void configure(Binder binder) {
                 configured[1] = true;
             }
@@ -68,12 +75,14 @@ public class ClientRuntimeTest extends TestCase {
         Map<String, String> properties = new HashMap<String, String>();
 
         ClientRuntime runtime = new ClientRuntime(properties, m1, m2);
-        assertEquals(3, runtime.getModules().length);
+        Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
+        assertEquals(3, modules.size());
 
         assertTrue(configured[0]);
         assertTrue(configured[1]);
     }
 
+    @Test
     public void testConstructor_ModulesCollection() {
 
         final boolean[] configured = new boolean[2];
@@ -82,6 +91,7 @@ public class ClientRuntimeTest extends TestCase {
 
         modules.add(new Module() {
 
+            @Override
             public void configure(Binder binder) {
                 configured[0] = true;
             }
@@ -89,6 +99,7 @@ public class ClientRuntimeTest extends TestCase {
 
         modules.add(new Module() {
 
+            @Override
             public void configure(Binder binder) {
                 configured[1] = true;
             }
@@ -97,12 +108,14 @@ public class ClientRuntimeTest extends TestCase {
         Map<String, String> properties = new HashMap<String, String>();
 
         ClientRuntime runtime = new ClientRuntime(properties, modules);
-        assertEquals(3, runtime.getModules().length);
+        Collection<Module> cmodules = ((ModuleCollection) runtime.getModule()).getModules();
+        assertEquals(3, cmodules.size());
 
         assertTrue(configured[0]);
         assertTrue(configured[1]);
     }
 
+    @Test
     public void testGetObjectContext() {
 
         Map<String, String> properties = new HashMap<String, String>();
@@ -122,20 +135,21 @@ public class ClientRuntimeTest extends TestCase {
         ObjectContext context = runtime.newContext();
         assertNotNull(context);
         assertTrue(context instanceof CayenneContext);
-        assertNotSame("ObjectContext must not be a singleton", context, runtime
-                .newContext());
+        assertNotSame("ObjectContext must not be a singleton", context, runtime.newContext());
 
         CayenneContext clientContext = (CayenneContext) context;
         assertNotNull(clientContext.getChannel());
         assertSame(runtime.getChannel(), clientContext.getChannel());
     }
 
+    @Test
     public void testGetDataChannel() {
 
         Map<String, String> properties = new HashMap<String, String>();
 
         Module extraModule = new Module() {
 
+            @Override
             public void configure(Binder binder) {
 
                 // use a noop connection to prevent hessian startup errors...
@@ -150,6 +164,7 @@ public class ClientRuntimeTest extends TestCase {
         assertTrue(channel instanceof ClientChannel);
     }
 
+    @Test
     public void testShutdown() throws Exception {
 
         Map<String, String> properties = new HashMap<String, String>();

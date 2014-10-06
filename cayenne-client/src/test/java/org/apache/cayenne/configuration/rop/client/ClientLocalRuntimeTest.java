@@ -20,63 +20,68 @@ package org.apache.cayenne.configuration.rop.client;
 
 import static org.mockito.Mockito.mock;
 
+import java.util.Collection;
 import java.util.Collections;
-
-import junit.framework.TestCase;
 
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.ClientServerChannel;
 import org.apache.cayenne.access.DataContext;
+import org.apache.cayenne.configuration.ModuleCollection;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.remote.ClientConnection;
 import org.apache.cayenne.remote.service.LocalConnection;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 public class ClientLocalRuntimeTest extends TestCase {
 
+    @Test
     public void testDefaultConstructor() {
 
         Module serverModule = new Module() {
 
+            @Override
             public void configure(Binder binder) {
             }
         };
 
-        ClientLocalRuntime runtime = new ClientLocalRuntime(
-                DIBootstrap.createInjector(serverModule),
-                Collections.EMPTY_MAP);
-        assertEquals(2, runtime.getModules().length);
+        ClientLocalRuntime runtime = new ClientLocalRuntime(DIBootstrap.createInjector(serverModule),
+                Collections.<String, String> emptyMap());
+        Collection<Module> cmodules = ((ModuleCollection) runtime.getModule()).getModules();
+        assertEquals(2, cmodules.size());
 
-        Module m0 = runtime.getModules()[0];
-        assertTrue(m0 instanceof ClientModule);
+        assertTrue(cmodules.toArray()[0] instanceof ClientModule);
     }
 
+    @Test
     public void testGetConnection() {
 
         final DataContext serverContext = mock(DataContext.class);
 
         Module serverModule = new Module() {
 
+            @Override
             public void configure(Binder binder) {
-                binder.bind(ObjectContextFactory.class).toInstance(
-                        new ObjectContextFactory() {
+                binder.bind(ObjectContextFactory.class).toInstance(new ObjectContextFactory() {
 
-                            public ObjectContext createContext(DataChannel parent) {
-                                return null;
-                            }
+                    @Override
+                    public ObjectContext createContext(DataChannel parent) {
+                        return null;
+                    }
 
-                            public ObjectContext createContext() {
-                                return serverContext;
-                            }
-                        });
+                    @Override
+                    public ObjectContext createContext() {
+                        return serverContext;
+                    }
+                });
             }
         };
 
-        ClientLocalRuntime runtime = new ClientLocalRuntime(
-                DIBootstrap.createInjector(serverModule),
+        ClientLocalRuntime runtime = new ClientLocalRuntime(DIBootstrap.createInjector(serverModule),
                 Collections.EMPTY_MAP);
 
         ClientConnection connection = runtime.getConnection();
@@ -85,8 +90,7 @@ public class ClientLocalRuntimeTest extends TestCase {
 
         LocalConnection localConnection = (LocalConnection) connection;
         assertTrue(localConnection.getChannel() instanceof ClientServerChannel);
-        ClientServerChannel clientServerChannel = (ClientServerChannel) localConnection
-                .getChannel();
+        ClientServerChannel clientServerChannel = (ClientServerChannel) localConnection.getChannel();
         assertSame(serverContext, clientServerChannel.getParentChannel());
     }
 }

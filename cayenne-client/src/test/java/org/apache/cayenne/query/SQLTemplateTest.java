@@ -21,13 +21,14 @@ package org.apache.cayenne.query;
 import java.util.Collections;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
+import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 public class SQLTemplateTest extends TestCase {
 
+    @Test
     public void testSerializabilityWithHessian() throws Exception {
         SQLTemplate o = new SQLTemplate("Test", "DO SQL");
         Object clone = HessianUtil.cloneViaClientServerSerialization(o, new EntityResolver());
@@ -41,6 +42,7 @@ public class SQLTemplateTest extends TestCase {
 
         // set immutable parameters ... query must recast them to mutable
         // version
+        @SuppressWarnings("unchecked")
         Map<String, Object>[] parameters = new Map[] { Collections.EMPTY_MAP };
         o.setParameters(parameters);
 
