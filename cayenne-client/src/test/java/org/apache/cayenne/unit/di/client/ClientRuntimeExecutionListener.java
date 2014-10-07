@@ -106,8 +106,10 @@ public class ClientRuntimeExecutionListener extends AbstractTestExecutionListene
             return dirty(Key.get(instanceClass));
         }
 
+        @SuppressWarnings("unchecked")
         public <T> ScopedDirtyBuilder dirty(Key<T> key) throws Exception {
-            Provider<T> provider = injector.getProvider(key);
+            // [devacfr] temporary, just to facilitate new DI integration
+            Object provider = injector.getProvider(key);
             if (provider instanceof DefaultScopeProvider) {
                 ((DefaultScopeProvider<T>) provider).afterScopeEnd();
             }
