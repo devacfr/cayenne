@@ -19,17 +19,20 @@
 
 package org.apache.cayenne.unit.di.server;
 
+import java.lang.reflect.Method;
+
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Key;
-import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.di.spi.DefaultInjector;
 import org.apache.cayenne.di.spi.DefaultScopeProvider;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.testing.CayenneTestContext;
 import org.apache.cayenne.testing.support.AbstractTestExecutionListener;
+import org.apache.cayenne.testing.support.CayenneRuntimeInvoker;
 import org.apache.cayenne.testing.utils.Assert;
 
 /**
@@ -46,7 +49,8 @@ public class SchemaBuilderExecutionListener extends AbstractTestExecutionListene
      */
     @Override
     public void beforeTestClass(CayenneTestContext testContext) throws Exception {
-        SchemaBuilder schemaBuilder = testContext.getCayenneRuntime().getInjector().getInstance(SchemaBuilder.class);
+        CayenneRuntimeInvoker invoker = testContext.getCayenneRuntime();
+        SchemaBuilder schemaBuilder = invoker.getInjector().getInstance(SchemaBuilder.class);
         schemaBuilder.rebuildSchema();
     }
 
@@ -87,9 +91,16 @@ public class SchemaBuilderExecutionListener extends AbstractTestExecutionListene
         }
 
         public <T> ScopedDirtyBuilder dirty(Key<T> key) throws Exception {
-            Provider<T> provider = injector.getProvider(key);
+            // [devacfr] temporary, just to facilitate new DI integration
+            Object provider = injector.getProvider(key);
             if (provider instanceof DefaultScopeProvider) {
-                ((DefaultScopeProvider<T>) provider).afterScopeEnd();
+                try {
+                    Method afterScopeMethod = provider.getClass().getMethod("afterScopeEnd");
+                    afterScopeMethod.invoke(provider);
+                } catch (NoSuchMethodException ex) {
+                    Method afterEndMethod = provider.getClass().getMethod("afterScopeEnd", new Class[] {DefaultInjector.class});
+                    afterEndMethod.invoke(provider, injector);
+                }
             }
             return this;
         }
