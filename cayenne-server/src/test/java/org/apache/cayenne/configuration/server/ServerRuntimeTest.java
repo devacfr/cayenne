@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -32,7 +29,6 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.ModuleCollection;
 import org.apache.cayenne.configuration.ObjectContextFactory;
@@ -49,7 +45,7 @@ import org.apache.cayenne.tx.TransactionFactory;
 import org.apache.cayenne.tx.TransactionalOperation;
 import org.junit.Test;
 
-public class ServerRuntimeTest {
+public class ServerRuntimeTest extends TestCase {
 
 	@Test
 	public void testPerformInTransaction() {
@@ -71,7 +67,8 @@ public class ServerRuntimeTest {
 
 			final Object expectedResult = new Object();
 			Object result = runtime.performInTransaction(new TransactionalOperation<Object>() {
-				public Object perform() {
+				@Override
+                public Object perform() {
 					assertSame(tx, BaseTransaction.getThreadTransaction());
 					return expectedResult;
 				}
@@ -127,14 +124,16 @@ public class ServerRuntimeTest {
 
 		Module m1 = new Module() {
 
-			public void configure(Binder binder) {
+			@Override
+            public void configure(Binder binder) {
 				configured[0] = true;
 			}
 		};
 
 		Module m2 = new Module() {
 
-			public void configure(Binder binder) {
+			@Override
+            public void configure(Binder binder) {
 				configured[1] = true;
 			}
 		};
@@ -153,26 +152,31 @@ public class ServerRuntimeTest {
 		final DataChannel channel = new DataChannel() {
 
 
-			public EntityResolver getEntityResolver() {
+			@Override
+            public EntityResolver getEntityResolver() {
 				return null;
 			}
 
-			public EventManager getEventManager() {
+			@Override
+            public EventManager getEventManager() {
 				return null;
 			}
 
-			public QueryResponse onQuery(ObjectContext originatingContext, Query query) {
+			@Override
+            public QueryResponse onQuery(ObjectContext originatingContext, Query query) {
 				return null;
 			}
 
-			public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType) {
+			@Override
+            public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType) {
 				return null;
 			}
 		};
 
 		Module module = new Module() {
 
-			public void configure(Binder binder) {
+			@Override
+            public void configure(Binder binder) {
 				binder.bind(DataChannel.class).toInstance(channel);
 			}
 		};
@@ -187,18 +191,21 @@ public class ServerRuntimeTest {
 		final ObjectContextFactory factory = new ObjectContextFactory() {
 
 
-			public ObjectContext createContext(DataChannel parent) {
+			@Override
+            public ObjectContext createContext(DataChannel parent) {
 				return context;
 			}
 
-			public ObjectContext createContext() {
+			@Override
+            public ObjectContext createContext() {
 				return context;
 			}
 		};
 
 		Module module = new Module() {
 
-			public void configure(Binder binder) {
+			@Override
+            public void configure(Binder binder) {
 				binder.bind(ObjectContextFactory.class).toInstance(factory);
 			}
 		};

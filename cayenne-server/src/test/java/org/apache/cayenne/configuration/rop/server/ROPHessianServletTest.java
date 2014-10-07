@@ -18,11 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.rop.server;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -39,12 +34,13 @@ import org.apache.cayenne.configuration.web.WebUtil;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.remote.RemoteService;
+import org.apache.cayenne.testing.TestCase;
 import org.junit.Test;
 
 import com.mockrunner.mock.web.MockServletConfig;
 import com.mockrunner.mock.web.MockServletContext;
 
-public class ROPHessianServletTest {
+public class ROPHessianServletTest extends TestCase {
 
 	@Test
 	public void testInitWithServletName() throws Exception {
@@ -111,7 +107,7 @@ public class ROPHessianServletTest {
 				Key.get(List.class, Constants.SERVER_PROJECT_LOCATIONS_LIST));
 
 		assertEquals(Arrays.asList(name + ".xml"), locations);
-		
+
 		Collection<Module> modules = ((ModuleCollection) runtime.getModule()).getModules();
 		assertEquals(2, modules.size());
 		Object[] marray = modules.toArray();

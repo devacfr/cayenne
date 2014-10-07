@@ -29,6 +29,7 @@ import org.apache.cayenne.configuration.server.ServerModule;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.testing.TestCase;
+import org.junit.Test;
 
 import com.mockrunner.mock.web.MockFilterChain;
 import com.mockrunner.mock.web.MockFilterConfig;
@@ -38,6 +39,7 @@ import com.mockrunner.mock.web.MockServletContext;
 
 public class CayenneFilterTest extends TestCase {
 
+    @Test
     public void testInitWithFilterName() throws Exception {
 
         MockFilterConfig config = new MockFilterConfig();
@@ -60,6 +62,7 @@ public class CayenneFilterTest extends TestCase {
         assertEquals(Arrays.asList("abc.xml"), locations);
     }
 
+    @Test
     public void testInitWithLocation() throws Exception {
 
         MockFilterConfig config = new MockFilterConfig();
@@ -80,6 +83,7 @@ public class CayenneFilterTest extends TestCase {
         assertEquals(Arrays.asList("xyz"), locations);
     }
 
+    @Test
     public void testInitWithStandardModules() throws Exception {
 
         MockFilterConfig config = new MockFilterConfig();
@@ -111,6 +115,7 @@ public class CayenneFilterTest extends TestCase {
         assertTrue(handler instanceof SessionContextRequestHandler);
     }
 
+    @Test
     public void testInitWithExtraModules() throws Exception {
 
         MockFilterConfig config = new MockFilterConfig();
@@ -140,6 +145,7 @@ public class CayenneFilterTest extends TestCase {
         assertTrue(handler instanceof MockRequestHandler);
     }
 
+    @Test
     public void testDoFilter() throws Exception {
         MockFilterConfig config = new MockFilterConfig();
         config.setFilterName("abc");

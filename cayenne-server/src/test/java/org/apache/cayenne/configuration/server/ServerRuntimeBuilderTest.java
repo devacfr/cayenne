@@ -18,9 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import java.util.Arrays;
@@ -32,9 +29,10 @@ import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.ModuleCollection;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
+import org.apache.cayenne.testing.TestCase;
 import org.junit.Test;
 
-public class ServerRuntimeBuilderTest {
+public class ServerRuntimeBuilderTest extends TestCase {
 
 	@Test
 	public void test_NoLocation() {
