@@ -78,7 +78,7 @@ public class DefaultScopeProvider<T> implements Provider<T> {
      * @param injector
      *            the associated injector.
      */
-    void beforeEndScope(DefaultInjector injector) {
+    public void beforeEndScope(DefaultInjector injector) {
         if (instance == null)
             return;
         Binding<?> binding = injector.getBinding(getKey());
@@ -93,7 +93,7 @@ public class DefaultScopeProvider<T> implements Provider<T> {
      * @param injector
      *            the associated injector.
      */
-    void afterEndScope(DefaultInjector injector) {
+    public void afterEndScope(DefaultInjector injector) {
         if (instance == null)
             return;
         Binding<?> binding = injector.getBinding(getKey());
