@@ -71,8 +71,17 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
         // one specific binding for Provider DI
         Key providerKey = Key.get(providerType);
         injector.putBinding(named(providerKey, providerType), provider1, providerType);
+
         // and another for the declared binding.
-        toInternalProvider(providerType);
+        Provider<Provider<? extends T>> provider10 = new ConstructorInjectingProvider<Provider<? extends T>>(
+                providerType, injector);
+        Provider<Provider<? extends T>> provider11 = new FieldInjectingProvider<Provider<? extends T>>(provider10,
+                injector);
+
+        Provider<T> provider12 = new CustomProvidersProvider<T>(provider11);
+        Provider<T> provider13 = new FieldInjectingProvider<T>(provider12, injector);
+
+        injector.putBinding(bindingKey, provider13, providerType);
         return this;
     }
 
@@ -96,8 +105,17 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
                 .getClass();
         Key providerKey = Key.get(providerType);
         injector.putBinding(named(providerKey, providerType), provider3, providerType);
+
         // and another for the declared binding.
-        toInternalProvider(providerType);
+        Provider<Provider<? extends T>> provider10 = new InstanceProvider<Provider<? extends T>>(provider);
+        Provider<Provider<? extends T>> provider11 = new FieldInjectingProvider<Provider<? extends T>>(provider10,
+                injector);
+
+        Provider<T> provider12 = new CustomProvidersProvider<T>(provider11);
+        Provider<T> provider13 = new FieldInjectingProvider<T>(provider12, injector);
+
+        injector.putBinding(bindingKey, provider13, providerType);
+
         return this;
     }
 
@@ -162,16 +180,4 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
         return key;
     }
 
-    protected BindingBuilder<T> toInternalProvider(Class<? extends Provider<? extends T>> providerType) {
-        Provider<Provider<? extends T>> provider0 = new ConstructorInjectingProvider<Provider<? extends T>>(
-                providerType, injector);
-        Provider<Provider<? extends T>> provider1 = new FieldInjectingProvider<Provider<? extends T>>(provider0,
-                injector);
-
-        Provider<T> provider2 = new CustomProvidersProvider<T>(provider1);
-        Provider<T> provider3 = new FieldInjectingProvider<T>(provider2, injector);
-
-        injector.putBinding(bindingKey, provider3, providerType);
-        return this;
-    }
 }
