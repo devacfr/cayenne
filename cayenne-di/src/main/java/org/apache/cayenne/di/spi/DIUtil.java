@@ -31,6 +31,7 @@ import javax.inject.Singleton;
 
 import org.apache.cayenne.di.DIRuntimeException;
 import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.di.Key;
 
 /**
  * A helper class used by Cayenne DI implementation.
@@ -79,7 +80,26 @@ public abstract class DIUtil {
     }
 
     /**
-     * Gets indicating whether the parameter <code>annotation</code> enables the
+     * Gets indicating whether the parameter {@code annotations} enables the
+     * injection dependency.
+     *
+     * @param annotation
+     *            the annotation to test
+     * @return Returns <code>true</code> whether <code>annotation</code>
+     *         parameter enables the injection dependency.
+     */
+    public static boolean isInjectedAnnotations(Annotation... annotations) {
+        for (Annotation annotation : annotations) {
+            if (isInjectedAnnotation(annotation)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Gets indicating whether the parameter {@code annotation} enables the
      * injection dependency.
      *
      * @param annotation
@@ -111,6 +131,49 @@ public abstract class DIUtil {
                 return annotation;
         }
         return null;
+    }
+
+    /**
+     * Gets or creates new {@link Key} with binding name already defined in
+     * {@code key} parameter or by naming annotation.
+     * <p>
+     * This function allows setting the binding name for key without already
+     * defined binding name.
+     *
+     * @param key
+     *            the reference key used.
+     * @return Returns {@code Key} with appropriate binding name.
+     * @see DIUtil#determineBindingName(Annotation[]))
+     */
+    public static <T> Key<T> named(Key<T> key) {
+        return named(key, key.getType());
+    }
+
+    /**
+     * Gets or creates new {@link Key} with binding name already defined in
+     * {@code key} parameter or by naming annotation.
+     * <p>
+     * This function allows setting the binding name for key without already
+     * defined binding name.
+     *
+     * @param key
+     *            the reference key used.
+     * @param implementedType
+     *            the implemented binding type associated to the key parameter
+     * @return Returns {@code Key} with appropriate binding name.
+     * @see DIUtil#determineBindingName(Annotation[]))
+     */
+    public static <T> Key<T> named(Key<T> key, Class<? extends T> implementedType) {
+        if (implementedType == null) {
+            return key;
+        }
+        if (key.getBindingName() == null) {
+            String bindingName = DIUtil.determineBindingName(implementedType.getAnnotations());
+            if (bindingName != null && bindingName.length() > 0) {
+                return Key.get(key.getType(), bindingName);
+            }
+        }
+        return key;
     }
 
     /**

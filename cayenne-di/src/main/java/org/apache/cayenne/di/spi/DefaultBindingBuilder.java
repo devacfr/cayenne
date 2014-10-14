@@ -46,7 +46,7 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
         Provider<T> provider0 = new ConstructorInjectingProvider<T>(implementation, injector);
         Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
 
-        injector.putBinding(named(this.bindingKey, implementation), provider1, implementation);
+        injector.putBinding(DIUtil.named(this.bindingKey, implementation), provider1, implementation);
         return this;
     }
 
@@ -56,32 +56,20 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
         Provider<T> provider1 = new FieldInjectingProvider<T>(provider0, injector);
         @SuppressWarnings("unchecked")
         Class<? extends T> implementedType = (Class<? extends T>) instance.getClass();
-        injector.putBinding(named(bindingKey, implementedType), provider1, implementedType);
+        injector.putBinding(DIUtil.named(bindingKey, implementedType), provider1, implementedType);
         return this;
     }
 
     @Override
     public BindingBuilder<T> toProvider(Class<? extends Provider<? extends T>> providerType) {
-
         Provider<Provider<? extends T>> provider0 = new ConstructorInjectingProvider<Provider<? extends T>>(
                 providerType, injector);
         Provider<Provider<? extends T>> provider1 = new FieldInjectingProvider<Provider<? extends T>>(provider0,
                 injector);
-        // create two binding:
-        // one specific binding for Provider DI
-        Key providerKey = Key.get(providerType);
-        injector.putBinding(named(providerKey, providerType), provider1, providerType);
 
-        // and another for the declared binding.
-        Provider<Provider<? extends T>> provider10 = new ConstructorInjectingProvider<Provider<? extends T>>(
-                providerType, injector);
-        Provider<Provider<? extends T>> provider11 = new FieldInjectingProvider<Provider<? extends T>>(provider10,
-                injector);
-
-        Provider<T> provider12 = new CustomProvidersProvider<T>(provider11);
-        Provider<T> provider13 = new FieldInjectingProvider<T>(provider12, injector);
-
-        injector.putBinding(bindingKey, provider13, providerType);
+        Class<Provider<T>> cl = (Class<Provider<T>>) providerType;
+        Provider<Provider<T>> p = provider1.getClass().cast(provider1);
+        injector.putProviderBinding(bindingKey, p, cl);
         return this;
     }
 
@@ -92,29 +80,15 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
 
     @Override
     public BindingBuilder<T> toProviderInstance(Provider<? extends T> provider) throws DIRuntimeException {
+        Class<? extends Provider> providerType = provider.getClass();
+        // and another for the declared binding.
         Provider<Provider<? extends T>> provider0 = new InstanceProvider<Provider<? extends T>>(provider);
         Provider<Provider<? extends T>> provider1 = new FieldInjectingProvider<Provider<? extends T>>(provider0,
                 injector);
 
-        Provider<T> provider2 = new CustomProvidersProvider<T>(provider1);
-        Provider<T> provider3 = new FieldInjectingProvider<T>(provider2, injector);
-
-        // create two binding:
-        // one specific binding for Provider DI
-        Class<? extends Provider<? extends T>> providerType = (Class<? extends Provider<? extends T>>) provider
-                .getClass();
-        Key providerKey = Key.get(providerType);
-        injector.putBinding(named(providerKey, providerType), provider3, providerType);
-
-        // and another for the declared binding.
-        Provider<Provider<? extends T>> provider10 = new InstanceProvider<Provider<? extends T>>(provider);
-        Provider<Provider<? extends T>> provider11 = new FieldInjectingProvider<Provider<? extends T>>(provider10,
-                injector);
-
-        Provider<T> provider12 = new CustomProvidersProvider<T>(provider11);
-        Provider<T> provider13 = new FieldInjectingProvider<T>(provider12, injector);
-
-        injector.putBinding(bindingKey, provider13, providerType);
+        Class<Provider<T>> cl = (Class<Provider<T>>) providerType;
+        Provider<Provider<T>> p = provider1.getClass().cast(provider1);
+        injector.putProviderBinding(bindingKey, p, cl);
 
         return this;
     }
@@ -151,33 +125,6 @@ class DefaultBindingBuilder<T> implements BindingBuilder<T> {
     public BindingBuilder<T> asEagerSingleton() {
         injector.asEagerSingleton(bindingKey);
         return this;
-    }
-
-    /**
-     * Gets or creates new {@link Key} with binding name already defined in
-     * {@code key} parameter or by naming annotation.
-     * <p>
-     * This function allows setting the binding name for key without already
-     * defined binding name.
-     *
-     * @param key
-     *            the reference key used.
-     * @param implementedType
-     *            the implemented binding type associated to the key parameter
-     * @return Returns {@code Key} with appropriate binding name.
-     * @see DIUtil#determineBindingName(Annotation[]))
-     */
-    protected static <T> Key<T> named(Key<T> key, Class<? extends T> implementedType) {
-        if (implementedType == null) {
-            return key;
-        }
-        if (key.getBindingName() == null) {
-            String bindingName = DIUtil.determineBindingName(implementedType.getAnnotations());
-            if (bindingName != null && bindingName.length() > 0) {
-                return Key.get(key.getType(), bindingName);
-            }
-        }
-        return key;
     }
 
 }

@@ -28,10 +28,10 @@ import org.apache.cayenne.di.mock.MockImplementation1_EventAnnotations;
 import org.apache.cayenne.di.mock.MockImplementation1_Provider;
 import org.apache.cayenne.di.mock.MockImplementation1_ServiceScope;
 import org.apache.cayenne.di.mock.MockInterface1;
-import org.apache.cayenne.di.mock.Mock_Implementation1_Provider_Lifecyle;
+import org.apache.cayenne.di.mock.Mock_Implementation1_Javax_Provider;
 import org.apache.cayenne.di.mock.Mock_Implementation1_Lifecycle_ScopeEvent;
 import org.apache.cayenne.di.mock.Mock_Implementation1_MultiPostConstruct;
-import org.apache.cayenne.di.mock.Mock_Implementation1_Javax_Provider;
+import org.apache.cayenne.di.mock.Mock_Implementation1_Provider_Lifecyle;
 import org.apache.cayenne.di.mock.Service;
 import org.apache.cayenne.di.mock.ServiceScope;
 import org.apache.cayenne.di.testing.TestCase;
@@ -291,8 +291,7 @@ public class DefaultInjectorScopeTest extends TestCase {
 
             @Override
             public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(Mock_Implementation1_MultiPostConstruct.class)
-                        .inSingletonScope();
+                binder.bind(MockInterface1.class).to(Mock_Implementation1_MultiPostConstruct.class).inSingletonScope();
             }
         };
 
@@ -333,14 +332,11 @@ public class DefaultInjectorScopeTest extends TestCase {
 
         MockInterface1 instance1 = injector.getInstance(MockInterface1.class);
         MockInterface1 instance2 = injector.getInstance(MockInterface1.class);
-        MockInterface1 instance3 = injector.getInstance(MockInterface1.class);
 
         assertNotNull(instance1);
         assertNotNull(instance2);
-        assertNotNull(instance3);
 
-        assertSame(instance1, instance2);
-        assertSame(instance2, instance3);
+        assertNotSame(instance1, instance2);
     }
 
     @Test
@@ -408,14 +404,11 @@ public class DefaultInjectorScopeTest extends TestCase {
 
         javax.inject.Provider<MockInterface1> instance1 = injector.getProvider(MockInterface1.class);
         javax.inject.Provider<MockInterface1> instance2 = injector.getProvider(MockInterface1.class);
-        javax.inject.Provider<MockInterface1> instance3 = injector.getProvider(MockInterface1.class);
 
         assertNotNull(instance1);
         assertNotNull(instance2);
-        assertNotNull(instance3);
 
-        assertSame(instance1, instance2);
-        assertSame(instance2, instance3);
+        assertNotSame(instance1, instance2);
     }
 
     @Test
@@ -470,13 +463,13 @@ public class DefaultInjectorScopeTest extends TestCase {
     }
 
     @Test
-    public void testSingleton_WithJSR330InstanceProvider() {
+    public void testSingleton_WithJSR330Provider() {
 
         Module module = new Module() {
 
             @Override
             public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).toProviderInstance(new Mock_Implementation1_Provider_Lifecyle())
+                binder.bind(MockInterface1.class).toProvider(Mock_Implementation1_Provider_Lifecyle.class)
                         .inSingletonScope();
             }
         };
