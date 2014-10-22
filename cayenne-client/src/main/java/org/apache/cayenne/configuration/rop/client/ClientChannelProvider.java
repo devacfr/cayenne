@@ -18,16 +18,20 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.rop.client;
 
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.inject.Singleton;
+
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.remote.ClientChannel;
 import org.apache.cayenne.remote.ClientConnection;
 
+@Singleton
 public class ClientChannelProvider implements Provider<DataChannel> {
 
     @Inject
@@ -39,12 +43,22 @@ public class ClientChannelProvider implements Provider<DataChannel> {
     @Inject
     protected RuntimeProperties properties;
 
+    private ClientChannel channel;
+
+    @PreDestroy
+    public void shutdown() throws Exception {
+        if (channel != null) {
+            channel.shutdown();
+        }
+    }
+
+    @Override
     public DataChannel get() throws ConfigurationException {
+        if (channel == null) {
+            boolean channelEvents = properties.getBoolean(Constants.ROP_CHANNEL_EVENTS_PROPERTY, false);
 
-        boolean channelEvents = properties.getBoolean(
-                Constants.ROP_CHANNEL_EVENTS_PROPERTY,
-                false);
-
-        return new ClientChannel(connection, channelEvents, eventManager, channelEvents);
+            channel = new ClientChannel(connection, channelEvents, eventManager, channelEvents);
+        }
+        return channel;
     }
 }

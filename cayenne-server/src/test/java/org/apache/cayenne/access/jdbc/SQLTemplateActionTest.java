@@ -26,12 +26,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.MockOperationObserver;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLAction;
 import org.apache.cayenne.query.SQLTemplate;
@@ -56,7 +57,7 @@ public class SQLTemplateActionTest extends ServerCase {
     protected DataNode node;
 
     @Inject
-    protected JdbcAdapter adapter;
+    protected DbAdapter adapter;
 
     @Inject
     protected ObjectContext objectContext;
@@ -95,8 +96,8 @@ public class SQLTemplateActionTest extends ServerCase {
 
     @Test
     public void testProperties() throws Exception {
-        SQLTemplate template = new SQLTemplate(Object.class, "AAAAA");      
-  
+        SQLTemplate template = new SQLTemplate(Object.class, "AAAAA");
+
         SQLTemplateAction action = new SQLTemplateAction(template, node);
         assertSame(template, action.getQuery());
         assertSame(node, action.dataNode);

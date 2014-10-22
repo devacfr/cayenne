@@ -27,7 +27,6 @@ import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DefaultObjectMapRetainStrategy;
 import org.apache.cayenne.access.ObjectMapRetainStrategy;
-import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
 import org.apache.cayenne.access.types.BigDecimalType;
 import org.apache.cayenne.access.types.BigIntegerType;
 import org.apache.cayenne.access.types.BooleanType;
@@ -47,15 +46,12 @@ import org.apache.cayenne.access.types.UUIDType;
 import org.apache.cayenne.access.types.UtilDateType;
 import org.apache.cayenne.access.types.VoidType;
 import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.configuration.DefaultObjectStoreFactory;
 import org.apache.cayenne.configuration.DefaultRuntimeProperties;
-import org.apache.cayenne.configuration.ObjectStoreFactory;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.configuration.server.DataNodeFactory;
 import org.apache.cayenne.configuration.server.DataSourceFactory;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.db2.DB2Adapter;
 import org.apache.cayenne.dba.derby.DerbyAdapter;
 import org.apache.cayenne.dba.firebird.FirebirdAdapter;
@@ -71,15 +67,10 @@ import org.apache.cayenne.dba.postgres.PostgresAdapter;
 import org.apache.cayenne.dba.sqlite.SQLiteAdapter;
 import org.apache.cayenne.dba.sqlserver.SQLServerAdapter;
 import org.apache.cayenne.dba.sybase.SybaseAdapter;
-import org.apache.cayenne.di.AdhocObjectFactory;
 import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.ClassLoaderManager;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.spi.DefaultAdhocObjectFactory;
-import org.apache.cayenne.di.spi.DefaultClassLoaderManager;
+import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.EntityResolver;
-import org.apache.cayenne.resource.ClassLoaderResourceLocator;
-import org.apache.cayenne.resource.ResourceLocator;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.unit.DB2UnitDbAdapter;
 import org.apache.cayenne.unit.DerbyUnitDbAdapter;
@@ -101,8 +92,21 @@ import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 
 public class ServerCaseModule implements Module {
 
+    public static final String NAME_QUERY_LOG_DISABLED = "server.query.log.disabled";
+
+    private boolean disableQueryLog = false;
+
+
+    public ServerCaseModule disableQueryLog(boolean status) {
+        disableQueryLog = status;
+        return this;
+    }
+
     @Override
     public void configure(Binder binder) {
+
+        binder.bindConstant(boolean.class, NAME_QUERY_LOG_DISABLED).to(disableQueryLog);
+        binder.bind(JdbcEventLogger.class).to(ServerCaseJdbcEventLogger.class);
 
         // these are the objects injectable in unit tests that subclass from
         // ServerCase. Note that ServerRuntimeProvider creates ServerRuntime
@@ -147,7 +151,6 @@ public class ServerCaseModule implements Module {
 
         binder.bind(DataSourceFactory.class).to(ServerCaseSharedDataSourceFactory.class);
         binder.bind(DbAdapter.class).toProvider(ServerCaseDbAdapterProvider.class);
-        binder.bind(JdbcAdapter.class).toProvider(ServerCaseDbAdapterProvider.class);
         binder.bind(UnitDbAdapter.class).toProvider(UnitDbAdapterProvider.class);
 
         // this factory is a hack that allows to inject to DbAdapters loaded
@@ -155,26 +158,21 @@ public class ServerCaseModule implements Module {
         // server runtime... BatchQueryBuilderFactory is hardcoded and whatever
         // is placed
         // in the ServerModule is ignored
-        binder.bind(BatchTranslatorFactory.class).toProvider(ServerCaseBatchQueryBuilderFactoryProvider.class);
+//        binder.bind(BatchTranslatorFactory.class).toProvider(ServerCaseBatchQueryBuilderFactoryProvider.class);
 
         binder.bind(DataChannelInterceptor.class).to(ServerCaseDataChannelInterceptor.class);
         binder.bind(SQLTemplateCustomizer.class).toProvider(SQLTemplateCustomizerProvider.class);
         binder.bind(ServerCaseDataSourceFactory.class).to(ServerCaseDataSourceFactory.class);
 
-        binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
-        binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
-        binder.bind(ResourceLocator.class).to(ClassLoaderResourceLocator.class);
-        binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
-
-        binder.bind(EntityResolver.class).toProvider(ServerCaseEntityResolverProvider.class);
 
         binder.bind(DataDomain.class).toProvider(ServerCaseDataDomainProvider.class);
 
         binder.bind(DataNodeFactory.class).to(ServerCaseDataNodeFactory.class);
 
-        binder.bind(DataNode.class).toProvider(ServerCaseDataNodeProvider.class).withoutScope();
-        binder.bind(ObjectContext.class).toProvider(ServerCaseObjectContextProvider.class).withoutScope();
-        binder.bind(DataContext.class).toProvider(ServerCaseDataContextProvider.class).withoutScope();
+        binder.bind(DataNode.class).toProvider(ServerCaseDataNodeProvider.class);
+        binder.bind(EntityResolver.class).toProvider(ServerCaseEntityResolverProvider.class);
+        binder.bind(ObjectContext.class).toProvider(ServerCaseObjectContextProvider.class);
+        binder.bind(DataContext.class).toProvider(ServerCaseDataContextProvider.class);
 
         binder.bind(DBHelper.class).toProvider(FlavoredDBHelperProvider.class);
     }

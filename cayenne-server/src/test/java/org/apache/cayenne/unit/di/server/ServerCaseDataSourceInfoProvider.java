@@ -23,12 +23,13 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Provider;
+
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.derby.DerbyAdapter;
 import org.apache.cayenne.dba.h2.H2Adapter;
 import org.apache.cayenne.dba.hsqldb.HSQLDBAdapter;
-import org.apache.cayenne.di.Provider;
 import org.apache.commons.collections.ExtendedProperties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

@@ -21,6 +21,11 @@ package org.apache.cayenne.configuration.server;
 import java.util.Collection;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Provider;
+import javax.inject.Singleton;
+
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelFilter;
@@ -35,9 +40,9 @@ import org.apache.cayenne.configuration.DataChannelDescriptorLoader;
 import org.apache.cayenne.configuration.DataChannelDescriptorMerger;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.RuntimeProperties;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.di.event.EventListener;
+import org.apache.cayenne.di.event.RefreshContextEvent;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.EntitySorter;
@@ -53,6 +58,7 @@ import org.apache.commons.logging.LogFactory;
  *
  * @since 3.1
  */
+@Singleton
 public class DataDomainProvider implements Provider<DataDomain> {
 
     /**
@@ -71,10 +77,12 @@ public class DataDomainProvider implements Provider<DataDomain> {
     @Inject
     protected DataChannelDescriptorLoader loader;
 
-    @Inject(Constants.SERVER_DOMAIN_FILTERS_LIST)
+    @Inject()
+    @Named(Constants.SERVER_DOMAIN_FILTERS_LIST)
     protected List<DataChannelFilter> filters;
 
-    @Inject(Constants.SERVER_PROJECT_LOCATIONS_LIST)
+    @Inject()
+    @Named(Constants.SERVER_PROJECT_LOCATIONS_LIST)
     protected List<String> locations;
 
     @Inject
@@ -89,19 +97,34 @@ public class DataDomainProvider implements Provider<DataDomain> {
     @Inject
     protected DataNodeFactory dataNodeFactory;
 
+    private DataDomain dataDomain;
+
     @Override
     public DataDomain get() throws ConfigurationException {
-
-        try {
-            // return createAndInitDataDomain();
-            DataDomain dataDomain = createAndInitDataDomain();
-            injector.injectMembers(dataDomain);
-            return dataDomain;
-        } catch (ConfigurationException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new DataDomainLoadException("Error loading DataChannel: '%s'", e, e.getMessage());
+        if (dataDomain == null) {
+            try {
+                // return createAndInitDataDomain();
+                DataDomain dataDomain = createAndInitDataDomain();
+                injector.injectMembers(dataDomain);
+                return dataDomain;
+            } catch (ConfigurationException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new DataDomainLoadException("Error loading DataChannel: '%s'", e, e.getMessage());
+            }
         }
+        return dataDomain;
+    }
+
+    @EventListener
+    public void onRefresh(RefreshContextEvent event) throws Exception {
+        if ( dataDomain != null) {
+            dataDomain.clear();
+        } else {
+            return;
+        }
+        DataChannelDescriptor descriptor = createDataChannelDecriptor();
+        initDataDomain(dataDomain, descriptor);
     }
 
     protected DataDomain createDataDomain(String name) {
@@ -110,6 +133,16 @@ public class DataDomainProvider implements Provider<DataDomain> {
 
     protected DataDomain createAndInitDataDomain() throws Exception {
 
+        DataChannelDescriptor descriptor = createDataChannelDecriptor();
+
+        dataDomain = createDataDomain(descriptor.getName());
+
+        initDataDomain(dataDomain, descriptor);
+
+        return dataDomain;
+    }
+
+    protected DataChannelDescriptor createDataChannelDecriptor() {
         DataChannelDescriptor descriptor;
 
         if (locations.isEmpty()) {
@@ -118,8 +151,10 @@ public class DataDomainProvider implements Provider<DataDomain> {
         } else {
             descriptor = descriptorFromConfigs();
         }
+        return descriptor;
+    }
 
-        DataDomain dataDomain = createDataDomain(descriptor.getName());
+    protected void initDataDomain(final DataDomain dataDomain, final DataChannelDescriptor dataChannelDescriptor) throws Exception {
 
         dataDomain.setMaxIdQualifierSize(runtimeProperties.getInt(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY, -1));
 
@@ -127,24 +162,24 @@ public class DataDomainProvider implements Provider<DataDomain> {
         dataDomain.setEntitySorter(injector.getInstance(EntitySorter.class));
         dataDomain.setEventManager(injector.getInstance(EventManager.class));
 
-        dataDomain.initWithProperties(descriptor.getProperties());
+        dataDomain.initWithProperties(dataChannelDescriptor.getProperties());
 
-        for (DataMap dataMap : descriptor.getDataMaps()) {
+        for (DataMap dataMap : dataChannelDescriptor.getDataMaps()) {
             dataDomain.addDataMap(dataMap);
         }
 
         dataDomain.getEntityResolver().applyDBLayerDefaults();
         dataDomain.getEntityResolver().applyObjectLayerDefaults();
 
-        for (DataNodeDescriptor nodeDescriptor : descriptor.getNodeDescriptors()) {
+        for (DataNodeDescriptor nodeDescriptor : dataChannelDescriptor.getNodeDescriptors()) {
             addDataNode(dataDomain, nodeDescriptor);
         }
 
         // init default node
         DataNode defaultNode = null;
 
-        if (descriptor.getDefaultNodeName() != null) {
-            defaultNode = dataDomain.getDataNode(descriptor.getDefaultNodeName());
+        if (dataChannelDescriptor.getDefaultNodeName() != null) {
+            defaultNode = dataDomain.getDataNode(dataChannelDescriptor.getDefaultNodeName());
         }
 
         if (defaultNode == null) {
@@ -163,8 +198,6 @@ public class DataDomainProvider implements Provider<DataDomain> {
         for (DataChannelFilter filter : filters) {
             dataDomain.addFilter(filter);
         }
-
-        return dataDomain;
     }
 
     /**

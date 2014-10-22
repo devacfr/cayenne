@@ -18,25 +18,38 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.client;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
+
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.ClientServerChannel;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.di.event.EventListener;
+import org.apache.cayenne.di.event.RefreshContextEvent;
 import org.apache.cayenne.remote.service.LocalConnection;
+
 
 public class ClientServerChannelProvider implements Provider<ClientServerChannel> {
 
     @Inject
     protected Provider<ClientRuntime> clientRuntimeProvider;
 
-    public ClientServerChannel get() throws ConfigurationException {
+    private ClientServerChannel channel;
 
-        LocalConnection connection = (LocalConnection) clientRuntimeProvider
-                .get()
-                .getConnection();
-        
-        ClientServerDataChannelDecorator channelDecorator = (ClientServerDataChannelDecorator) connection.getChannel();
-        return (ClientServerChannel) channelDecorator.getDelegate();
+    @EventListener
+    public void onRefresh(RefreshContextEvent event){
+        this.channel = null;
+    }
+
+    @Override
+    public ClientServerChannel get() throws ConfigurationException {
+        if (channel == null) {
+            LocalConnection connection = (LocalConnection) clientRuntimeProvider.get().getConnection();
+
+            ClientServerDataChannelDecorator channelDecorator = (ClientServerDataChannelDecorator) connection
+                    .getChannel();
+            channel = (ClientServerChannel) channelDecorator.getDelegate();
+        }
+        return channel;
     }
 }

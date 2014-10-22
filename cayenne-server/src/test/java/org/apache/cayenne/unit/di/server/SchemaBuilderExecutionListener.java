@@ -19,21 +19,12 @@
 
 package org.apache.cayenne.unit.di.server;
 
-import java.lang.reflect.Method;
-
-import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.cache.QueryCache;
-import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.di.Key;
-import org.apache.cayenne.di.spi.DefaultInjector;
-import org.apache.cayenne.di.spi.DefaultScopeProvider;
-import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.testing.CayenneTestContext;
 import org.apache.cayenne.testing.support.AbstractTestExecutionListener;
 import org.apache.cayenne.testing.support.CayenneRuntimeInvoker;
-import org.apache.cayenne.testing.utils.Assert;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * <code>SchemaBuilderExecutionListener</code> allows rebuilding the database
@@ -44,13 +35,19 @@ import org.apache.cayenne.testing.utils.Assert;
  */
 public class SchemaBuilderExecutionListener extends AbstractTestExecutionListener {
 
+    private static Log LOGGER = LogFactory.getLog(SchemaBuilderExecutionListener.class);
+
     /**
      * rebuild the database schema before execution each test class.
      */
     @Override
     public void beforeTestClass(CayenneTestContext testContext) throws Exception {
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Before Cayenne Runtime Context");
+        }
         CayenneRuntimeInvoker invoker = testContext.getCayenneRuntime();
-        SchemaBuilder schemaBuilder = invoker.getInjector().getInstance(SchemaBuilder.class);
+        Injector injector = invoker.getInjector();
+        SchemaBuilder schemaBuilder = injector.getInstance(SchemaBuilder.class);
         schemaBuilder.rebuildSchema();
     }
 
@@ -59,51 +56,11 @@ public class SchemaBuilderExecutionListener extends AbstractTestExecutionListene
      */
     @Override
     public void afterTestMethod(CayenneTestContext testContext) throws Exception {
-
-        Injector injector = testContext.getCayenneRuntime().getInjector();
-        // TODO [devacfr] replace direct call DefaultScopeProvider with specific
-        // scope
-        // example
-        // TestScope testScope =
-        // (TestScope)injector.getScopeBindings().get(TestScopeAnnotation.class);
-        // testScope.dirty(); // clear cached instance in all scope provider
-
-        scopedDirty(injector).dirty(EntityResolver.class).dirty(ObjectContextFactory.class).dirty(DataDomain.class)
-                .dirty(DataChannel.class);
-
-        injector.getInstance(QueryCache.class).clear();
-    }
-
-    public ScopedDirtyBuilder scopedDirty(Injector injector) {
-        return new ScopedDirtyBuilder(injector);
-    }
-
-    static class ScopedDirtyBuilder {
-
-        private final Injector injector;
-
-        public ScopedDirtyBuilder(final Injector injector) {
-            this.injector = Assert.notNull(injector);
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Refershing Cayenne Runtime Context");
         }
-
-        public <T> ScopedDirtyBuilder dirty(Class<T> instanceClass) throws Exception {
-            return dirty(Key.get(instanceClass));
-        }
-
-        public <T> ScopedDirtyBuilder dirty(Key<T> key) throws Exception {
-            // [devacfr] temporary, just to facilitate new DI integration
-            Object provider = injector.getProvider(key);
-            if (provider instanceof DefaultScopeProvider) {
-                try {
-                    Method afterScopeMethod = provider.getClass().getMethod("afterScopeEnd");
-                    afterScopeMethod.invoke(provider);
-                } catch (NoSuchMethodException ex) {
-                    Method afterEndMethod = provider.getClass().getMethod("afterEndScope", new Class[] {DefaultInjector.class});
-                    afterEndMethod.invoke(provider, injector);
-                }
-            }
-            return this;
-        }
+        CayenneRuntimeInvoker invoker = testContext.getCayenneRuntime();
+        invoker.refresh();
     }
 
 }

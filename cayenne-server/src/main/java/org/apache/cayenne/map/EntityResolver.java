@@ -47,7 +47,7 @@ import org.apache.commons.logging.LogFactory;
  * <p>
  * EntityResolver is thread-safe.
  * </p>
- * 
+ *
  * @since 1.1
  */
 public class EntityResolver implements MappingNamespace, Serializable {
@@ -87,7 +87,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * Updates missing mapping artifacts that can be guessed from other mapping
      * information. This implementation creates missing reverse relationships,
      * marking newly created relationships as "runtime".
-     * 
+     *
      * @since 3.0
      */
     public void applyDBLayerDefaults() {
@@ -167,7 +167,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * Returns a {@link LifecycleCallbackRegistry} for handling callbacks.
      * Registry is lazily initialized on first call.
-     * 
+     *
      * @since 3.0
      */
     public LifecycleCallbackRegistry getCallbackRegistry() {
@@ -182,7 +182,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * Sets a lifecycle callbacks registry of the EntityResolver. Users rarely
      * if ever need to call this method as Cayenne would instantiate a registry
      * itself as needed based on mapped configuration.
-     * 
+     *
      * @since 3.0
      */
     public void setCallbackRegistry(LifecycleCallbackRegistry callbackRegistry) {
@@ -192,7 +192,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * Returns ClientEntityResolver with mapping information that only includes
      * entities available on CWS Client Tier.
-     * 
+     *
      * @since 1.2
      */
     public EntityResolver getClientEntityResolver() {
@@ -225,10 +225,12 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * Returns all DbEntities.
      */
+    @Override
     public Collection<DbEntity> getDbEntities() {
         return mappingCache.getDbEntities();
     }
 
+    @Override
     public Collection<ObjEntity> getObjEntities() {
         return mappingCache.getObjEntities();
     }
@@ -236,6 +238,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * @since 3.0
      */
+    @Override
     public Collection<Embeddable> getEmbeddables() {
         return mappingCache.getEmbeddables();
     }
@@ -251,18 +254,22 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * @since 3.2
      */
+    @Override
     public Collection<SQLResult> getResults() {
         return mappingCache.getResults();
     }
 
+    @Override
     public Collection<Procedure> getProcedures() {
         return mappingCache.getProcedures();
     }
 
+    @Override
     public Collection<Query> getQueries() {
         return mappingCache.getQueries();
     }
 
+    @Override
     public DbEntity getDbEntity(String name) {
         DbEntity result = mappingCache.getDbEntity(name);
         if (result == null) {
@@ -275,6 +282,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
         return result;
     }
 
+    @Override
     public ObjEntity getObjEntity(String name) {
         ObjEntity result = mappingCache.getObjEntity(name);
         if (result == null) {
@@ -287,6 +295,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
         return result;
     }
 
+    @Override
     public Procedure getProcedure(String procedureName) {
         Procedure result = mappingCache.getProcedure(procedureName);
         if (result == null) {
@@ -302,6 +311,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * Returns a named query or null if no query exists for a given name.
      */
+    @Override
     public Query getQuery(String name) {
         Query result = mappingCache.getQuery(name);
 
@@ -317,6 +327,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * @since 3.0
      */
+    @Override
     public Embeddable getEmbeddable(String className) {
         Embeddable result = mappingCache.getEmbeddable(className);
 
@@ -333,6 +344,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * @since 3.0
      */
+    @Override
     public SQLResult getResult(String name) {
         SQLResult result = mappingCache.getResult(name);
 
@@ -349,7 +361,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * Returns ClassDescriptor for the ObjEntity matching the name. Returns null
      * if no matching entity exists.
-     * 
+     *
      * @since 1.2
      */
     public ClassDescriptor getClassDescriptor(String entityName) {
@@ -369,8 +381,20 @@ public class EntityResolver implements MappingNamespace, Serializable {
     }
 
     /**
+     *
+     */
+    public void clear() {
+        this.clientEntityResolver = null;
+        this.callbackRegistry = null;
+        this.classDescriptorMap = null;
+        this.indexedByClass = false;
+        this.maps = new ArrayList<DataMap>(Collections.<DataMap> emptyList());
+        refreshMappingCache();
+    }
+
+    /**
      * Removes all entity mappings from the cache.
-     * 
+     *
      * @deprecated since 3.2 in favor of {@link #refreshMappingCache()}.
      */
     @Deprecated
@@ -381,7 +405,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * Refreshes entity cache to reflect the current state of the DataMaps in
      * the EntityResolver.
-     * 
+     *
      * @since 3.2
      */
     public void refreshMappingCache() {
@@ -429,6 +453,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * @since 3.2
      */
+    @Override
     public EntityInheritanceTree getInheritanceTree(String entityName) {
 
         EntityInheritanceTree tree = mappingCache.getInheritanceTree(entityName);
@@ -458,12 +483,13 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * Looks in the DataMap's that this object was created with for the
      * ObjEntity that maps to the services the specified class
-     * 
+     *
      * @return the required ObjEntity or null if there is none that matches the
      *         specifier
-     * 
+     *
      * @since 3.2
      */
+    @Override
     public ObjEntity getObjEntity(Class<?> entityClass) {
         ObjEntity result = mappingCache.getObjEntity(entityClass);
         if (result == null) {
@@ -479,10 +505,12 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * @deprecated since 3.2, use {@link #getObjEntity(Class)}.
      */
+    @Deprecated
     public ObjEntity lookupObjEntity(Class<?> entityClass) {
         return getObjEntity(entityClass);
     }
 
+    @Override
     public ObjEntity getObjEntity(Persistent object) {
         return mappingCache.getObjEntity(object);
     }
@@ -490,7 +518,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * Looks in the DataMap's that this object was created with for the
      * ObjEntity that services the specified data Object
-     * 
+     *
      * @return the required ObjEntity, or null if none matches the specifier
      * @since 3.2 a corresponding getObjEntity method should be used.
      */
@@ -555,6 +583,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
      * @deprecated since 3.2. There's no replacement. This property is
      *             meaningless.
      */
+    @Deprecated
     public void setIndexedByClass(boolean b) {
         indexedByClass = b;
     }
@@ -562,7 +591,7 @@ public class EntityResolver implements MappingNamespace, Serializable {
     /**
      * Returns an object that compiles and stores {@link ClassDescriptor}
      * instances for all entities.
-     * 
+     *
      * @since 3.0
      */
     public ClassDescriptorMap getClassDescriptorMap() {

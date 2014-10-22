@@ -18,46 +18,57 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.rop.client;
 
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.inject.Singleton;
+
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.remote.ClientConnection;
 import org.apache.cayenne.remote.hessian.HessianConnection;
 
+@Singleton
 public class HessianConnectionProvider implements Provider<ClientConnection> {
 
     @Inject
     protected RuntimeProperties runtimeProperties;
 
+    private ClientConnection clientConnection;
+
+    @PreDestroy
+    public void shutdown() {
+        if (clientConnection != null) {
+            ((HessianConnection)clientConnection).close();
+        }
+        clientConnection = null;
+    }
+
+
+
+    @Override
     public ClientConnection get() throws ConfigurationException {
+        if (clientConnection == null) {
+            String url = runtimeProperties.get(Constants.ROP_SERVICE_URL_PROPERTY);
+            if (url == null) {
+                throw new ConfigurationException("No property defined for '%s', can't initialize HessianConnection",
+                        Constants.ROP_SERVICE_URL_PROPERTY);
+            }
 
-        String url = runtimeProperties.get(Constants.ROP_SERVICE_URL_PROPERTY);
-        if (url == null) {
-            throw new ConfigurationException(
-                    "No property defined for '%s', can't initialize HessianConnection",
-                    Constants.ROP_SERVICE_URL_PROPERTY);
+            String userName = runtimeProperties.get(Constants.ROP_SERVICE_USERNAME_PROPERTY);
+            String password = runtimeProperties.get(Constants.ROP_SERVICE_PASSWORD_PROPERTY);
+            String sharedSession = runtimeProperties.get(Constants.ROP_SERVICE_SHARED_SESSION_PROPERTY);
+            long readTimeout = runtimeProperties.getLong(Constants.ROP_SERVICE_TIMEOUT_PROPERTY, -1l);
+
+            HessianConnection result = new HessianConnection(url, userName, password, sharedSession);
+
+            if (readTimeout > 0) {
+                result.setReadTimeout(readTimeout);
+            }
+
+            clientConnection = result;
         }
-
-        String userName = runtimeProperties.get(Constants.ROP_SERVICE_USERNAME_PROPERTY);
-        String password = runtimeProperties.get(Constants.ROP_SERVICE_PASSWORD_PROPERTY);
-        String sharedSession = runtimeProperties
-                .get(Constants.ROP_SERVICE_SHARED_SESSION_PROPERTY);
-        long readTimeout = runtimeProperties.getLong(
-                Constants.ROP_SERVICE_TIMEOUT_PROPERTY,
-                -1l);
-
-        HessianConnection result = new HessianConnection(
-                url,
-                userName,
-                password,
-                sharedSession);
-
-        if (readTimeout > 0) {
-            result.setReadTimeout(readTimeout);
-        }
-
-        return result;
+        return clientConnection;
     }
 }

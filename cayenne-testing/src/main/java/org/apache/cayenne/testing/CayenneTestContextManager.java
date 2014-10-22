@@ -186,6 +186,10 @@ public class CayenneTestContextManager {
 
         for (TestExecutionListener testExecutionListener : getTestExecutionListeners()) {
             try {
+                if (logger.isTraceEnabled()) {
+                    logger.trace("prepareTestInstance(): instance [" + testInstance + "], executionListener ["
+                            + testExecutionListener.toString() + "]");
+                }
                 testExecutionListener.prepareTestInstance(getTestContext());
             } catch (Exception ex) {
                 logger.error("Caught exception while allowing TestExecutionListener [" + testExecutionListener
@@ -203,6 +207,10 @@ public class CayenneTestContextManager {
 
         for (TestExecutionListener testExecutionListener : getTestExecutionListeners()) {
             try {
+                if (logger.isTraceEnabled()) {
+                    logger.trace("beforeTestMethod(): instance [" + testInstance + "], executionListener ["
+                            + testExecutionListener.toString() + "]");
+                }
                 testExecutionListener.beforeTestMethod(getTestContext());
             } catch (Exception ex) {
                 logger.warn("Caught exception while allowing TestExecutionListener [" + testExecutionListener
@@ -225,6 +233,10 @@ public class CayenneTestContextManager {
         // "wrapper"-style execution of listeners.
         for (TestExecutionListener testExecutionListener : getReversedTestExecutionListeners()) {
             try {
+                if (logger.isTraceEnabled()) {
+                    logger.trace("afterTestMethod(): instance [" + testInstance + "], executionListener ["
+                            + testExecutionListener.toString() + "]");
+                }
                 testExecutionListener.afterTestMethod(getTestContext());
             } catch (Exception ex) {
                 logger.warn("Caught exception while allowing TestExecutionListener [" + testExecutionListener

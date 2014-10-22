@@ -26,13 +26,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Inject;
+
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
 import org.apache.cayenne.configuration.server.ServerRuntime;
-import org.apache.cayenne.dba.JdbcAdapter;
-import org.apache.cayenne.di.Inject;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.query.SelectQuery;
@@ -55,7 +56,7 @@ public class ResultDirectiveTest extends ServerCase {
     private DBHelper dbHelper;
 
     @Inject
-    private JdbcAdapter dbAdapter;
+    private DbAdapter dbAdapter;
 
 
     @Override
@@ -139,7 +140,7 @@ public class ResultDirectiveTest extends ServerCase {
 
     /**
      * Inserts one Artist
-     * 
+     *
      * @return Inserted Artist as a DataRow
      */
     private Map<String, Object> insertArtist() throws Exception {
@@ -157,10 +158,10 @@ public class ResultDirectiveTest extends ServerCase {
         node.setEntityResolver(runtime.getDataDomain().getEntityResolver());
         node.setRowReaderFactory(mock(RowReaderFactory.class));
         node.setAdapter(dbAdapter);
-        
+
         SQLTemplateAction action = new SQLTemplateAction(template, node);
 
-        Connection c = ((ServerRuntime)runtime)
+        Connection c = runtime
                 .getDataDomain()
                 .getDataNodes()
                 .iterator()

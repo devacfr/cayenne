@@ -18,15 +18,18 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
+import javax.inject.Inject;
+
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.UnitTestDomain;
+import org.apache.cayenne.configuration.DataChannelDescriptor;
 import org.apache.cayenne.configuration.DataNodeDescriptor;
 import org.apache.cayenne.configuration.server.DataDomainProvider;
 import org.apache.cayenne.configuration.server.DataNodeFactory;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.testdo.testmap.StringET1ExtendedType;
 import org.apache.cayenne.unit.UnitDbAdapter;
 
 class ServerCaseDataDomainProvider extends DataDomainProvider {
@@ -43,11 +46,12 @@ class ServerCaseDataDomainProvider extends DataDomainProvider {
     }
 
     @Override
-    protected DataDomain createAndInitDataDomain() throws Exception {
-        DataDomain domain = super.createAndInitDataDomain();
+    protected void initDataDomain(final DataDomain dataDomain, final DataChannelDescriptor dataChannelDescriptor)
+            throws Exception {
+        super.initDataDomain(dataDomain, dataChannelDescriptor);
         DataNode node = null;
 
-        for (DataMap dataMap : domain.getDataMaps()) {
+        for (DataMap dataMap : dataDomain.getDataMaps()) {
 
             // add nodes and DataSources dynamically...
             DataNodeDescriptor descriptor = new DataNodeDescriptor(dataMap.getName());
@@ -64,21 +68,14 @@ class ServerCaseDataDomainProvider extends DataDomainProvider {
             // customizations from SimpleAccessStackAdapter that are not yet
             // ported...
             // those can be done better now
+            node.getAdapter().getExtendedTypes().registerType(new StringET1ExtendedType());
 
-            // node
-            // .getAdapter()
-            // .getExtendedTypes()
-            // .registerType(new StringET1ExtendedType());
-            //
-
-            domain.addNode(node);
+            dataDomain.addNode(node);
         }
 
-        if (domain.getDataMaps().size() == 1) {
-            domain.setDefaultNode(node);
+        if (dataDomain.getDataMaps().size() == 1) {
+            dataDomain.setDefaultNode(node);
         }
-
-        return domain;
     }
 
 }

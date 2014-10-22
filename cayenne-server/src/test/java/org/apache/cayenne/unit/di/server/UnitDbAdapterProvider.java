@@ -21,16 +21,20 @@ package org.apache.cayenne.unit.di.server;
 import java.lang.reflect.Constructor;
 import java.util.Map;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Provider;
+import javax.inject.Singleton;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.unit.UnitDbAdapter;
 import org.apache.cayenne.util.Util;
 
+@Singleton
 public class UnitDbAdapterProvider implements Provider<UnitDbAdapter> {
 
     static final String TEST_ADAPTERS_MAP = "org.apache.cayenne.unit.di.server.CayenneResourcesAccessStackAdapterProvider.adapters";
@@ -39,50 +43,46 @@ public class UnitDbAdapterProvider implements Provider<UnitDbAdapter> {
     private DbAdapter adapter;
     private DataSourceInfo dataSourceInfo;
     private Map<String, String> adapterTypesMap;
-    
-    public UnitDbAdapterProvider(
-            @Inject(TEST_ADAPTERS_MAP) Map<String, String> adapterTypesMap,
-            @Inject DataSourceInfo dataSourceInfo, @Inject DbAdapter adapter,
-            @Inject Injector injector) {
+
+    private UnitDbAdapter unitDbAdapter;
+
+    @Inject
+    public UnitDbAdapterProvider(@Named(TEST_ADAPTERS_MAP) Map<String, String> adapterTypesMap,
+            DataSourceInfo dataSourceInfo, DbAdapter adapter, Injector injector) {
         this.dataSourceInfo = dataSourceInfo;
         this.adapterTypesMap = adapterTypesMap;
         this.adapter = adapter;
         this.injector = injector;
     }
 
+    @Override
     public UnitDbAdapter get() throws ConfigurationException {
-        String testAdapterType = adapterTypesMap
-                .get(dataSourceInfo.getAdapterClassName());
-        if (testAdapterType == null) {
-            throw new IllegalStateException("Unmapped adapter type: "
-                    + dataSourceInfo.getAdapterClassName());
-        }
+        if (unitDbAdapter == null) {
+            String testAdapterType = adapterTypesMap.get(dataSourceInfo.getAdapterClassName());
+            if (testAdapterType == null) {
+                throw new IllegalStateException("Unmapped adapter type: " + dataSourceInfo.getAdapterClassName());
+            }
 
-        Class<UnitDbAdapter> type;
-        try {
-            type = (Class<UnitDbAdapter>) Util.getJavaClass(testAdapterType);
-        }
-        catch (ClassNotFoundException e) {
-            throw new CayenneRuntimeException(
-                    "Invalid class %s of type AccessStackAdapter",
-                    e,
-                    testAdapterType);
-        }
+            Class<UnitDbAdapter> type;
+            try {
+                type = (Class<UnitDbAdapter>) Util.getJavaClass(testAdapterType);
+            } catch (ClassNotFoundException e) {
+                throw new CayenneRuntimeException("Invalid class %s of type AccessStackAdapter", e, testAdapterType);
+            }
 
-        if (!UnitDbAdapter.class.isAssignableFrom(type)) {
-            throw new CayenneRuntimeException(
-                    "Class %s is not assignable to AccessStackAdapter",
-                    testAdapterType);
-        }
+            if (!UnitDbAdapter.class.isAssignableFrom(type)) {
+                throw new CayenneRuntimeException("Class %s is not assignable to AccessStackAdapter", testAdapterType);
+            }
 
-        try {
-            Constructor<UnitDbAdapter> c = type.getConstructor(DbAdapter.class);
-            UnitDbAdapter instance = c.newInstance(adapter);
-            injector.injectMembers(instance);
-            return instance;
+            try {
+                Constructor<UnitDbAdapter> c = type.getConstructor(DbAdapter.class);
+                UnitDbAdapter instance = c.newInstance(adapter);
+                injector.injectMembers(instance);
+                unitDbAdapter = instance;
+            } catch (Exception e) {
+                throw new ConfigurationException("Error instantiating " + testAdapterType, e);
+            }
         }
-        catch (Exception e) {
-            throw new ConfigurationException("Error instantiating " + testAdapterType, e);
-        }
+        return unitDbAdapter;
     }
 }

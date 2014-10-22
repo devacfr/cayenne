@@ -18,34 +18,41 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.rop.client;
 
+import javax.inject.Provider;
+
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.ClientServerChannel;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.configuration.ObjectContextFactory;
 import org.apache.cayenne.di.Injector;
-import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.remote.service.LocalConnection;
 
 /**
  * Creates a {@link ClientServerChannel} for the {@link LocalConnection}.
- * 
+ *
  * @since 3.1
  */
 public class LocalClientServerChannelProvider implements Provider<DataChannel> {
 
     protected Injector serverInjector;
 
+    protected DataChannel dataChannel;
+
     public LocalClientServerChannelProvider(Injector serverInjector) {
         this.serverInjector = serverInjector;
     }
 
-    public DataChannel get() throws ConfigurationException {
-        ObjectContextFactory factory = serverInjector
-                .getInstance(ObjectContextFactory.class);
 
-        // TODO: ugly cast
-        DataContext serverContext = (DataContext) factory.createContext();
-        return new ClientServerChannel(serverContext);
+    @Override
+    public DataChannel get() throws ConfigurationException {
+        if (dataChannel == null) {
+            ObjectContextFactory factory = serverInjector.getInstance(ObjectContextFactory.class);
+
+            // TODO: ugly cast
+            DataContext serverContext = (DataContext) factory.createContext();
+            dataChannel = new ClientServerChannel(serverContext);
+        }
+        return dataChannel;
     }
 }

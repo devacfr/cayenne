@@ -18,18 +18,24 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.client;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Provider;
+
 import org.apache.cayenne.CayenneContext;
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.di.NoScope;
 
 
+@NoScope
 public class ClientCaseCayenneContextProvider implements Provider<CayenneContext> {
 
-    @Inject(ClientCase.ROP_CLIENT_KEY)
+    @Inject()
+    @Named(ClientCase.ROP_CLIENT_KEY)
     protected Provider<ObjectContext> objectContextProvider;
-    
+
+    @Override
     public CayenneContext get() throws ConfigurationException {
         return (CayenneContext) objectContextProvider.get();
     }

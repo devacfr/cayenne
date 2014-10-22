@@ -18,9 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.configuration;
 
+import javax.annotation.PreDestroy;
+
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.ObjectContext;
-import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.DIBootstrap;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Module;
@@ -31,7 +32,7 @@ import org.apache.cayenne.di.Module;
  * configuration as well as a way to customize this configuration via a built-in
  * dependency injection (DI) container. In fact implementation-wise, Runtime
  * object is just a convenience thin wrapper around a DI {@link Injector}.
- * 
+ *
  * @since 3.1
  */
 public abstract class CayenneRuntime {
@@ -40,7 +41,7 @@ public abstract class CayenneRuntime {
 	 * A holder of an Injector bound to the current thread. Used mainly to allow
 	 * serializable contexts to attach to correct Cayenne stack on
 	 * deserialization.
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	protected static final ThreadLocal<Injector> threadInjector = new ThreadLocal<Injector>();
@@ -48,7 +49,7 @@ public abstract class CayenneRuntime {
 	/**
 	 * Binds a DI {@link Injector} bound to the current thread. It is primarily
 	 * intended for deserialization of ObjectContexts.
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static void bindThreadInjector(Injector injector) {
@@ -58,7 +59,7 @@ public abstract class CayenneRuntime {
 	/**
 	 * Returns the {@link Injector} bound to the current thread. Will return
 	 * null if none is bound.
-	 * 
+	 *
 	 * @since 3.1
 	 */
 	public static Injector getThreadInjector() {
@@ -79,7 +80,7 @@ public abstract class CayenneRuntime {
 
 	/**
 	 * Returns an array of modules used to initialize this runtime.
-	 * 
+	 *
 	 * @deprecated since 3.2. We only keep one module now, so use
 	 *             {@link #getModule()}.
 	 */
@@ -89,9 +90,9 @@ public abstract class CayenneRuntime {
 	}
 
 	/**
-	 * 
+	 *
 	 * Returns the module used to initialize this runtime.
-	 * 
+	 *
 	 * @since 3.2
 	 */
 	public Module getModule() {
@@ -106,13 +107,20 @@ public abstract class CayenneRuntime {
 	}
 
 	/**
+	 *
+	 */
+	public void refresh() {
+	    this.injector.refresh();
+	}
+
+	/**
 	 * Shuts down the DI injector of this runtime, giving all services that need
 	 * to release some resources a chance to do that.
 	 */
 	// the following annotation is for environments that manage CayenneRuntimes
 	// within
 	// another DI registry (e.g. unit tests)
-	@BeforeScopeEnd
+	@PreDestroy
 	public void shutdown() {
 		injector.shutdown();
 	}
@@ -127,7 +135,7 @@ public abstract class CayenneRuntime {
 	/**
 	 * Returns a new ObjectContext instance based on the runtime's main
 	 * DataChannel.
-	 * 
+	 *
 	 * @since 3.2
 	 */
 	public ObjectContext newContext() {
@@ -138,7 +146,7 @@ public abstract class CayenneRuntime {
 	 * Returns a new ObjectContext which is a child of the specified
 	 * DataChannel. This method is used for creation of nested ObjectContexts,
 	 * with parent ObjectContext passed as an argument.
-	 * 
+	 *
 	 * @since 3.2
 	 */
 	public ObjectContext newContext(DataChannel parentChannel) {

@@ -32,18 +32,19 @@ import org.junit.runner.RunWith;
 
 @RunWith(CayenneBlockJUnit4ClassRunner.class)
 @TestExecutionListeners(listeners = {
-// Allows setting client properties
-        ClientRuntimeExecutionListener.class,
+        // Allows setting client properties before injection, before test method
+        ClientPropertiesExecutionListener.class,
         // Injects dependencies in test class
         DependencyInjectionTestExecutionListener.class,
+        // Allows setting client properties before injection, after test method
+        ClientPropertiesExecutionListener.class,
         // Allows recreate new cayenne runtime
         DirtiesRuntimeTestExecutionListener.class,
         // Rebuild db schema
         SchemaBuilderExecutionListener.class })
 @Modules({ ServerCaseModule.class, ClientCaseModule.class })
+//re-inject dependencies in a test class for each test method (ex: create new ObjectContext
 @InjectMode(classMode = ClassMode.AfterTestMethod)
-// re-inject dependencies in a test class for each test method (ex: create new
-// DataContext)
 public abstract class ClientCase extends DICase {
 
     /**

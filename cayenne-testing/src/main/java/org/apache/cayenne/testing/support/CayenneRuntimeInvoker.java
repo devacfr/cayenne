@@ -36,6 +36,8 @@ public class CayenneRuntimeInvoker {
 
     private final Method injectorMethod;
 
+    private final Method refreshMethod;
+
     private final Method shutdownMethod;
 
     /**
@@ -47,11 +49,20 @@ public class CayenneRuntimeInvoker {
         this.runtime = Assert.notNull(runtime);
         this.injectorMethod = runtime.getClass().getMethod("getInjector");
         this.shutdownMethod = runtime.getClass().getMethod("shutdown");
+        this.refreshMethod = runtime.getClass().getMethod("refresh");
     }
 
     public Injector getInjector() {
         try {
             return (Injector) injectorMethod.invoke(runtime);
+        } catch (Exception e) {
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    public void refresh() {
+        try {
+            refreshMethod.invoke(runtime);
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage(), e);
         }

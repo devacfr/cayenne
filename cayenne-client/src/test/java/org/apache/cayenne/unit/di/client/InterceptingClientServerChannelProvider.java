@@ -23,16 +23,20 @@ import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.configuration.rop.client.LocalClientServerChannelProvider;
 import org.apache.cayenne.di.Injector;
 
-public class InterceptingClientServerChannelProvider extends
-        LocalClientServerChannelProvider {
+public class InterceptingClientServerChannelProvider extends LocalClientServerChannelProvider {
+
 
     public InterceptingClientServerChannelProvider(Injector serverInjector) {
         super(serverInjector);
     }
 
+
     @Override
     public DataChannel get() throws ConfigurationException {
-        DataChannel clientServerChannel = super.get();
-        return new ClientServerDataChannelDecorator(clientServerChannel);
+        if (dataChannel == null) {
+            DataChannel clientServerChannel = super.get();
+            dataChannel = new ClientServerDataChannelDecorator(clientServerChannel);
+        }
+        return dataChannel;
     }
 }

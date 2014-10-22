@@ -18,17 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.client;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
+
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.di.NoScope;
 import org.apache.cayenne.remote.ClientConnection;
 
+@NoScope
 public class ClientCaseClientConnectionProvider implements Provider<ClientConnection> {
 
     @Inject
     protected Provider<ClientRuntime> clientRuntimeProvider;
 
+    @Override
     public ClientConnection get() throws ConfigurationException {
         return clientRuntimeProvider.get().getConnection();
     }

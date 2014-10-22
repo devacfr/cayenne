@@ -18,28 +18,46 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.inject.Singleton;
+
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.conn.DataSourceInfo;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.di.event.EventListener;
+import org.apache.cayenne.di.event.RefreshContextEvent;
 
+@Singleton
 public class ServerCaseDbAdapterProvider implements Provider<JdbcAdapter> {
 
     private DataSourceInfo dataSourceInfo;
     private AdhocObjectFactory objectFactory;
 
-    public ServerCaseDbAdapterProvider(@Inject DataSourceInfo dataSourceInfo,
-            @Inject AdhocObjectFactory objectFactory) {
+    private JdbcAdapter adapter;
+
+    @Inject
+    public ServerCaseDbAdapterProvider(DataSourceInfo dataSourceInfo,
+            AdhocObjectFactory objectFactory) {
         this.dataSourceInfo = dataSourceInfo;
         this.objectFactory = objectFactory;
     }
 
-    public JdbcAdapter get() throws ConfigurationException {
+    @EventListener
+    public void onRefresh(RefreshContextEvent event) {
+        if (adapter != null && adapter.getPkGenerator()!= null) {
+            adapter.getPkGenerator().reset();
+        }
+    }
 
-        return objectFactory.newInstance(DbAdapter.class, dataSourceInfo
+    @Override
+    public JdbcAdapter get() throws ConfigurationException {
+        if (adapter == null) {
+            adapter = objectFactory.newInstance(DbAdapter.class, dataSourceInfo
                 .getAdapterClassName());
+        }
+        return adapter;
     }
 }

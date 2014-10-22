@@ -114,6 +114,10 @@ public class ContextCacheTest extends TestCase {
             return injector;
         }
 
+        public void refresh() {
+            injector.refresh();
+        }
+
         public void shutdown() {
             injector.shutdown();
         }

@@ -21,23 +21,31 @@ package org.apache.cayenne.unit.di.client;
 import java.util.Collections;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class ClientCaseProperties {
+
+    private static Log LOGGER = LogFactory.getLog(ClientCase.class);
 
     protected Map<String, String> runtimeProperties;
 
-    
+
     /**
-     * 
+     *
      */
     public ClientCaseProperties() {
     }
-    
+
     Map<String, String> getRuntimeProperties() {
-        return runtimeProperties != null ? runtimeProperties : Collections.EMPTY_MAP;
+        return runtimeProperties != null ? runtimeProperties : Collections.<String, String>emptyMap();
     }
 
     void setRuntimeProperties(Map<String, String> runtimeProperties) {
         this.runtimeProperties = runtimeProperties;
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("Setting Cayenne Properties: " + runtimeProperties );
+        }
     }
 
 }

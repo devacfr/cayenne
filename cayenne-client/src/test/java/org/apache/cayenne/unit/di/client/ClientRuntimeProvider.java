@@ -18,19 +18,26 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.client;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
+
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.configuration.rop.client.ClientLocalRuntime;
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
 import org.apache.cayenne.configuration.server.ServerRuntime;
 import org.apache.cayenne.di.Binder;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
-import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.di.event.EventListener;
+import org.apache.cayenne.di.event.RefreshContextEvent;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class ClientRuntimeProvider implements Provider<ClientRuntime> {
+
+    private static Log LOGGER = LogFactory.getLog(ClientRuntimeProvider.class);
 
     @Inject
     // injecting provider to make this provider independent from scoping of
@@ -40,11 +47,33 @@ public class ClientRuntimeProvider implements Provider<ClientRuntime> {
     @Inject
     protected ClientCaseProperties clientCaseProperties;
 
+    private ClientLocalRuntime runtime;
+
     @Override
     public ClientRuntime get() throws ConfigurationException {
-        Injector serverInjector = serverRuntimeProvider.get().getInjector();
-        return new ClientLocalRuntime(serverInjector, clientCaseProperties.getRuntimeProperties(),
-                new ClientExtraModule(serverInjector));
+        if (runtime == null) {
+            Injector serverInjector = serverRuntimeProvider.get().getInjector();
+            runtime = new ClientLocalRuntime(serverInjector, clientCaseProperties.getRuntimeProperties(),
+                    new ClientExtraModule(serverInjector));
+            if (LOGGER.isTraceEnabled()) {
+                LOGGER.trace("get(): Creating new ClientRuntime instance ["+ runtime + "]");
+            }
+        }
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("get(): get ClientRuntime instance ["+ runtime + "]");
+        }
+        return runtime;
+    }
+
+    @EventListener
+    public void onRefresh(RefreshContextEvent event) {
+        if (LOGGER.isTraceEnabled()) {
+            LOGGER.trace("onRefresh(): shutdown current ClientRuntime");
+        }
+        if (runtime != null) {
+            runtime.shutdown();
+        }
+        runtime = null;
     }
 
     class ClientExtraModule implements Module {

@@ -21,64 +21,61 @@ package org.apache.cayenne.unit.di.server;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
+import javax.inject.Singleton;
+
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.unit.util.SQLTemplateCustomizer;
 
+@Singleton
 public class SQLTemplateCustomizerProvider implements Provider<SQLTemplateCustomizer> {
 
     @Inject
     private DbAdapter dbAdapter;
-   
 
+    private SQLTemplateCustomizer sqlTemplateCustomizer;
+
+    @Override
     public SQLTemplateCustomizer get() throws ConfigurationException {
-        Map<String, Map<String, String>> map = new HashMap<String, Map<String, String>>();
+        if (sqlTemplateCustomizer == null) {
+            Map<String, Map<String, String>> map = new HashMap<String, Map<String, String>>();
 
-        Map<String, String> q1 = new HashMap<String, String>();
-        q1.put(
-                "org.apache.cayenne.dba.postgres.PostgresAdapter",
-                "SELECT #result('ARTIST_ID'), RTRIM(#result('ARTIST_NAME')), "
-                        + "#result('DATE_OF_BIRTH') FROM ARTIST ORDER BY ARTIST_ID");
-        q1.put(
-                "org.apache.cayenne.dba.ingres.IngresAdapter",
-                "SELECT #result('ARTIST_ID'), TRIM(#result('ARTIST_NAME')), "
-                        + "#result('DATE_OF_BIRTH') FROM ARTIST ORDER BY ARTIST_ID");
-        q1.put(
-                "org.apache.cayenne.dba.openbase.OpenBaseAdapter",
-                "SELECT #result('ARTIST_ID'), #result('ARTIST_NAME'), "
-                        + "#result('DATE_OF_BIRTH') FROM ARTIST ORDER BY ARTIST_ID");
+            Map<String, String> q1 = new HashMap<String, String>();
+            q1.put("org.apache.cayenne.dba.postgres.PostgresAdapter",
+                    "SELECT #result('ARTIST_ID'), RTRIM(#result('ARTIST_NAME')), "
+                            + "#result('DATE_OF_BIRTH') FROM ARTIST ORDER BY ARTIST_ID");
+            q1.put("org.apache.cayenne.dba.ingres.IngresAdapter",
+                    "SELECT #result('ARTIST_ID'), TRIM(#result('ARTIST_NAME')), "
+                            + "#result('DATE_OF_BIRTH') FROM ARTIST ORDER BY ARTIST_ID");
+            q1.put("org.apache.cayenne.dba.openbase.OpenBaseAdapter",
+                    "SELECT #result('ARTIST_ID'), #result('ARTIST_NAME'), "
+                            + "#result('DATE_OF_BIRTH') FROM ARTIST ORDER BY ARTIST_ID");
 
-        Map<String, String> q2 = new HashMap<String, String>();
-        q2.put(
-                "org.apache.cayenne.dba.postgres.PostgresAdapter",
-                "SELECT #result('ARTIST_ID'), RTRIM(#result('ARTIST_NAME')), #result('DATE_OF_BIRTH') "
-                        + "FROM ARTIST WHERE ARTIST_ID = #bind($id)");
-        q2.put(
-                "org.apache.cayenne.dba.ingres.IngresAdapter",
-                "SELECT #result('ARTIST_ID'), TRIM(#result('ARTIST_NAME')), #result('DATE_OF_BIRTH') "
-                        + "FROM ARTIST WHERE ARTIST_ID = #bind($id)");
-        q2.put(
-                "org.apache.cayenne.dba.openbase.OpenBaseAdapter",
-                "SELECT #result('ARTIST_ID'), #result('ARTIST_NAME'), #result('DATE_OF_BIRTH') "
-                        + "FROM ARTIST WHERE ARTIST_ID = #bind($id)");
+            Map<String, String> q2 = new HashMap<String, String>();
+            q2.put("org.apache.cayenne.dba.postgres.PostgresAdapter",
+                    "SELECT #result('ARTIST_ID'), RTRIM(#result('ARTIST_NAME')), #result('DATE_OF_BIRTH') "
+                            + "FROM ARTIST WHERE ARTIST_ID = #bind($id)");
+            q2.put("org.apache.cayenne.dba.ingres.IngresAdapter",
+                    "SELECT #result('ARTIST_ID'), TRIM(#result('ARTIST_NAME')), #result('DATE_OF_BIRTH') "
+                            + "FROM ARTIST WHERE ARTIST_ID = #bind($id)");
+            q2.put("org.apache.cayenne.dba.openbase.OpenBaseAdapter",
+                    "SELECT #result('ARTIST_ID'), #result('ARTIST_NAME'), #result('DATE_OF_BIRTH') "
+                            + "FROM ARTIST WHERE ARTIST_ID = #bind($id)");
 
-        Map<String, String> q3 = new HashMap<String, String>();
-        q3
-                .put(
-                        "org.apache.cayenne.dba.oracle.OracleAdapter",
-                        "UPDATE ARTIST SET ARTIST_NAME = #bind($newName) WHERE RTRIM(ARTIST_NAME) = #bind($oldName)");
-        q3
-                .put(
-                        "org.apache.cayenne.dba.oracle.Oracle8Adapter",
-                        "UPDATE ARTIST SET ARTIST_NAME = #bind($newName) WHERE RTRIM(ARTIST_NAME) = #bind($oldName)");
+            Map<String, String> q3 = new HashMap<String, String>();
+            q3.put("org.apache.cayenne.dba.oracle.OracleAdapter",
+                    "UPDATE ARTIST SET ARTIST_NAME = #bind($newName) WHERE RTRIM(ARTIST_NAME) = #bind($oldName)");
+            q3.put("org.apache.cayenne.dba.oracle.Oracle8Adapter",
+                    "UPDATE ARTIST SET ARTIST_NAME = #bind($newName) WHERE RTRIM(ARTIST_NAME) = #bind($oldName)");
 
-        map.put("SELECT * FROM ARTIST ORDER BY ARTIST_ID", q1);
-        map.put("SELECT * FROM ARTIST WHERE ARTIST_ID = #bind($id)", q2);
-        map.put("UPDATE ARTIST SET ARTIST_NAME = #bind($newName) "
-                + "WHERE ARTIST_NAME = #bind($oldName)", q3);
+            map.put("SELECT * FROM ARTIST ORDER BY ARTIST_ID", q1);
+            map.put("SELECT * FROM ARTIST WHERE ARTIST_ID = #bind($id)", q2);
+            map.put("UPDATE ARTIST SET ARTIST_NAME = #bind($newName) " + "WHERE ARTIST_NAME = #bind($oldName)", q3);
 
-        return new SQLTemplateCustomizer(map, dbAdapter);
+            sqlTemplateCustomizer = new SQLTemplateCustomizer(map, dbAdapter);
+        }
+        return sqlTemplateCustomizer;
     }
 }

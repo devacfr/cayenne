@@ -44,9 +44,9 @@ import org.apache.cayenne.util.DeepMergeOperation;
 import org.apache.cayenne.util.ToStringBuilder;
 
 /**
- * A {@link org.apache.cayenne.DataChannel} implementation that accesses a remote server
- * via a ClientConnection.
- * 
+ * A {@link org.apache.cayenne.DataChannel} implementation that accesses a
+ * remote server via a ClientConnection.
+ *
  * @since 1.2
  */
 public class ClientChannel implements DataChannel {
@@ -60,13 +60,13 @@ public class ClientChannel implements DataChannel {
     EventBridge remoteChannelListener;
 
     /**
-     * @param remoteEventsOptional if true, failure to start an EventBridge will not
-     *            result in an exception.
+     * @param remoteEventsOptional
+     *            if true, failure to start an EventBridge will not result in an
+     *            exception.
      * @since 3.0
      */
-    public ClientChannel(ClientConnection connection, boolean channelEventsEnabled,
-            EventManager eventManager, boolean remoteEventsOptional)
-            throws CayenneRuntimeException {
+    public ClientChannel(ClientConnection connection, boolean channelEventsEnabled, EventManager eventManager,
+            boolean remoteEventsOptional) throws CayenneRuntimeException {
 
         this.connection = connection;
         this.diffCompressor = new GraphDiffCompressor();
@@ -75,14 +75,19 @@ public class ClientChannel implements DataChannel {
 
         if (!remoteEventsOptional) {
             setupRemoteChannelListener();
-        }
-        else {
+        } else {
             try {
                 setupRemoteChannelListener();
-            }
-            catch (CayenneRuntimeException e) {
+            } catch (CayenneRuntimeException e) {
 
             }
+        }
+    }
+
+
+    public void shutdown() throws Exception {
+        if (remoteChannelListener != null) {
+            remoteChannelListener.shutdown();
         }
     }
 
@@ -100,17 +105,18 @@ public class ClientChannel implements DataChannel {
         return channelEventsEnabled;
     }
 
+    @Override
     public EventManager getEventManager() {
         return eventManager;
     }
 
+    @Override
     public QueryResponse onQuery(ObjectContext context, Query query) {
 
-        QueryResponse response = (QueryResponse) send(
-                new QueryMessage(query),
-                QueryResponse.class);
+        QueryResponse response = (QueryResponse) send(new QueryMessage(query), QueryResponse.class);
 
-        // if needed, register objects in provided context, rewriting the response
+        // if needed, register objects in provided context, rewriting the
+        // response
         // (assuming all lists are mutable)
 
         if (context != null) {
@@ -133,19 +139,13 @@ public class ClientChannel implements DataChannel {
                             List<Object> rsMapping = info.getResultSetMapping();
                             if (rsMapping == null) {
                                 convertSingleObjects(resolver, objects, merger);
-                            }
-                            else {
+                            } else {
                                 if (rsMapping.size() == 1) {
                                     if (rsMapping.get(0) instanceof EntityResultSegment) {
                                         convertSingleObjects(resolver, objects, merger);
                                     }
-                                }
-                                else {
-                                    processMixedResult(
-                                            resolver,
-                                            objects,
-                                            merger,
-                                            rsMapping);
+                                } else {
+                                    processMixedResult(resolver, objects, merger, rsMapping);
 
                                 }
                             }
@@ -158,10 +158,7 @@ public class ClientChannel implements DataChannel {
         return response;
     }
 
-    private void processMixedResult(
-            EntityResolver resolver,
-            List<Object[]> objects,
-            DeepMergeOperation merger,
+    private void processMixedResult(EntityResolver resolver, List<Object[]> objects, DeepMergeOperation merger,
             List<Object> rsMapping) {
 
         int width = rsMapping.size();
@@ -174,10 +171,7 @@ public class ClientChannel implements DataChannel {
         }
     }
 
-    private void convertSingleObjects(
-            EntityResolver resolver,
-            List objects,
-            DeepMergeOperation merger) {
+    private void convertSingleObjects(EntityResolver resolver, List objects, DeepMergeOperation merger) {
 
         ListIterator it = objects.listIterator();
         while (it.hasNext()) {
@@ -186,62 +180,50 @@ public class ClientChannel implements DataChannel {
         }
     }
 
-    private Object convertObject(
-            EntityResolver resolver,
-            DeepMergeOperation merger,
-            Persistent object) {
+    private Object convertObject(EntityResolver resolver, DeepMergeOperation merger, Persistent object) {
 
         ObjectId id = object.getObjectId();
 
         // sanity check
         if (id == null) {
-            throw new CayenneRuntimeException("Server returned an object without an id: "
-                    + object);
+            throw new CayenneRuntimeException("Server returned an object without an id: " + object);
         }
 
         return merger.merge(object);
     }
 
-    public GraphDiff onSync(
-            ObjectContext originatingContext,
-            GraphDiff changes,
-            int syncType) {
+    @Override
+    public GraphDiff onSync(ObjectContext originatingContext, GraphDiff changes, int syncType) {
 
-        DataChannelSyncCallbackAction callbackAction = DataChannelSyncCallbackAction
-                .getCallbackAction(
-                        getEntityResolver().getCallbackRegistry(),
-                        originatingContext.getGraphManager(),
-                        changes,
-                        syncType);
+        DataChannelSyncCallbackAction callbackAction = DataChannelSyncCallbackAction.getCallbackAction(
+                getEntityResolver().getCallbackRegistry(), originatingContext.getGraphManager(), changes, syncType);
         callbackAction.applyPreCommit();
 
         changes = diffCompressor.compress(changes);
 
-        GraphDiff replyDiff = (GraphDiff) send(new SyncMessage(
-                originatingContext,
-                syncType,
-                changes), GraphDiff.class);
+        GraphDiff replyDiff = (GraphDiff) send(new SyncMessage(originatingContext, syncType, changes), GraphDiff.class);
 
         if (channelEventsEnabled) {
             EventSubject subject;
 
             switch (syncType) {
-                case DataChannel.ROLLBACK_CASCADE_SYNC:
-                    subject = DataChannel.GRAPH_ROLLEDBACK_SUBJECT;
-                    break;
-                case DataChannel.FLUSH_NOCASCADE_SYNC:
-                    subject = DataChannel.GRAPH_CHANGED_SUBJECT;
-                    break;
-                case DataChannel.FLUSH_CASCADE_SYNC:
-                    subject = DataChannel.GRAPH_FLUSHED_SUBJECT;
-                    break;
-                default:
-                    subject = null;
+            case DataChannel.ROLLBACK_CASCADE_SYNC:
+                subject = DataChannel.GRAPH_ROLLEDBACK_SUBJECT;
+                break;
+            case DataChannel.FLUSH_NOCASCADE_SYNC:
+                subject = DataChannel.GRAPH_CHANGED_SUBJECT;
+                break;
+            case DataChannel.FLUSH_CASCADE_SYNC:
+                subject = DataChannel.GRAPH_FLUSHED_SUBJECT;
+                break;
+            default:
+                subject = null;
             }
 
             if (subject != null) {
 
-                // combine message sender changes and message receiver changes into a
+                // combine message sender changes and message receiver changes
+                // into a
                 // single event
                 boolean sentNoop = changes == null || changes.isNoop();
                 boolean receivedNoop = replyDiff == null || replyDiff.isNoop();
@@ -257,9 +239,7 @@ public class ClientChannel implements DataChannel {
                         notification.add(replyDiff);
                     }
 
-                    Object postedBy = (originatingContext != null)
-                            ? originatingContext
-                            : this;
+                    Object postedBy = (originatingContext != null) ? originatingContext : this;
                     GraphEvent e = new GraphEvent(this, postedBy, notification);
                     eventManager.postEvent(e, subject);
                 }
@@ -271,17 +251,16 @@ public class ClientChannel implements DataChannel {
     }
 
     /**
-     * Returns EntityResolver obtained from the server. On first access, this method sends
-     * a message to the server to retrieve the EntityResolver. On subsequent calls locally
-     * cached resolver is used.
+     * Returns EntityResolver obtained from the server. On first access, this
+     * method sends a message to the server to retrieve the EntityResolver. On
+     * subsequent calls locally cached resolver is used.
      */
+    @Override
     public EntityResolver getEntityResolver() {
         if (entityResolver == null) {
             synchronized (this) {
                 if (entityResolver == null) {
-                    entityResolver = (EntityResolver) send(
-                            new BootstrapMessage(),
-                            EntityResolver.class);
+                    entityResolver = (EntityResolver) send(new BootstrapMessage(), EntityResolver.class);
                 }
             }
         }
@@ -290,9 +269,10 @@ public class ClientChannel implements DataChannel {
     }
 
     /**
-     * Starts up an EventBridge to listen for remote updates. Returns true if the listener
-     * was setup, false if not. False can be returned if the underlying connection doesn't
-     * support events of if there is no EventManager available.
+     * Starts up an EventBridge to listen for remote updates. Returns true if
+     * the listener was setup, false if not. False can be returned if the
+     * underlying connection doesn't support events of if there is no
+     * EventManager available.
      */
     protected boolean setupRemoteChannelListener() throws CayenneRuntimeException {
         if (eventManager == null) {
@@ -305,10 +285,10 @@ public class ClientChannel implements DataChannel {
         }
 
         try {
-            // make sure events are sent on behalf of this channel...and received from all
+            // make sure events are sent on behalf of this channel...and
+            // received from all
             bridge.startup(eventManager, EventBridge.RECEIVE_LOCAL_EXTERNAL, null, this);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new CayenneRuntimeException("Error starting EventBridge " + bridge, e);
         }
 
@@ -317,19 +297,19 @@ public class ClientChannel implements DataChannel {
     }
 
     /**
-     * Sends a message via connector, getting a result as an instance of a specific class.
-     * 
-     * @throws org.apache.cayenne.CayenneRuntimeException if an underlying connector
-     *             exception occurred, or a result is not of expected type.
+     * Sends a message via connector, getting a result as an instance of a
+     * specific class.
+     *
+     * @throws org.apache.cayenne.CayenneRuntimeException
+     *             if an underlying connector exception occurred, or a result is
+     *             not of expected type.
      */
     protected Object send(ClientMessage message, Class<?> resultClass) {
         Object result = connection.sendMessage(message);
 
         if (result != null && !resultClass.isInstance(result)) {
             String resultString = new ToStringBuilder(result).toString();
-            throw new CayenneRuntimeException("Expected result type: "
-                    + resultClass.getName()
-                    + ", actual: "
+            throw new CayenneRuntimeException("Expected result type: " + resultClass.getName() + ", actual: "
                     + resultString);
         }
 

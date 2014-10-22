@@ -19,10 +19,11 @@
 
 package org.apache.cayenne.util;
 
+import javax.inject.Inject;
+
 import org.apache.cayenne.ObjectId;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.access.DataContext;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.test.jdbc.TableHelper;

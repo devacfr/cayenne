@@ -33,14 +33,12 @@ public class ClientCaseModule implements Module {
 
 
 
+    @Override
     public void configure(Binder binder) {
-
-        // singletons
 
         binder.bind(Key.get(DataChannelInterceptor.class, ClientCase.ROP_CLIENT_KEY)).to(
                 ClientServerDataChannelInterceptor.class);
 
-        // test-scoped objects
 
         binder.bind(ClientCaseProperties.class).to(ClientCaseProperties.class);
         binder.bind(ClientRuntime.class).toProvider(ClientRuntimeProvider.class);

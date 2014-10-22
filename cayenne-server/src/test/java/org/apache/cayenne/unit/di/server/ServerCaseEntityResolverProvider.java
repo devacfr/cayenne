@@ -19,19 +19,23 @@
 package org.apache.cayenne.unit.di.server;
 
 
+import javax.inject.Inject;
+import javax.inject.Provider;
+
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.CayenneRuntime;
 import org.apache.cayenne.configuration.server.ServerRuntime;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.di.NoScope;
 import org.apache.cayenne.map.EntityResolver;
 
+@NoScope
 public class ServerCaseEntityResolverProvider implements Provider<EntityResolver> {
 
     @Inject
     // injecting provider to make this provider independent from scoping of ServerRuntime
     protected Provider<CayenneRuntime> serverRuntimeProvider;
 
+    @Override
     public EntityResolver get() throws ConfigurationException {
     	ServerRuntime serverRuntime = (ServerRuntime)serverRuntimeProvider.get();
         return serverRuntime.getDataDomain().getEntityResolver();

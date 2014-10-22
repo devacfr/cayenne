@@ -31,14 +31,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.MockOperationObserver;
 import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
-import org.apache.cayenne.dba.JdbcAdapter;
+import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.query.CapsStrategy;
 import org.apache.cayenne.query.SQLTemplate;
@@ -60,7 +61,7 @@ public class BindDirectiveTest extends ServerCase {
     private ServerCaseDataSourceFactory dataSourceFactory;
 
     @Inject
-    private JdbcAdapter adapter;
+    private DbAdapter adapter;
 
     @Inject
     private ObjectContext context;
@@ -81,7 +82,7 @@ public class BindDirectiveTest extends ServerCase {
         dbHelper.deleteAll("ARTIST_GROUP");
         dbHelper.deleteAll("ARTIST");
     }
-    
+
     @Test
     public void testBindTimestamp() throws Exception {
         Map<String, Object> parameters = new HashMap<String, Object>();
@@ -153,10 +154,10 @@ public class BindDirectiveTest extends ServerCase {
         artistNames.add("Artist3");
         String sql = "SELECT * FROM ARTIST WHERE ARTIST_NAME in (#bind($ARTISTNAMES))";
         SQLTemplate query = new SQLTemplate(Artist.class, sql);
-        
-        // customize for DB's that require trimming CHAR spaces 
+
+        // customize for DB's that require trimming CHAR spaces
         query.setTemplate(OracleAdapter.class.getName(), "SELECT * FROM ARTIST WHERE RTRIM(ARTIST_NAME) in (#bind($ARTISTNAMES))");
-        
+
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
         query.setParameters(Collections.singletonMap("ARTISTNAMES", artistNames));
         List<DataRow> result = context.performQuery(query);
@@ -227,7 +228,7 @@ public class BindDirectiveTest extends ServerCase {
 
     /**
      * Inserts row for given parameters
-     * 
+     *
      * @return inserted row
      */
     private Map<String, ?> performInsertForParameters(

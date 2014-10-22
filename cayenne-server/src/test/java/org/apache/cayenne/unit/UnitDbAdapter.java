@@ -33,15 +33,18 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.QuotingStrategy;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.Procedure;
+import org.apache.cayenne.unit.di.server.ServerCaseModule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -58,6 +61,10 @@ public class UnitDbAdapter {
     @Inject
     protected RuntimeProperties runtimeProperties;
 
+    @Inject
+    @Named(ServerCaseModule.NAME_QUERY_LOG_DISABLED)
+    protected boolean disableQueryLog;
+
     protected DbAdapter adapter;
 
     public UnitDbAdapter(DbAdapter adapter) {
@@ -66,19 +73,19 @@ public class UnitDbAdapter {
         }
         this.adapter = adapter;
     }
-    
+
     public String getIdentifiersStartQuote() {
         return "\"";
     }
-    
+
     public String getIdentifiersEndQuote() {
         return "\"";
     }
-    
+
     /**
      * Returns whether the target DB treats REAL values as DOUBLEs. Default is
      * false, i.e. REALs are treated as FLOATs.
-     * 
+     *
      * @return
      */
     public boolean realAsDouble() {
@@ -248,7 +255,9 @@ public class UnitDbAdapter {
     }
 
     protected void executeDDL(Connection con, String ddl) throws Exception {
-        logger.info(ddl);
+        if (logger.isInfoEnabled() && !disableQueryLog) {
+            logger.info(ddl);
+        }
         Statement st = con.createStatement();
 
         try {

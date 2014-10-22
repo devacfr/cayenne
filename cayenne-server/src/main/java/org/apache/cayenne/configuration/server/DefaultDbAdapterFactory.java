@@ -23,6 +23,9 @@ import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Singleton;
 import javax.sql.DataSource;
 
 import org.apache.cayenne.CayenneRuntimeException;
@@ -32,7 +35,6 @@ import org.apache.cayenne.dba.AutoAdapter;
 import org.apache.cayenne.dba.DbAdapter;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.di.AdhocObjectFactory;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.log.JdbcEventLogger;
@@ -40,9 +42,10 @@ import org.apache.cayenne.log.JdbcEventLogger;
 /**
  * A factory of DbAdapters that either loads user-provided adapter or guesses
  * the adapter type from the database metadata.
- * 
+ *
  * @since 3.1
  */
+@Singleton
 public class DefaultDbAdapterFactory implements DbAdapterFactory {
 
     @Inject
@@ -53,9 +56,11 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
 
     @Inject
     protected AdhocObjectFactory objectFactory;
+
     protected List<DbAdapterDetector> detectors;
 
-    public DefaultDbAdapterFactory(@Inject(Constants.SERVER_ADAPTER_DETECTORS_LIST) List<DbAdapterDetector> detectors) {
+    @Inject
+    public DefaultDbAdapterFactory(@Named(Constants.SERVER_ADAPTER_DETECTORS_LIST) List<DbAdapterDetector> detectors) {
         if (detectors == null) {
             throw new NullPointerException("Null detectors list");
         }
@@ -84,6 +89,7 @@ public class DefaultDbAdapterFactory implements DbAdapterFactory {
         } else {
             return new AutoAdapter(new Provider<DbAdapter>() {
 
+                @Override
                 public DbAdapter get() {
                     return detectAdapter(dataSource);
                 }

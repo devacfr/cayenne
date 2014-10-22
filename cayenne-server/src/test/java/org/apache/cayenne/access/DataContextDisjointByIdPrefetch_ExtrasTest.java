@@ -25,12 +25,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.apache.cayenne.Cayenne;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.PersistenceState;
 import org.apache.cayenne.ValueHolder;
 import org.apache.cayenne.configuration.server.ServerRuntime;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.query.PrefetchTreeNode;
 import org.apache.cayenne.query.SelectQuery;
 import org.apache.cayenne.test.jdbc.DBHelper;
@@ -196,12 +197,13 @@ public class DataContextDisjointByIdPrefetch_ExtrasTest extends ServerCase {
     public void testFlattenedRelationship() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
-        SelectQuery query = new SelectQuery(Bag.class);
+        SelectQuery<Bag> query = new SelectQuery<Bag>(Bag.class);
         query.addPrefetch(Bag.BALLS_PROPERTY).setSemantics(PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
         final List<Bag> result = context.performQuery(query);
 
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
+            @Override
             public void execute() {
                 assertFalse(result.isEmpty());
                 Bag b1 = result.get(0);
@@ -230,6 +232,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasTest extends ServerCase {
 
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
+            @Override
             public void execute() {
                 assertFalse(result.isEmpty());
                 List<Integer> volumes = new ArrayList<Integer>();
@@ -258,6 +261,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasTest extends ServerCase {
 
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
+            @Override
             public void execute() {
                 assertFalse(result.isEmpty());
                 Bag b1 = result.get(0);
@@ -280,7 +284,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasTest extends ServerCase {
     public void testMultiColumnRelationship() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
-        SelectQuery query = new SelectQuery(Ball.class);
+        SelectQuery<Ball> query = new SelectQuery<Ball>(Ball.class);
         query.orQualifier(matchExp(Ball.THING_VOLUME_PROPERTY, 40).andExp(matchExp(Ball.THING_WEIGHT_PROPERTY, 30)));
         query.orQualifier(matchExp(Ball.THING_VOLUME_PROPERTY, 20).andExp(matchExp(Ball.THING_WEIGHT_PROPERTY, 10)));
 
@@ -290,6 +294,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasTest extends ServerCase {
 
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
+            @Override
             public void execute() {
 
                 assertEquals(2, balls.size());
@@ -304,7 +309,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasTest extends ServerCase {
     public void testJointPrefetchInParent() throws Exception {
         createBagWithTwoBoxesAndPlentyOfBallsDataSet();
 
-        SelectQuery query = new SelectQuery(Box.class);
+        SelectQuery<Box> query = new SelectQuery<Box>(Box.class);
         query.addPrefetch(Box.BALLS_PROPERTY).setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
         query.addPrefetch(Box.BALLS_PROPERTY + "." + Ball.THING_PROPERTY).setSemantics(
                 PrefetchTreeNode.DISJOINT_BY_ID_PREFETCH_SEMANTICS);
@@ -312,6 +317,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasTest extends ServerCase {
 
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
+            @Override
             public void execute() {
                 assertFalse(result.isEmpty());
                 List<Integer> volumes = new ArrayList<Integer>();
@@ -343,6 +349,7 @@ public class DataContextDisjointByIdPrefetch_ExtrasTest extends ServerCase {
 
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
+            @Override
             public void execute() {
                 assertFalse(result.isEmpty());
 

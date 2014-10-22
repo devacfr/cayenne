@@ -101,7 +101,7 @@ import org.apache.cayenne.tx.TransactionManager;
 
 /**
  * A DI module containing all Cayenne server runtime configuration.
- * 
+ *
  * @since 3.1
  */
 public class ServerModule implements Module {
@@ -123,19 +123,20 @@ public class ServerModule implements Module {
         this.configurationLocations = configurationLocations;
     }
 
+    @Override
     public void configure(Binder binder) {
 
         // configure global stack properties
         binder.bindMap(Constants.PROPERTIES_MAP)
             .put(Constants.SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY, String.valueOf(DEFAULT_MAX_ID_QUALIFIER_SIZE));
 
-        binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);  
+        binder.bind(JdbcEventLogger.class).to(CommonsJdbcEventLogger.class);
         binder.bind(ClassLoaderManager.class).to(DefaultClassLoaderManager.class);
         binder.bind(AdhocObjectFactory.class).to(DefaultAdhocObjectFactory.class);
 
         // configure known DbAdapter detectors in reverse order of popularity. Users can
         // add their own to install custom adapters automatically
-        
+
         // a bit ugly - need to bind all sniffers explicitly first before placing then in a list
         binder.bind(FirebirdSniffer.class).to(FirebirdSniffer.class);
         binder.bind(OpenBaseSniffer.class).to(OpenBaseSniffer.class);
@@ -151,7 +152,7 @@ public class ServerModule implements Module {
         binder.bind(OracleSniffer.class).to(OracleSniffer.class);
         binder.bind(PostgresSniffer.class).to(PostgresSniffer.class);
         binder.bind(MySQLSniffer.class).to(MySQLSniffer.class);
-        
+
         binder.bindList(Constants.SERVER_ADAPTER_DETECTORS_LIST)
                 .add(FirebirdSniffer.class)
                 .add(OpenBaseSniffer.class)
@@ -170,7 +171,7 @@ public class ServerModule implements Module {
 
         // configure an empty filter chain
         binder.bindList(Constants.SERVER_DOMAIN_FILTERS_LIST);
-        
+
         // configure extended types
         binder
                 .bindList(Constants.SERVER_DEFAULT_TYPES_LIST)
@@ -192,7 +193,7 @@ public class ServerModule implements Module {
                 .add(new UtilDateType())
                 .add(new CalendarType<GregorianCalendar>(GregorianCalendar.class))
                 .add(new CalendarType<Calendar>(Calendar.class))
-                .add(new UUIDType()); 
+                .add(new UUIDType());
         binder.bindList(Constants.SERVER_USER_TYPES_LIST);
         binder.bindList(Constants.SERVER_TYPE_FACTORIES_LIST);
 
@@ -212,16 +213,16 @@ public class ServerModule implements Module {
 
         // a service to provide the main stack DataDomain
         binder.bind(DataDomain.class).toProvider(DataDomainProvider.class);
-        
+
         binder.bind(DataNodeFactory.class).to(DefaultDataNodeFactory.class);
 
         // will return DataDomain for request for a DataChannel
         binder.bind(DataChannel.class).toProvider(DomainDataChannelProvider.class);
 
         binder.bind(ObjectContextFactory.class).to(DataContextFactory.class);
-        
+
         binder.bind(TransactionFactory.class).to(DefaultTransactionFactory.class);
-        
+
         // a service to load project XML descriptors
         binder.bind(DataChannelDescriptorLoader.class).to(
                 XMLDataChannelDescriptorLoader.class);
@@ -251,7 +252,7 @@ public class ServerModule implements Module {
 
         // binding AshwoodEntitySorter without scope, as this is a stateful object and is
         // configured by the owning domain
-        binder.bind(EntitySorter.class).to(AshwoodEntitySorter.class).withoutScope();
+        binder.bind(EntitySorter.class).to(AshwoodEntitySorter.class);
 
         binder.bind(BatchTranslatorFactory.class).to(
                 DefaultBatchTranslatorFactory.class);
@@ -262,7 +263,7 @@ public class ServerModule implements Module {
 
         // a default ObjectStoreFactory used to create ObjectStores for contexts
         binder.bind(ObjectStoreFactory.class).to(DefaultObjectStoreFactory.class);
-        
+
         binder.bind(TransactionManager.class).to(DefaultTransactionManager.class);
         binder.bind(RowReaderFactory.class).to(DefaultRowReaderFactory.class);
     }

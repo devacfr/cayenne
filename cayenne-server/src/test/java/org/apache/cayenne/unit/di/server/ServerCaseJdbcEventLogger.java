@@ -18,20 +18,29 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
-import org.apache.cayenne.ConfigurationException;
-import org.apache.cayenne.access.translator.batch.BatchTranslatorFactory;
-import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
-import org.apache.cayenne.di.Provider;
+import javax.inject.Inject;
+import javax.inject.Named;
 
-public class ServerCaseBatchQueryBuilderFactoryProvider implements
-        Provider<BatchTranslatorFactory> {
-	
-	private BatchTranslatorFactory instance;
-		
+import org.apache.cayenne.configuration.RuntimeProperties;
+import org.apache.cayenne.log.CommonsJdbcEventLogger;
 
-    public BatchTranslatorFactory get() throws ConfigurationException {
-    	if (instance == null)
-    		instance = new DefaultBatchTranslatorFactory();
-    	return instance;
+
+public class ServerCaseJdbcEventLogger extends CommonsJdbcEventLogger {
+
+
+
+    @Inject
+    @Named(ServerCaseModule.NAME_QUERY_LOG_DISABLED)
+    protected boolean disableQueryLog;
+
+    @Inject
+    public ServerCaseJdbcEventLogger( RuntimeProperties runtimeProperties) {
+        super(runtimeProperties);
+    }
+
+
+    @Override
+    public boolean isLoggable() {
+        return super.isLoggable() && !disableQueryLog;
     }
 }

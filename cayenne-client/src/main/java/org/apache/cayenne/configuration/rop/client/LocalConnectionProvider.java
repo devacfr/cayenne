@@ -18,26 +18,36 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.rop.client;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.inject.Provider;
+import javax.inject.Singleton;
+
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.DataChannel;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.remote.ClientConnection;
 import org.apache.cayenne.remote.service.LocalConnection;
 
 /**
  * @since 3.1
  */
+@Singleton
 public class LocalConnectionProvider implements Provider<ClientConnection> {
 
-    @Inject(ClientLocalRuntime.CLIENT_SERVER_CHANNEL_KEY)
+    @Inject
+    @Named(ClientLocalRuntime.CLIENT_SERVER_CHANNEL_KEY)
     protected Provider<DataChannel> clientServerChannelProvider;
 
-    public ClientConnection get() throws ConfigurationException {
+    private ClientConnection clientConnection;
 
-        DataChannel clientServerChannel = clientServerChannelProvider.get();
-        return new LocalConnection(
-                clientServerChannel,
-                LocalConnection.HESSIAN_SERIALIZATION);
+
+
+    @Override
+    public ClientConnection get() throws ConfigurationException {
+        if (clientConnection == null) {
+            DataChannel clientServerChannel = clientServerChannelProvider.get();
+            clientConnection = new LocalConnection(clientServerChannel, LocalConnection.HESSIAN_SERIALIZATION);
+        }
+        return clientConnection;
     }
 }

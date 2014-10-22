@@ -32,6 +32,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.ListIterator;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.DbGenerator;
@@ -41,7 +44,6 @@ import org.apache.cayenne.access.translator.batch.DefaultBatchTranslatorFactory;
 import org.apache.cayenne.ashwood.AshwoodEntitySorter;
 import org.apache.cayenne.cache.MapQueryCache;
 import org.apache.cayenne.dba.DbAdapter;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.DefaultEventManager;
 import org.apache.cayenne.log.JdbcEventLogger;
 import org.apache.cayenne.map.DataMap;
@@ -85,8 +87,13 @@ public class SchemaBuilder {
     private JdbcEventLogger jdbcEventLogger;
 
 
-    public SchemaBuilder(@Inject ServerCaseDataSourceFactory dataSourceFactory, @Inject UnitDbAdapter unitDbAdapter,
-            @Inject DbAdapter dbAdapter, @Inject JdbcEventLogger jdbcEventLogger) {
+    @Inject
+    @Named(ServerCaseModule.NAME_QUERY_LOG_DISABLED)
+    protected boolean disableQueryLog;
+
+    @Inject
+    public SchemaBuilder(ServerCaseDataSourceFactory dataSourceFactory, UnitDbAdapter unitDbAdapter,
+            DbAdapter dbAdapter, JdbcEventLogger jdbcEventLogger) {
         this.dataSourceFactory = dataSourceFactory;
         this.unitDbAdapter = unitDbAdapter;
         this.dbAdapter = dbAdapter;
@@ -297,7 +304,9 @@ public class SchemaBuilder {
 
                 for (String dropSql : node.getAdapter().dropTableStatements(ent)) {
                     try {
-                        logger.info(dropSql);
+                        if (logger.isInfoEnabled() && !disableQueryLog) {
+                            logger.info(dropSql);
+                        }
                         stmt.execute(dropSql);
                     } catch (SQLException sqe) {
                         logger.warn("Can't drop table " + ent.getName() + ", ignoring...", sqe);
@@ -330,7 +339,9 @@ public class SchemaBuilder {
             Statement stmt = conn.createStatement();
 
             for (String query : tableCreateQueries(node, map)) {
-                logger.info(query);
+                if (logger.isInfoEnabled() && !disableQueryLog) {
+                    logger.info(query);
+                }
                 stmt.execute(query);
             }
             unitDbAdapter.createdTables(conn, map);

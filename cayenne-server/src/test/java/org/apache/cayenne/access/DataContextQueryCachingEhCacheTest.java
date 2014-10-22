@@ -25,7 +25,7 @@ import org.apache.cayenne.unit.di.server.ServerCase;
 
 @CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DataContextQueryCachingEhCacheTest extends DataContextQueryCachingTest {
-    
+
     protected EhCacheQueryCache domainCache;
     protected EhCacheQueryCache contextCache;
 
@@ -49,16 +49,16 @@ public class DataContextQueryCachingEhCacheTest extends DataContextQueryCachingT
 
         domain = context.getParentDataDomain();
         oldCache = domain.getQueryCache();
-        
+
         domainCache = new EhCacheQueryCache();
         contextCache = new EhCacheQueryCache();
         domain.setQueryCache(domainCache);
         context.setQueryCache(contextCache);
     }
-    
+
     @Override
     protected void tearDownBeforeInjection() throws Exception {
-        domainCache.shutdown();
+        // must clear manually, the cache manager does not shutdown automatically when context refreshes.
         contextCache.shutdown();
     }
 }

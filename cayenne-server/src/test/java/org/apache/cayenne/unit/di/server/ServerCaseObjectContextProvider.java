@@ -18,17 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.server;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
+
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.configuration.CayenneRuntime;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.di.NoScope;
 
+@NoScope
 public class ServerCaseObjectContextProvider implements Provider<ObjectContext> {
 
     @Inject
     protected CayenneRuntime serverRuntime;
 
+    @Override
     public ObjectContext get() throws ConfigurationException {
         return serverRuntime.newContext();
     }

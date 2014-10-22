@@ -18,17 +18,21 @@
  ****************************************************************/
 package org.apache.cayenne.configuration.server;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
+
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.access.DataDomain;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.di.NoScope;
+
 
 /**
  * This is a default implementation of a DataChannel provider that simply returns a
  * DataDomain for a given runtime.
- * 
+ *
  * @since 3.1
  */
+@NoScope
 public class DomainDataChannelProvider implements Provider<DataChannel> {
 
     @Inject

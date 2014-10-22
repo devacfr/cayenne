@@ -18,11 +18,13 @@
  ****************************************************************/
 package org.apache.cayenne.cache;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
+
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.configuration.Constants;
 import org.apache.cayenne.configuration.RuntimeProperties;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Provider;
+
 
 /**
  * @since 3.1
@@ -31,15 +33,20 @@ public class MapQueryCacheProvider implements Provider<QueryCache> {
 
     protected RuntimeProperties properties;
 
-    public MapQueryCacheProvider(@Inject RuntimeProperties properties) {
+    private QueryCache queryCache;
+
+    @Inject
+    public MapQueryCacheProvider(RuntimeProperties properties) {
         this.properties = properties;
+        this.queryCache = null;
     }
 
+    @Override
     public QueryCache get() throws ConfigurationException {
-
-        int size = properties.getInt(
-                Constants.QUERY_CACHE_SIZE_PROPERTY,
-                MapQueryCache.DEFAULT_CACHE_SIZE);
-        return new MapQueryCache(size);
+        if (queryCache == null) {
+            int size = properties.getInt(Constants.QUERY_CACHE_SIZE_PROPERTY, MapQueryCache.DEFAULT_CACHE_SIZE);
+            queryCache = new MapQueryCache(size);
+        }
+        return queryCache;
     }
 }

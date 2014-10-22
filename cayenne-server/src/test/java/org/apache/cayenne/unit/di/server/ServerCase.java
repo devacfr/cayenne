@@ -24,22 +24,19 @@ import org.apache.cayenne.testing.Modules;
 import org.apache.cayenne.testing.TestExecutionListeners;
 import org.apache.cayenne.testing.support.DependencyInjectionTestExecutionListener;
 import org.apache.cayenne.testing.support.DirtiesRuntimeTestExecutionListener;
-import org.apache.cayenne.testing.support.DirtyMode;
 import org.apache.cayenne.testing.support.InjectMode;
 import org.apache.cayenne.unit.di.DICase;
 import org.junit.runner.RunWith;
 
 @RunWith(CayenneBlockJUnit4ClassRunner.class)
-@TestExecutionListeners(listeners = { DirtiesRuntimeTestExecutionListener.class,
+@TestExecutionListeners(listeners = {  DirtiesRuntimeTestExecutionListener.class,
         DependencyInjectionTestExecutionListener.class, SchemaBuilderExecutionListener.class })
 @Modules({ ServerCaseModule.class })
 // re-inject dependencies in test instance after each method
 @InjectMode(classMode = ClassMode.AfterTestMethod)
-// TODO [devacfr] resolve corruption between each test instance
-@DirtyMode(classMode=ClassMode.AfterClass)
 public abstract class ServerCase extends DICase {
 
-    // known runtimes... unit tests may reuse these with @UseServerRuntime
+    // known runtimes... unit tests may reuse these with @CayenneConfiguration
     // annotation or
     // can define their own on the fly (TODO: how would that work with the
     // global schema

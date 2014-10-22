@@ -28,6 +28,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
+
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataChannel;
 import org.apache.cayenne.DataChannelFilter;
@@ -37,8 +40,6 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.QueryResponse;
 import org.apache.cayenne.cache.QueryCache;
 import org.apache.cayenne.configuration.Constants;
-import org.apache.cayenne.di.BeforeScopeEnd;
-import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.event.EventManager;
 import org.apache.cayenne.graph.CompoundDiff;
 import org.apache.cayenne.graph.GraphDiff;
@@ -92,6 +93,9 @@ public class DataDomain implements QueryEngine, DataChannel {
     @Inject
     protected TransactionManager transactionManager;
 
+
+    protected QueryCache queryCache;
+
     /**
      * @since 3.1
      */
@@ -110,7 +114,7 @@ public class DataDomain implements QueryEngine, DataChannel {
     protected EntityResolver entityResolver;
     protected DataRowStore sharedSnapshotCache;
     protected String name;
-    protected QueryCache queryCache;
+
 
     // these are initialized from properties...
     protected boolean sharedCacheEnabled;
@@ -138,7 +142,7 @@ public class DataDomain implements QueryEngine, DataChannel {
 
     /**
      * Creates new DataDomain.
-     * 
+     *
      * @param name
      *            DataDomain name. Domain can be located using its name in the
      *            Configuration object.
@@ -161,15 +165,34 @@ public class DataDomain implements QueryEngine, DataChannel {
         // properties are read-only, so no need for concurrent map, or any
         // specific map
         // for that matter
-        this.properties = Collections.EMPTY_MAP;
+        this.properties = Collections.emptyMap();
 
         setName(name);
+    }
+
+    public void clear() {
+        this.filters.clear();
+        this.nodesByDataMapName.clear();
+        resetProperties();
+        this.nodes.clear();
+        this.defaultNode = null;
+        entityResolver.clear();
+        entityResolver = null;
+        if ( sharedSnapshotCache != null){
+            sharedSnapshotCache.stopListeners();
+            sharedSnapshotCache.clear();
+        }
+        sharedSnapshotCache = null;
+        if (queryCache != null){
+            queryCache.clear();
+        }
+        queryCache = null;
     }
 
     /**
      * Checks that Domain is not stopped. Throws DomainStoppedException
      * otherwise.
-     * 
+     *
      * @since 3.0
      */
     protected void checkStopped() throws DomainStoppedException {
@@ -197,7 +220,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * @since 1.1
      */
     protected void resetProperties() {
-        properties = Collections.EMPTY_MAP;
+        properties = Collections.emptyMap();
 
         sharedCacheEnabled = SHARED_CACHE_ENABLED_DEFAULT;
         validatingObjectsOnCommit = VALIDATING_OBJECTS_ON_COMMIT_DEFAULT;
@@ -205,7 +228,7 @@ public class DataDomain implements QueryEngine, DataChannel {
 
     /**
      * Reinitializes domain state with a new set of properties.
-     * 
+     *
      * @since 1.1
      * @deprecated since 3.2 properties are processed by the DI provider.
      */
@@ -229,16 +252,17 @@ public class DataDomain implements QueryEngine, DataChannel {
 
     /**
      * Returns EventManager used by this DataDomain.
-     * 
+     *
      * @since 1.2
      */
+    @Override
     public EventManager getEventManager() {
         return eventManager;
     }
 
     /**
      * Sets EventManager used by this DataDomain.
-     * 
+     *
      * @since 1.2
      */
     public void setEventManager(EventManager eventManager) {
@@ -283,7 +307,7 @@ public class DataDomain implements QueryEngine, DataChannel {
     /**
      * Returns whether child DataContexts default behavior is to perform object
      * validation before commit is executed.
-     * 
+     *
      * @since 1.1
      */
     public boolean isValidatingObjectsOnCommit() {
@@ -293,7 +317,7 @@ public class DataDomain implements QueryEngine, DataChannel {
     /**
      * Sets the property defining whether child DataContexts should perform
      * object validation before commit is executed.
-     * 
+     *
      * @since 1.1
      */
     public void setValidatingObjectsOnCommit(boolean flag) {
@@ -366,7 +390,7 @@ public class DataDomain implements QueryEngine, DataChannel {
     /**
      * Removes named DataMap from this DataDomain and any underlying DataNodes
      * that include it.
-     * 
+     *
      * @since 3.1
      */
     public void removeDataMap(String mapName) {
@@ -442,7 +466,7 @@ public class DataDomain implements QueryEngine, DataChannel {
     /**
      * Returns registered DataNode whose name matches <code>name</code>
      * parameter.
-     * 
+     *
      * @since 3.1
      */
     public DataNode getDataNode(String nodeName) {
@@ -452,7 +476,7 @@ public class DataDomain implements QueryEngine, DataChannel {
     /**
      * Returns a DataNode that should handle queries for all entities in a
      * DataMap.
-     * 
+     *
      * @since 1.1
      */
     public DataNode lookupDataNode(DataMap map) {
@@ -494,7 +518,7 @@ public class DataDomain implements QueryEngine, DataChannel {
     /**
      * Sets EntityResolver. If not set explicitly, DataDomain creates a default
      * EntityResolver internally on demand.
-     * 
+     *
      * @since 1.1
      */
     public void setEntityResolver(EntityResolver entityResolver) {
@@ -513,7 +537,7 @@ public class DataDomain implements QueryEngine, DataChannel {
     /**
      * Shutdowns all owned data nodes and marks this domain as stopped.
      */
-    @BeforeScopeEnd
+    @PreDestroy
     public void shutdown() {
         if (!stopped) {
             stopped = true;
@@ -527,6 +551,7 @@ public class DataDomain implements QueryEngine, DataChannel {
     /**
      * Routes queries to appropriate DataNodes for execution.
      */
+    @Override
     public void performQueries(final Collection<? extends Query> queries, final OperationObserver callback) {
 
         transactionManager.performInTransaction(new TransactionalOperation<Object>() {
@@ -542,7 +567,7 @@ public class DataDomain implements QueryEngine, DataChannel {
 
     /**
      * Runs query returning generic QueryResponse.
-     * 
+     *
      * @since 1.2
      */
     @Override
@@ -575,7 +600,7 @@ public class DataDomain implements QueryEngine, DataChannel {
 
     /**
      * Only handles commit-type synchronization, ignoring any other type.
-     * 
+     *
      * @since 1.2
      */
     @Override
@@ -650,7 +675,7 @@ public class DataDomain implements QueryEngine, DataChannel {
 
     /**
      * Returns shared {@link QueryCache} used by this DataDomain.
-     * 
+     *
      * @since 3.0
      */
     public QueryCache getQueryCache() {
@@ -680,7 +705,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * Filter ordering note: filters are applied in reverse order of their
      * occurrence in the filter list. I.e. the last filter in the list called
      * first in the chain.
-     * 
+     *
      * @since 3.1
      */
     public List<DataChannelFilter> getFilters() {
@@ -691,7 +716,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * Adds a new filter, immediately calling its 'init' method. Since 3.2 this
      * method also registers passed filter as an event listener, if any of its
      * methods have event annotations.
-     * 
+     *
      * @since 3.1
      */
     public void addFilter(DataChannelFilter filter) {
@@ -702,7 +727,7 @@ public class DataDomain implements QueryEngine, DataChannel {
 
     /**
      * Removes a filter from the filter chain.
-     * 
+     *
      * @since 3.1
      */
     public void removeFilter(DataChannelFilter filter) {
@@ -713,7 +738,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * Adds a listener, mapping its methods to events based on annotations. This
      * is a shortcut for
      * 'getEntityResolver().getCallbackRegistry().addListener(listener)'.
-     * 
+     *
      * @since 3.2
      */
     public void addListener(Object listener) {
@@ -770,7 +795,7 @@ public class DataDomain implements QueryEngine, DataChannel {
     /**
      * An optional DataNode that is used for DataMaps that are not linked to a
      * DataNode explicitly.
-     * 
+     *
      * @since 3.1
      */
     public DataNode getDefaultNode() {
@@ -794,7 +819,7 @@ public class DataDomain implements QueryEngine, DataChannel {
      * changed either by calling {@link #setMaxIdQualifierSize(int)} or changing
      * the value for property
      * {@link Constants#SERVER_MAX_ID_QUALIFIER_SIZE_PROPERTY}.
-     * 
+     *
      * @since 3.1
      */
     public int getMaxIdQualifierSize() {

@@ -20,20 +20,24 @@ package org.apache.cayenne.unit.di.server;
 
 
 
+import javax.inject.Inject;
+import javax.inject.Provider;
+
 import org.apache.cayenne.ConfigurationException;
 import org.apache.cayenne.access.DataDomain;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.configuration.CayenneRuntime;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Provider;
+import org.apache.cayenne.di.NoScope;
 
 
+@NoScope
 public class ServerCaseDataNodeProvider implements Provider<DataNode> {
 
     @Inject
     // injecting provider to make this provider independent from scoping of ServerRuntime
     protected Provider<CayenneRuntime> serverRuntimeProvider;
 
+    @Override
     public DataNode get() throws ConfigurationException {
         DataDomain channel = (DataDomain) serverRuntimeProvider.get().getChannel();
         return channel.getDataNodes().iterator().next();

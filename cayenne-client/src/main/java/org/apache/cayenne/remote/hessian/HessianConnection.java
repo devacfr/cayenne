@@ -40,13 +40,13 @@ import com.caucho.hessian.io.SerializerFactory;
  * binary web service protocol over HTTP. For more info on Hessian see Caucho site at <a
  * href="http://www.caucho.com/resin-3.0/protocols/hessian.xtp">http://www.caucho.com/resin-3.0/protocols/hessian.xtp</a>.
  * HessianConnection supports logging of message traffic via Jakarta commons-logging API.
- * 
+ *
  * @since 1.2
  */
 public class HessianConnection extends BaseConnection {
 
     private static Log logger = LogFactory.getLog(HessianConnection.class);
-    
+
     public static final String[] CLIENT_SERIALIZER_FACTORIES = new String[] {
             ClientSerializerFactory.class.getName()
     };
@@ -59,7 +59,7 @@ public class HessianConnection extends BaseConnection {
     protected RemoteSession session;
     protected RemoteService service;
     protected SerializerFactory serializerFactory;
-    
+
     /**
      * Creates HessianConnection that will establish dedicated session and will not use
      * HTTP basic authentication.
@@ -120,11 +120,11 @@ public class HessianConnection extends BaseConnection {
 
         return createServerEventBridge(session);
     }
-    
+
     /**
      * Creates an EventBridge that will listen for server events. Returns null if server
      * events support is not configured in the descriptor.
-     * 
+     *
      * @throws CayenneRuntimeException if EventBridge startup fails for any reason.
      */
     protected EventBridge createServerEventBridge(RemoteSession session) throws CayenneRuntimeException {
@@ -263,6 +263,12 @@ public class HessianConnection extends BaseConnection {
         }
 
         // TODO: send a connect event...
+    }
+
+    public void close() {
+     // TODO: send a close connection event...
+        this.session = null;
+        this.service = null;
     }
 
     String buildExceptionMessage(String message, Throwable th) {

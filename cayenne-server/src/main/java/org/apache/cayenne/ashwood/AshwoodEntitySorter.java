@@ -37,6 +37,7 @@ import org.apache.cayenne.ashwood.graph.Digraph;
 import org.apache.cayenne.ashwood.graph.IndegreeTopologicalSort;
 import org.apache.cayenne.ashwood.graph.MapDigraph;
 import org.apache.cayenne.ashwood.graph.StrongConnection;
+import org.apache.cayenne.di.NoScope;
 import org.apache.cayenne.map.DbAttribute;
 import org.apache.cayenne.map.DbEntity;
 import org.apache.cayenne.map.DbJoin;
@@ -53,9 +54,10 @@ import org.apache.commons.collections.comparators.ReverseComparator;
  * Implements dependency sorting algorithms for ObjEntities, DbEntities and
  * DataObjects. Presently it works for acyclic database schemas with possible
  * multi-reflexive tables.
- * 
+ *
  * @since 3.1
  */
+@NoScope
 public class AshwoodEntitySorter implements EntitySorter {
 
     protected EntityResolver entityResolver;
@@ -117,7 +119,7 @@ public class AshwoodEntitySorter implements EntitySorter {
         for (DbEntity destination : tableMap.values()) {
             for (DbRelationship candidate : destination.getRelationships()) {
                 if ((!candidate.isToMany() && !candidate.isToDependentPK()) || candidate.isToMasterPK()) {
-                    DbEntity origin = (DbEntity) candidate.getTargetEntity();
+                    DbEntity origin = candidate.getTargetEntity();
                     boolean newReflexive = destination.equals(origin);
 
                     for (DbJoin join : candidate.getJoins()) {
@@ -176,21 +178,25 @@ public class AshwoodEntitySorter implements EntitySorter {
     /**
      * @since 3.1
      */
+    @Override
     public void setEntityResolver(EntityResolver entityResolver) {
         this.entityResolver = entityResolver;
         this.dirty = true;
     }
 
+    @Override
     public void sortDbEntities(List<DbEntity> dbEntities, boolean deleteOrder) {
         indexSorter();
         Collections.sort(dbEntities, getDbEntityComparator(deleteOrder));
     }
 
+    @Override
     public void sortObjEntities(List<ObjEntity> objEntities, boolean deleteOrder) {
         indexSorter();
         Collections.sort(objEntities, getObjEntityComparator(deleteOrder));
     }
 
+    @Override
     public void sortObjectsForEntity(ObjEntity objEntity, List<?> objects, boolean deleteOrder) {
 
         indexSorter();
@@ -342,6 +348,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 
     private final class ObjEntityComparator implements Comparator<ObjEntity> {
 
+        @Override
         public int compare(ObjEntity o1, ObjEntity o2) {
             if (o1 == o2)
                 return 0;
@@ -353,6 +360,7 @@ public class AshwoodEntitySorter implements EntitySorter {
 
     private final class DbEntityComparator implements Comparator<DbEntity> {
 
+        @Override
         public int compare(DbEntity t1, DbEntity t2) {
             int result = 0;
 

@@ -18,9 +18,10 @@
  ****************************************************************/
 package org.apache.cayenne.unit.di.client;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
+
 import org.apache.cayenne.configuration.rop.client.ClientRuntime;
-import org.apache.cayenne.di.Inject;
-import org.apache.cayenne.di.Provider;
 import org.apache.cayenne.remote.service.LocalConnection;
 import org.apache.cayenne.unit.di.DataChannelInterceptor;
 import org.apache.cayenne.unit.di.DataChannelSyncStats;
@@ -40,6 +41,7 @@ public class ClientServerDataChannelInterceptor implements DataChannelIntercepto
         return (ClientServerDataChannelDecorator) connection.getChannel();
     }
 
+    @Override
     public void runWithQueriesBlocked(UnitTestClosure closure) {
         ClientServerDataChannelDecorator channel = getChannelDecorator();
 
@@ -52,10 +54,12 @@ public class ClientServerDataChannelInterceptor implements DataChannelIntercepto
         }
     }
 
+    @Override
     public int runWithQueryCounter(UnitTestClosure closure) {
         throw new UnsupportedOperationException("TODO... unused for now");
     }
 
+    @Override
     public DataChannelSyncStats runWithSyncStatsCollection(UnitTestClosure closure) {
         ClientServerDataChannelDecorator channel = getChannelDecorator();
 
