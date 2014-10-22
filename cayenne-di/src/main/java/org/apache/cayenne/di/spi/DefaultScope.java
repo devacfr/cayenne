@@ -101,7 +101,7 @@ public class DefaultScope implements Scope {
         if (has(key)) {
             return (Provider<T>) this.providers.get(key);
         }
-        DefaultScopeProvider<T> provider = new DefaultScopeProvider<T>(key, unscoped);
+        DefaultScopeProvider<T> provider = new DefaultScopeProvider<T>(key, unscoped, this.injector);
         this.providers.put(key, provider);
         return provider;
     }

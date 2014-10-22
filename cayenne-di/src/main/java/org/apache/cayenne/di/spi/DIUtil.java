@@ -23,7 +23,9 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Named;
 import javax.inject.Scope;
@@ -271,6 +273,29 @@ public abstract class DIUtil {
             }
         }
         return false;
+    }
+
+    /**
+     * Return all interfaces that the given class implements as Set, including
+     * ones implemented by superclasses.
+     *
+     * @param clazz
+     *            the class to analyse for interfaces
+     * @return all interfaces that the given object implements as Set
+     */
+    public static Set<Class<?>> getAllInterfacesForClass(Class<?> clazz) {
+        Set<Class<?>> interfaces = new HashSet<Class<?>>();
+        if (clazz.isInterface()) {
+            interfaces.add(clazz);
+        }
+        while (clazz != null) {
+            for (int i = 0; i < clazz.getInterfaces().length; i++) {
+                Class<?> ifc = clazz.getInterfaces()[i];
+                interfaces.add(ifc);
+            }
+            clazz = clazz.getSuperclass();
+        }
+        return interfaces;
     }
 
 }

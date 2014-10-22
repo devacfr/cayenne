@@ -31,14 +31,16 @@ public class DefaultScopeProvider<T> implements Provider<T> {
 
     private final Key<T> key;
     private final javax.inject.Provider<T> delegate;
+    private final DefaultInjector injector;
 
     // presumably "volatile" works in Java 5 and newer to prevent double-checked
     // locking
     private volatile T instance;
 
-    public DefaultScopeProvider(final Key<T> key, final javax.inject.Provider<T> delegate) {
+    public DefaultScopeProvider(final Key<T> key, final javax.inject.Provider<T> delegate, DefaultInjector injector) {
         this.key = key;
         this.delegate = delegate;
+        this.injector = injector;
     }
 
     @Override
@@ -48,7 +50,7 @@ public class DefaultScopeProvider<T> implements Provider<T> {
             synchronized (this) {
                 if (instance == null) {
                     instance = delegate.get();
-
+                    this.injector.getEventPublisher().register(instance);
                     if (instance == null) {
                         throw new DIRuntimeException("Underlying provider (%s) returned NULL instance", delegate
                                 .getClass().getName());
@@ -112,6 +114,7 @@ public class DefaultScopeProvider<T> implements Provider<T> {
         Object localInstance = instance;
 
         if (localInstance != null) {
+            this.injector.getEventPublisher().unregister(localInstance);
             instance = null;
         }
     }

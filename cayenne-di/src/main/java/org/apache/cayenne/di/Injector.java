@@ -89,6 +89,8 @@ public interface Injector {
      */
     Map<Class<? extends Annotation>, Scope> getScopeBindings();
 
+    void refresh();
+
     /**
      * A lifecycle method that let's the injector's services to clean up their
      * state and release resources. This method would normally generate a scope

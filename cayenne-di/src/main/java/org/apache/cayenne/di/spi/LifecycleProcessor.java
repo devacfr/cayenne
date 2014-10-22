@@ -37,6 +37,8 @@ import javax.annotation.PreDestroy;
 
 import org.apache.cayenne.di.BeforeScopeEnd;
 import org.apache.cayenne.di.DIRuntimeException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This class allows generate lifecycle metadata associated of a class. Metadata
@@ -75,6 +77,8 @@ import org.apache.cayenne.di.DIRuntimeException;
  * @see FieldInjectingProvider
  */
 public class LifecycleProcessor {
+
+    private static Log LOGGER = LogFactory.getLog(LifecycleProcessor.class);
 
     /**
      * Contains all type of annotations on a method that needs to be executed
@@ -248,7 +252,7 @@ public class LifecycleProcessor {
                     }
                 } catch (InvocationTargetException ex) {
                     String msg = "Invocation of destroy method failed on bean '" + target.getClass() + "'";
-                    // TODO add logger
+                    LOGGER.error(msg, ex);
                 } catch (Throwable ex) {
                     // noop
                 }
@@ -264,7 +268,7 @@ public class LifecycleProcessor {
                     }
                 } catch (InvocationTargetException ex) {
                     String msg = "Invocation of destroy method failed on bean '" + target.getClass() + "'";
-                    // TODO add logger
+                    LOGGER.error(msg, ex);
                 } catch (Throwable ex) {
                     // noop
                 }

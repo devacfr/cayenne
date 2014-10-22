@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.inject.Provider;
 import javax.inject.Singleton;
@@ -32,7 +33,10 @@ import org.apache.cayenne.di.Injector;
 import org.apache.cayenne.di.Key;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.Scope;
+import org.apache.cayenne.di.event.EventPublisher;
+import org.apache.cayenne.di.event.RefreshContextEvent;
 import org.apache.cayenne.di.spi.LifecycleProcessor.LifecycleMetadata;
+import org.apache.cayenne.di.spi.event.DefaultEventPublisher;
 
 /**
  * A default Cayenne implementations of a DI injector.
@@ -56,12 +60,15 @@ public class DefaultInjector implements Injector {
 
     private final LifecycleProcessor lifecycleProcessor;
 
+    private final EventPublisher eventPublisher;
+
     public DefaultInjector(Module... modules) throws DIRuntimeException {
         this.lifecycleProcessor = new LifecycleProcessor();
         this.singletonScope = new DefaultScope(this);
         this.noScope = NoScope.INSTANCE;
         scopes = new HashMap<Class<? extends Annotation>, Scope>();
-        scopes.put(Singleton.class, this.singletonScope);
+        putScope(Singleton.class, this.singletonScope);
+        putScope(org.apache.cayenne.di.NoScope.class, this.noScope);
 
         // this is intentionally hardcoded and is not configurable
         this.defaultScope = singletonScope;
@@ -69,11 +76,14 @@ public class DefaultInjector implements Injector {
         this.bindings = new HashMap<Key<?>, Binding<?>>();
         this.decorations = new HashMap<Key<?>, Decoration<?>>();
         this.injectionStack = new InjectionStack();
+        this.eventPublisher = new DefaultEventPublisher();
 
         DefaultBinder binder = new DefaultBinder(this);
 
         // bind self for injector injection...
         binder.bind(Injector.class).toInstance(this);
+        // bind event publisher
+        binder.bind(EventPublisher.class).toInstance(this.eventPublisher);
 
         // bind modules
         if (modules != null && modules.length > 0) {
@@ -88,6 +98,13 @@ public class DefaultInjector implements Injector {
 
     InjectionStack getInjectionStack() {
         return injectionStack;
+    }
+
+    /**
+     * @return the eventPublisher
+     */
+    public EventPublisher getEventPublisher() {
+        return eventPublisher;
     }
 
     public <T> Binding<T> getBinding(Key<T> key) throws DIRuntimeException {
@@ -217,9 +234,11 @@ public class DefaultInjector implements Injector {
 
         Binding<T> binding = (Binding<T>) bindings.get(key);
         if (binding == null) {
-            throw new DIRuntimeException("DI container has no binding for key %s", key);
+            binding = (Binding<T>) findImplicitBinding(key);
+            if (binding == null) {
+                throw new DIRuntimeException("DI container has no binding for key %s", key);
+            }
         }
-
         if (!Provider.class.isAssignableFrom(key.getType()) && binding instanceof ProviderBinding) {
             ProviderBinding<T> p = (ProviderBinding<T>) binding;
             return p.getScoped().get();
@@ -227,6 +246,33 @@ public class DefaultInjector implements Injector {
             return binding.getScoped();
         }
 
+    }
+
+    /**
+     * Find a binding on interface implemented by type referenced by {@code key}
+     * 
+     * @param key
+     *            the key
+     * @return Returns the first binding implementing interface assignable from
+     *         type referenced by {@code key}, otherwise {@code null}.
+     */
+    protected Binding<?> findImplicitBinding(Key<?> key) {
+        if (key.getType().isInterface()) {
+            return null;
+        }
+        Binding<?> binding = null;
+        for (Key<?> k : this.bindings.keySet()) {
+            Class<?> typeKey = k.getType();
+            if (typeKey.isAssignableFrom(key.getType())) {
+                Set<Class<?>> interfaces = DIUtil.getAllInterfacesForClass(typeKey);
+                for (Class<?> cl : interfaces) {
+                    binding = bindings.get(Key.get(cl, key.getBindingName()));
+                    if (binding != null)
+                        break;
+                }
+            }
+        }
+        return binding;
     }
 
     @Override
@@ -241,6 +287,14 @@ public class DefaultInjector implements Injector {
         return Collections.unmodifiableMap(this.scopes);
     }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void refresh() {
+        this.eventPublisher.publish(new RefreshContextEvent());
+    }
+
     @Override
     public void shutdown() {
         singletonScope.shutdown();
@@ -248,6 +302,7 @@ public class DefaultInjector implements Injector {
         decorations.clear();
         injectionStack.reset();
         lifecycleProcessor.clear();
+        this.eventPublisher.unregisterAll();
     }
 
     DefaultScope getSingletonScope() {
