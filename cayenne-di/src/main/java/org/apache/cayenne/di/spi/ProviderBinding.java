@@ -16,28 +16,33 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.di.mock;
+package org.apache.cayenne.di.spi;
 
-import javax.inject.Inject;
 import javax.inject.Provider;
 
-import org.apache.cayenne.di.Injector;
+import org.apache.cayenne.di.Key;
 
-public class Mock_Implementation1_Provider_Lifecyle implements Provider<MockInterface1> {
+public class ProviderBinding<T> extends Binding<Provider<T>> {
 
-    private final MockInterface1 interface1;
+    private final Key<T> providedKey;
 
     /**
-     *
+     * @param key
+     * @param provider1
+     * @param cl
+     * @param injector
      */
-    @Inject
-    public Mock_Implementation1_Provider_Lifecyle(Injector injector) {
-        this.interface1 = new Mock_Implementation1_MultiPostConstruct();
-        injector.injectMembers(interface1);
+    ProviderBinding(Key<T> providedKey, Key<Provider<T>> providerKey, Provider<Provider<T>> provider1,
+            Class<Provider<T>> cl, DefaultInjector injector) {
+        super(providerKey, provider1, cl, injector);
+        this.providedKey = providedKey;
     }
 
-    @Override
-    public MockInterface1 get() {
-        return interface1;
+    /**
+     * @return the providerKey
+     */
+    public Key<T> getProvidedKey() {
+        return providedKey;
     }
+
 }

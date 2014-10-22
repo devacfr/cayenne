@@ -78,19 +78,21 @@ class ConstructorInjectingProvider<T> implements Provider<T> {
             }
 
             boolean injectable = true;
-            for (Annotation[] annotations : constructor.getParameterAnnotations()) {
+            if (!DIUtil.isInjectedAnnotations(constructor.getAnnotations())) {
+                for (Annotation[] annotations : constructor.getParameterAnnotations()) {
 
-                boolean parameterInjectable = false;
-                for (Annotation annotation : annotations) {
-                    if (DIUtil.isInjectedAnnotation(annotation)) {
-                        parameterInjectable = true;
+                    boolean parameterInjectable = false;
+                    for (Annotation annotation : annotations) {
+                        if (DIUtil.isInjectedAnnotation(annotation)) {
+                            parameterInjectable = true;
+                            break;
+                        }
+                    }
+
+                    if (!parameterInjectable) {
+                        injectable = false;
                         break;
                     }
-                }
-
-                if (!parameterInjectable) {
-                    injectable = false;
-                    break;
                 }
             }
 

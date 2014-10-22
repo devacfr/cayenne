@@ -101,22 +101,44 @@ public class DefaultInjector implements Injector {
         return (Binding<T>) bindings.get(key);
     }
 
-    <T> void putBinding(Key<T> bindingKey, javax.inject.Provider<T> provider, Class<?> implementationClass) {
+    <T> Binding<T> putBinding(Key<T> bindingKey, javax.inject.Provider<T> provider, Class<?> implementationClass) {
         Class<? extends Annotation> scopeAnnotation = DIUtil.findScopeAnnotation(implementationClass);
         Scope scope = null;
-        Binding<T> binging = new Binding<T>(bindingKey, provider, implementationClass, this);
+        Binding<T> binding = new Binding<T>(bindingKey, provider, implementationClass, this);
         if (scopeAnnotation != null) {
             scope = this.scopes.get(scopeAnnotation);
             if (scope == null) {
                 throw new DIRuntimeException("Any declared scope does not exist for this '%s' annotation",
                         scopeAnnotation);
             }
-            binging.applyScope(scope);
+            binding.applyScope(scope);
         } else {
             // lazy default scope set, wait the binding is complete see
             // #applyEagerSingleton method.
         }
-        bindings.put(bindingKey, binging);
+        bindings.put(bindingKey, binding);
+        return binding;
+    }
+
+    <T> ProviderBinding<T> putProviderBinding(Key<T> bindingKey, Provider<Provider<T>> provider1, Class<Provider<T>> cl) {
+        Class<? extends Annotation> scopeAnnotation = DIUtil.findScopeAnnotation(cl);
+        Scope scope = null;
+        Key<Provider<T>> providerKey = DIUtil.named(Key.get(cl));
+        ProviderBinding<T> bindingProvider = new ProviderBinding<T>(bindingKey, providerKey, provider1, cl, this);
+        if (scopeAnnotation != null) {
+            scope = this.scopes.get(scopeAnnotation);
+            if (scope == null) {
+                throw new DIRuntimeException("Any declared scope does not exist for this '%s' annotation",
+                        scopeAnnotation);
+            }
+            bindingProvider.applyScope(scope);
+        } else {
+            // lazy default scope set, wait the binding is complete see
+            // #applyEagerSingleton method.
+        }
+        bindings.put(bindingProvider.getKey(), bindingProvider);
+        bindings.put(bindingProvider.getProvidedKey(), bindingProvider);
+        return bindingProvider;
     }
 
     public void putScope(Class<? extends Annotation> scopeAnnotation, Scope scope) {
@@ -194,11 +216,17 @@ public class DefaultInjector implements Injector {
         }
 
         Binding<T> binding = (Binding<T>) bindings.get(key);
-
         if (binding == null) {
             throw new DIRuntimeException("DI container has no binding for key %s", key);
         }
-        return binding.getScoped();
+
+        if (!Provider.class.isAssignableFrom(key.getType()) && binding instanceof ProviderBinding) {
+            ProviderBinding<T> p = (ProviderBinding<T>) binding;
+            return p.getScoped().get();
+        } else {
+            return binding.getScoped();
+        }
+
     }
 
     @Override

@@ -28,7 +28,7 @@ import org.junit.Test;
 
 /**
  * Test different methods to call a provider or a specific provider.
- * 
+ *
  * @since 3.2
  */
 public class ProviderInjectionTest extends TestCase {
@@ -40,8 +40,8 @@ public class ProviderInjectionTest extends TestCase {
 
             @Override
             public void configure(Binder binder) {
-                binder.bind(ClassA.class).toProvider(ProviderA.class);
                 binder.bind(ClassB.class).to(ClassB.class);
+                binder.bind(ClassA.class).toProvider(ProviderA.class);
             }
         };
 
@@ -55,12 +55,13 @@ public class ProviderInjectionTest extends TestCase {
         // call using generic provider interface
         Provider<ClassA> p = injector.getProvider(ClassA.class);
         assertNotNull(p);
-        assertEquals(DefaultScopeProvider.class, p.getClass());
+        assertEquals(ProviderA.class, p.getClass());
 
         // call using specific provider class
         ProviderA providerA = injector.getInstance(ProviderA.class);
         assertNotNull(providerA);
         assertEquals(ProviderA.class, providerA.getClass());
+
     }
 
     public static class ClassA {
@@ -76,8 +77,10 @@ public class ProviderInjectionTest extends TestCase {
 
         private ClassA instance;
 
-        public ProviderA() {
+        @Inject
+        public ProviderA(ClassB b) {
             instance = new ClassA();
+            instance.b = b;
         }
 
         @Override
