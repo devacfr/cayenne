@@ -19,11 +19,7 @@
 
 package org.apache.cayenne.query;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.DataRow;
@@ -33,7 +29,6 @@ import org.apache.cayenne.map.DataMap;
 import org.apache.cayenne.test.jdbc.DBHelper;
 import org.apache.cayenne.testing.CayenneConfiguration;
 import org.apache.cayenne.unit.di.server.ServerCase;
-import org.apache.cayenne.util.Util;
 import org.junit.Test;
 
 @CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
@@ -54,6 +49,7 @@ public class SQLTemplateIT extends ServerCase {
 		dbHelper.deleteAll("ARTIST");
 	}
 
+	@Test
 	public void testSQLTemplateForDataMap() {
 		DataMap testDataMap = context.getEntityResolver().getDataMap("tstmap");
 		SQLTemplate q1 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST", true);
@@ -61,6 +57,7 @@ public class SQLTemplateIT extends ServerCase {
 		assertEquals(0, result.size());
 	}
 
+	@Test
 	public void testSQLTemplateForDataMapWithInsert() {
 		DataMap testDataMap = context.getEntityResolver().getDataMap("tstmap");
 		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
@@ -72,6 +69,7 @@ public class SQLTemplateIT extends ServerCase {
 		assertEquals(1, result.size());
 	}
 
+	@Test
 	public void testSQLTemplateForDataMapWithInsertException() {
 		DataMap testDataMap = context.getEntityResolver().getDataMap("tstmap");
 		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
