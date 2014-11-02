@@ -32,7 +32,7 @@ import org.apache.cayenne.map.SQLResult;
 /**
  * A selecting query based on raw SQL and featuring fluent API.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 
@@ -164,13 +164,12 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	/**
 	 * Returns mutable map of parameters that will be bound to SQL. A caller is
 	 * free to add/remove parameters from the returned map as needed.
-	 * Alternatively one should use chained {@link #params(String, Object)}
+	 * Alternatively one may use chained {@link #params(String, Object)}
 	 */
-	public Map<String, Object> getParameters() {
+	public Map<String, Object> getParams() {
 		return parameters;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected Query createReplacementQuery(EntityResolver resolver) {
 
@@ -196,7 +195,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 		template.setDefaultTemplate(getSql());
 		template.setCacheGroups(cacheGroups);
 		template.setCacheStrategy(cacheStrategy);
-		template.setParameters(parameters);
+		template.setParams(parameters);
 		template.setColumnNamesCapitalization(columnNameCaps);
 		template.setFetchLimit(limit);
 		template.setFetchOffset(offset);
@@ -221,7 +220,7 @@ public class SQLSelect<T> extends IndirectQuery implements Select<T> {
 	 * query.setCacheGroups(&quot;group1&quot;, &quot;group2&quot;);
 	 * </pre>
 	 * 
-	 * @since 3.2
+	 * @since 4.0
 	 */
 	public void useLocalCache(String... cacheGroups) {
 		cacheStrategy(QueryCacheStrategy.LOCAL_CACHE);

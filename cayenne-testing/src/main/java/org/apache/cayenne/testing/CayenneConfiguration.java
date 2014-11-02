@@ -28,7 +28,7 @@ import java.lang.annotation.Target;
  * Used to annotate unit test classes to indicate which cayenne file should be
  * load.
  *
- * @since 3.2
+ * @since 4.0
  * @see CayenneBlockJUnit4ClassRunner CayenneJUnit4ClassRunner Sample
  */
 @Target(ElementType.TYPE)

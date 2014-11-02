@@ -31,7 +31,7 @@ import org.junit.runners.model.Statement;
  *
  * @see #evaluate()
  * @see RunAfterTestMethodCallbacks
- * @since 3.2
+ * @since 4.0
  */
 public class RunBeforeTestClassCallbacks extends Statement {
 

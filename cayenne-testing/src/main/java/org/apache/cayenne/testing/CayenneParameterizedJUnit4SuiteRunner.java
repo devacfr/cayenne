@@ -57,14 +57,14 @@ import org.junit.runners.model.Statement;
  *     public static Iterable&lt;Object[]&gt; data() {
  *         return Arrays.asList(new Object[] { { LocalConnection.HESSIAN_SERIALIZATION }, { LocalConnection.JAVA_SERIALIZATION}, { LocalConnection.NO_SERIALIZATION } });
  *     }
- * 
+ *
  *     private int serializationPolicy;
- * 
- * 
+ *
+ *
  *     public ROPSerializationClientTest(int serializationPolicy) {
  *         this.serializationPolicy = serializationPolicy;
  *     }
- *     
+ *
  *     protected CayenneContext createROPContext() {
  *         ClientServerChannel clientServerChannel = new ClientServerChannel(serverContext);
  *         UnitLocalConnection connection = new UnitLocalConnection(clientServerChannel,serializationPolicy);
@@ -73,32 +73,32 @@ import org.junit.runners.model.Statement;
  *         context.setQueryCache(new MapQueryCache(10));
  *         return context;
  *     }
- *     
+ *
  *     ...
- * 
+ *
  *     &#064;Test
  *     public void test() {
  *         ObjectContext context = createContext();
  *         Continent continent = context.newObject(Continent.class);
  *         continent.setName("Europe");
- * 
+ *
  *         Country country = new Country();
  *         context.registerNewObject(country);
- * 
+ *
  *         country.setName("Russia");
- * 
+ *
  *         country.setContinent(continent);
  *         assertEquals(continent.getCountries().size(), 1);
- * 
+ *
  *         context.commitChanges();
- * 
+ *
  *         context.deleteObjects(country);
  *         assertEquals(continent.getCountries().size(), 0);
  *         continent.setName("Australia");
- * 
+ *
  *         context.commitChanges();
  *         context.performQuery(new RefreshQuery());
- * 
+ *
  *         assertEquals(context.performQuery(new SelectQuery&lt;Country&gt;(Country.class)).size(), 0);
  *         assertEquals(context.performQuery(new SelectQuery&lt;Continent&gt;(Continent.class)).size(), 1);
  *     }
@@ -158,7 +158,7 @@ import org.junit.runners.model.Statement;
  * <code>&#064;Parameters</code> method.
  * </p>
  *
- * @since 3.2
+ * @since 4.0
  */
 public class CayenneParameterizedJUnit4SuiteRunner extends Suite {
 
@@ -233,8 +233,9 @@ public class CayenneParameterizedJUnit4SuiteRunner extends Suite {
             int i = 0;
             for (Object[] parametersOfSingleTest : allParameters) {
                 String name = nameFor(namePattern, i, parametersOfSingleTest);
-                TestClassRunnerForParameters runner = new TestClassRunnerForParameters(getTestClass().getJavaClass(),
-                        parametersOfSingleTest, name, this.testContextManager);
+                TestClassRunnerForParameters runner =
+                        new TestClassRunnerForParameters(getTestClass().getJavaClass(), parametersOfSingleTest, name,
+                                this.testContextManager);
                 runners.add(runner);
                 ++i;
             }
@@ -271,7 +272,7 @@ public class CayenneParameterizedJUnit4SuiteRunner extends Suite {
         private final String fName;
 
         TestClassRunnerForParameters(final Class<?> type, final Object[] parameters, final String name,
-                final CayenneTestContextManager testContextManager) throws InitializationError {
+            final CayenneTestContextManager testContextManager) throws InitializationError {
             super(type, testContextManager);
             fParameters = parameters;
             fName = name;
@@ -313,9 +314,9 @@ public class CayenneParameterizedJUnit4SuiteRunner extends Suite {
                     field.set(testClassInstance, fParameters[index]);
                 } catch (IllegalArgumentException iare) {
                     throw new Exception(getTestClass().getName() + ": Trying to set " + field.getName()
-                            + " with the value " + fParameters[index] + " that is not the right type ("
-                            + fParameters[index].getClass().getSimpleName() + " instead of "
-                            + field.getType().getSimpleName() + ").", iare);
+                        + " with the value " + fParameters[index] + " that is not the right type ("
+                        + fParameters[index].getClass().getSimpleName() + " instead of "
+                        + field.getType().getSimpleName() + ").", iare);
                 }
             }
             return testClassInstance;
@@ -373,7 +374,7 @@ public class CayenneParameterizedJUnit4SuiteRunner extends Suite {
                         errors.add(new Exception("@Parameter(" + index + ") is never used."));
                     } else if (numberOfUse > 1) {
                         errors.add(new Exception("@Parameter(" + index + ") is used more than once (" + numberOfUse
-                                + ")."));
+                            + ")."));
                     }
                 }
             }

@@ -29,7 +29,7 @@ import org.junit.Test;
 /**
  * Test different methods to call a provider or a specific provider.
  * 
- * @since 3.2
+ * @since 4.0
  */
 public class ProviderInjectionTest extends TestCase {
 

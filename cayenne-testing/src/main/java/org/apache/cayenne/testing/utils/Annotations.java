@@ -24,7 +24,7 @@ import java.util.Arrays;
 
 /**
  *
- * @since 3.2
+ * @since 4.0
  */
 public abstract class Annotations {
 
@@ -88,8 +88,8 @@ public abstract class Annotations {
         if (clazz == null || clazz.equals(Object.class)) {
             return null;
         }
-        return (isAnnotationDeclaredLocally(annotationType, clazz)) ? clazz : findAnnotationDeclaringClass(
-                annotationType, clazz.getSuperclass());
+        return isAnnotationDeclaredLocally(annotationType, clazz) ? clazz
+                : findAnnotationDeclaringClass(annotationType, clazz.getSuperclass());
     }
 
     /**

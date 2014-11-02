@@ -21,7 +21,7 @@ package org.apache.cayenne.di;
 /**
  * This builder allows binding constant value.
  *
- * @since 3.2
+ * @since 4.0
  * @param <T>
  *            Represent the type of value to bind.
  */

@@ -31,7 +31,7 @@ import org.apache.cayenne.testing.ClassMode;
 /**
  * To resolve recreation each time <code>DataContext</code>
  *
- * @since 3.2
+ * @since 4.0
  *
  */
 @Documented

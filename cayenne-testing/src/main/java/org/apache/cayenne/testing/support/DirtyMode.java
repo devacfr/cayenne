@@ -33,8 +33,8 @@ import org.apache.cayenne.testing.ClassMode;
  * provides support for marking the {@code CayenneRuntime} associated with a
  * test as <em>dirty</em> for both test classes and test methods configured with
  * the {@code @DirtyMode} annotation.
- * 
- * @since 3.2
+ *
+ * @since 4.0
  *
  */
 @Documented

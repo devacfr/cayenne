@@ -30,7 +30,7 @@ package org.apache.cayenne.testing;
  * constructor.
  * </p>
  *
- * @since 3.2
+ * @since 4.0
  */
 public interface TestExecutionListener {
 

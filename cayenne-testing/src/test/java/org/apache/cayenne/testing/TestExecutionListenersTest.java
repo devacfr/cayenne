@@ -36,7 +36,7 @@ import org.junit.Test;
  * <li><em>Inheritance</em></li>
  * </ul>
  *
- * @since 3.2
+ * @since 4.0
  */
 public class TestExecutionListenersTest extends TestCase {
 
@@ -58,53 +58,58 @@ public class TestExecutionListenersTest extends TestCase {
 
     private void assertRegisteredListeners(Class<?> testClass, List<Class<?>> expected) {
         CayenneTestContextManager testContextManager = new CayenneTestContextManager(testClass);
-        assertEquals("Listeners registered for " + testClass.getSimpleName(), names(expected),
-                names(classes(testContextManager)));
+        assertEquals("Listeners registered for " + testClass.getSimpleName(),
+            names(expected),
+            names(classes(testContextManager)));
     }
 
     @Test
     public void defaultListeners() {
-        List<Class<?>> expected = Arrays.<Class<?>> asList(DependencyInjectionTestExecutionListener.class,
-                DirtiesRuntimeTestExecutionListener.class);
+        List<Class<?>> expected =
+                Arrays.<Class<?>> asList(DependencyInjectionTestExecutionListener.class,
+                    DirtiesRuntimeTestExecutionListener.class);
         assertRegisteredListeners(DefaultListenersTestCase.class, expected);
     }
 
     @Test
     public void nonInheritedDefaultListeners() {
         assertRegisteredListeners(NonInheritedDefaultListenersTestCase.class,
-                Arrays.<Class<?>> asList(XyzTestExecutionListener.class));
+            Arrays.<Class<?>> asList(XyzTestExecutionListener.class));
     }
 
     @Test
     public void inheritedDefaultListeners() {
         assertRegisteredListeners(InheritedDefaultListenersTestCase.class,
-                Arrays.<Class<?>> asList(XyzTestExecutionListener.class));
+            Arrays.<Class<?>> asList(XyzTestExecutionListener.class));
         assertRegisteredListeners(SubInheritedDefaultListenersTestCase.class,
-                Arrays.<Class<?>> asList(XyzTestExecutionListener.class));
+            Arrays.<Class<?>> asList(XyzTestExecutionListener.class));
         assertRegisteredListeners(SubSubInheritedDefaultListenersTestCase.class,
-                Arrays.<Class<?>> asList(XyzTestExecutionListener.class, AbcTestExecutionListener.class));
+            Arrays.<Class<?>> asList(XyzTestExecutionListener.class, AbcTestExecutionListener.class));
     }
 
     @Test
     public void customListeners() {
         CayenneTestContextManager testContextManager = new CayenneTestContextManager(ExplicitListenersTestCase.class);
-        assertEquals("Number registered Listeners for ExplicitListenersTestCase.", 3, testContextManager
-                .getTestExecutionListeners().size());
+        assertEquals("Number registered Listeners for ExplicitListenersTestCase.",
+            3,
+            testContextManager.getTestExecutionListeners().size());
     }
 
     @Test
     public void nonInheritedListeners() {
-        CayenneTestContextManager testContextManager = new CayenneTestContextManager(
-                NonInheritedListenersTestCase.class);
-        assertEquals("Number registered Listeners for NonInheritedListenersTestCase.", 1, testContextManager
-                .getTestExecutionListeners().size());
+        CayenneTestContextManager testContextManager =
+                new CayenneTestContextManager(NonInheritedListenersTestCase.class);
+        assertEquals("Number registered Listeners for NonInheritedListenersTestCase.",
+            1,
+            testContextManager.getTestExecutionListeners().size());
     }
 
     @Test
     public void inheritedListeners() {
         CayenneTestContextManager testContextManager = new CayenneTestContextManager(InheritedListenersTestCase.class);
-        assertEquals("Number registered Listeners for InheritedListenersTestCase.", 4, testContextManager
-                .getTestExecutionListeners().size());
+        assertEquals("Number registered Listeners for InheritedListenersTestCase.",
+            4,
+            testContextManager.getTestExecutionListeners().size());
     }
 
     @Test(expected = IllegalStateException.class)
@@ -133,7 +138,7 @@ public class TestExecutionListenersTest extends TestCase {
     }
 
     @TestExecutionListeners({ FooTestExecutionListener.class, BarTestExecutionListener.class,
-            BazTestExecutionListener.class })
+        BazTestExecutionListener.class })
     static class ExplicitListenersTestCase {
     }
 

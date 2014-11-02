@@ -23,7 +23,7 @@ import java.lang.reflect.Field;
 import org.apache.cayenne.di.DIRuntimeException;
 
 /**
- * @since 3.2
+ * @since 4.0
  */
 class FieldInjectingDecoratorProvider<T> implements DecoratorProvider<T> {
 

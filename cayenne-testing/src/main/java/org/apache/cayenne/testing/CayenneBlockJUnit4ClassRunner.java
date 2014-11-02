@@ -51,7 +51,7 @@ import org.mockito.asm.tree.analysis.Value;
 
 /**
  *
- * @since 3.2
+ * @since 4.0
  *
  */
 public class CayenneBlockJUnit4ClassRunner extends BlockJUnit4ClassRunner {
@@ -169,7 +169,8 @@ public class CayenneBlockJUnit4ClassRunner extends BlockJUnit4ClassRunner {
         return result;
     }
 
-    private Statement withMethodRules(FrameworkMethod method, List<TestRule> testRules, Object target, Statement result) {
+    private Statement
+            withMethodRules(FrameworkMethod method, List<TestRule> testRules, Object target, Statement result) {
         for (org.junit.rules.MethodRule each : rules(target)) {
             if (!testRules.contains(each)) {
                 result = each.apply(result, method, target);
@@ -193,21 +194,21 @@ public class CayenneBlockJUnit4ClassRunner extends BlockJUnit4ClassRunner {
 
     protected boolean isTestMethodIgnored(FrameworkMethod frameworkMethod) {
         Method method = frameworkMethod.getMethod();
-        return (method.isAnnotationPresent(Ignore.class));
+        return method.isAnnotationPresent(Ignore.class);
     }
 
     @Override
     protected Statement withBefores(FrameworkMethod frameworkMethod, Object testInstance, Statement statement) {
         Statement junitBefores = super.withBefores(frameworkMethod, testInstance, statement);
         return new RunBeforeTestMethodCallbacks(junitBefores, testInstance, frameworkMethod.getMethod(),
-                getTestContextManager());
+            getTestContextManager());
     }
 
     @Override
     protected Statement withAfters(FrameworkMethod frameworkMethod, Object testInstance, Statement statement) {
         Statement junitAfters = super.withAfters(frameworkMethod, testInstance, statement);
         return new RunAfterTestMethodCallbacks(junitAfters, testInstance, frameworkMethod.getMethod(),
-                getTestContextManager());
+            getTestContextManager());
     }
 
     static Method findMethod(Class<?> clazz, String name) {
@@ -219,7 +220,7 @@ public class CayenneBlockJUnit4ClassRunner extends BlockJUnit4ClassRunner {
         Assert.notNull(name, "Method name must not be null");
         Class<?> searchType = clazz;
         while (searchType != null) {
-            Method[] methods = (searchType.isInterface() ? searchType.getMethods() : searchType.getDeclaredMethods());
+            Method[] methods = searchType.isInterface() ? searchType.getMethods() : searchType.getDeclaredMethods();
             for (Method method : methods) {
                 if (name.equals(method.getName())
                         && (paramTypes == null || Arrays.equals(paramTypes, method.getParameterTypes()))) {

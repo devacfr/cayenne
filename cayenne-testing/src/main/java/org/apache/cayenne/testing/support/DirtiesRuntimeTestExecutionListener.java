@@ -32,7 +32,7 @@ import org.apache.commons.logging.LogFactory;
  * for both test classes and test methods configured with the {@link DirtyMode
  * @DirtyMode} annotation.
  *
- * @since 3.2
+ * @since 4.0
  *
  */
 public class DirtiesRuntimeTestExecutionListener extends AbstractTestExecutionListener {
@@ -83,10 +83,10 @@ public class DirtiesRuntimeTestExecutionListener extends AbstractTestExecutionLi
 
         if (logger.isDebugEnabled()) {
             logger.debug("After test method: context [" + testContext + "], class dirties context [" + classDirtyMode
-                    + "], class mode [" + classMode + "], method dirties context [" + methodDirtyMode + "].");
+                + "], class mode [" + classMode + "], method dirties context [" + methodDirtyMode + "].");
         }
 
-        if (methodDirtyMode || (classDirtyMode && classMode == ClassMode.AfterTestMethod)) {
+        if (methodDirtyMode || classDirtyMode && classMode == ClassMode.AfterTestMethod) {
             dirtyContext(testContext);
         }
     }

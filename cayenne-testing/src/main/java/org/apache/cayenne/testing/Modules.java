@@ -31,7 +31,7 @@ import org.apache.cayenne.di.Module;
  * This annotation allows attaching specific dependency injection {@link Module}
  * to test context.
  *
- * @since 3.2
+ * @since 4.0
  *
  */
 @Target(ElementType.TYPE)

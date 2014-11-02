@@ -39,7 +39,7 @@ import org.apache.commons.logging.LogFactory;
  * <code>TestContext</code> contains all information in which a test is
  * executed.
  *
- * @since 3.2
+ * @since 4.0
  */
 public class CayenneTestContext {
 
@@ -118,8 +118,10 @@ public class CayenneTestContext {
             }
         } else {
             if (logger.isTraceEnabled()) {
-                logger.trace(String.format("Retrieved @%s [%s] for class [%s]", annotationConfigName,
-                        runtimeConfiguration, testClass));
+                logger.trace(String.format("Retrieved @%s [%s] for class [%s]",
+                    annotationConfigName,
+                    runtimeConfiguration,
+                    testClass));
             }
             this.configurationLocation = runtimeConfiguration.value();
             Assert.notNull(configurationLocation, "Can not load an CayenneRuntime with a NULL 'locations'. "
@@ -170,8 +172,9 @@ public class CayenneTestContext {
         Class<?> cl = Class.forName(CLASS_SERVER_RUNTIME_NAME);
         Constructor<?> ctr = cl.getConstructor(String.class, Module[].class);
 
-        CayenneRuntimeInvoker cayenneRuntime = new CayenneRuntimeInvoker(ctr.newInstance(configurationLocation,
-                modules.toArray(new Module[modules.size()])));
+        CayenneRuntimeInvoker cayenneRuntime =
+                new CayenneRuntimeInvoker(ctr.newInstance(configurationLocation,
+                    modules.toArray(new Module[modules.size()])));
         return cayenneRuntime;
     }
 
@@ -209,9 +212,9 @@ public class CayenneTestContext {
                 }
             } else {
                 if (logger.isDebugEnabled()) {
-                    logger.debug(String.format(
-                            "Retrieved CayenneRuntime for test class [%s] from cache with key [%s].", testClass,
-                            configurationLocation));
+                    logger.debug(String.format("Retrieved CayenneRuntime for test class [%s] from cache with key [%s].",
+                        testClass,
+                        configurationLocation));
                 }
             }
             return runtime;
@@ -360,10 +363,18 @@ public class CayenneTestContext {
      */
     @Override
     public String toString() {
-        return new StringBuilder(this.getClass().getName()).append(':').append("testClass[" + testClass).append("],")
-                .append("testInstance[" + testInstance).append("],").append("testMethod[" + testMethod).append("],")
-                .append("testException[" + testException).append("],")
-                .append("configurationLocation[" + configurationLocation).append("]").toString();
+        return new StringBuilder(this.getClass().getName()).append(':')
+                .append("testClass[" + testClass)
+                .append("],")
+                .append("testInstance[" + testInstance)
+                .append("],")
+                .append("testMethod[" + testMethod)
+                .append("],")
+                .append("testException[" + testException)
+                .append("],")
+                .append("configurationLocation[" + configurationLocation)
+                .append("]")
+                .toString();
     }
 
     /**

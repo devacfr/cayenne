@@ -38,13 +38,13 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  *
- * @since 3.2
+ * @since 4.0
  *
  */
 public class CayenneTestContextManager {
 
     private static final Class<?>[] DEFAULT_TEST_EXECUTION_LISTENER_CLASS_NAMES = {
-            DependencyInjectionTestExecutionListener.class, DirtiesRuntimeTestExecutionListener.class };
+        DependencyInjectionTestExecutionListener.class, DirtiesRuntimeTestExecutionListener.class };
 
     private static final Log logger = LogFactory.getLog(CayenneTestContextManager.class);
 
@@ -77,15 +77,16 @@ public class CayenneTestContextManager {
     }
 
     private List<TestExecutionListener> getReversedTestExecutionListeners() {
-        List<TestExecutionListener> listenersReversed = new ArrayList<TestExecutionListener>(
-                getTestExecutionListeners());
+        List<TestExecutionListener> listenersReversed =
+                new ArrayList<TestExecutionListener>(getTestExecutionListeners());
         Collections.reverse(listenersReversed);
         return listenersReversed;
     }
 
     private TestExecutionListener[] retrieveTestExecutionListeners(Class<?> clazz) {
         Class<TestExecutionListeners> annotationType = TestExecutionListeners.class;
-        List<Class<? extends TestExecutionListener>> classesList = new ArrayList<Class<? extends TestExecutionListener>>();
+        List<Class<? extends TestExecutionListener>> classesList =
+                new ArrayList<Class<? extends TestExecutionListener>>();
         Class<?> declaringClass = Annotations.findAnnotationDeclaringClass(annotationType, clazz);
         boolean defaultListeners = false;
 
@@ -102,16 +103,18 @@ public class CayenneTestContextManager {
                 TestExecutionListeners testExecutionListeners = declaringClass.getAnnotation(annotationType);
                 if (logger.isTraceEnabled()) {
                     logger.trace("Retrieved @TestExecutionListeners [" + testExecutionListeners
-                            + "] for declaring class [" + declaringClass + "].");
+                        + "] for declaring class [" + declaringClass + "].");
                 }
 
                 Class<? extends TestExecutionListener>[] valueListenerClasses = testExecutionListeners.value();
                 Class<? extends TestExecutionListener>[] listenerClasses = testExecutionListeners.listeners();
                 if (!isArrayEmpty(valueListenerClasses) && !isArrayEmpty(listenerClasses)) {
-                    String msg = String.format(
-                            "Test class [%s] has been configured with @TestExecutionListeners' 'value' [%s] "
-                                    + "and 'listeners' [%s] attributes. Use one or the other, but not both.",
-                            declaringClass, nullSafeToString(valueListenerClasses), nullSafeToString(listenerClasses));
+                    String msg =
+                            String.format("Test class [%s] has been configured with @TestExecutionListeners' 'value' [%s] "
+                                + "and 'listeners' [%s] attributes. Use one or the other, but not both.",
+                                declaringClass,
+                                nullSafeToString(valueListenerClasses),
+                                nullSafeToString(listenerClasses));
                     logger.error(msg);
                     throw new IllegalStateException(msg);
                 } else if (!isArrayEmpty(valueListenerClasses)) {
@@ -121,8 +124,10 @@ public class CayenneTestContextManager {
                 if (listenerClasses != null) {
                     classesList.addAll(0, Arrays.<Class<? extends TestExecutionListener>> asList(listenerClasses));
                 }
-                declaringClass = (testExecutionListeners.inheritListeners() ? Annotations.findAnnotationDeclaringClass(
-                        annotationType, declaringClass.getSuperclass()) : null);
+                declaringClass =
+                        testExecutionListeners.inheritListeners() ? Annotations.findAnnotationDeclaringClass(annotationType,
+                            declaringClass.getSuperclass())
+                                : null;
             }
         }
 
@@ -146,14 +151,15 @@ public class CayenneTestContextManager {
     }
 
     protected Set<Class<? extends TestExecutionListener>> getDefaultTestExecutionListenerClasses() {
-        Set<Class<? extends TestExecutionListener>> defaultListenerClasses = new LinkedHashSet<Class<? extends TestExecutionListener>>();
+        Set<Class<? extends TestExecutionListener>> defaultListenerClasses =
+                new LinkedHashSet<Class<? extends TestExecutionListener>>();
         for (Class<?> clazz : DEFAULT_TEST_EXECUTION_LISTENER_CLASS_NAMES) {
             try {
                 defaultListenerClasses.add((Class<? extends TestExecutionListener>) clazz);
             } catch (Throwable ex) {
                 if (logger.isDebugEnabled()) {
                     logger.debug("Could not load default TestExecutionListener class [" + clazz.getSimpleName()
-                            + "]. Specify custom listener classes or make the default listener classes available.");
+                        + "]. Specify custom listener classes or make the default listener classes available.");
                 }
             }
         }
@@ -172,7 +178,7 @@ public class CayenneTestContextManager {
                 testExecutionListener.beforeTestClass(getTestContext());
             } catch (Exception ex) {
                 logger.warn("Caught exception while allowing TestExecutionListener [" + testExecutionListener
-                        + "] to process 'before class' callback for test class [" + testClass + "]", ex);
+                    + "] to process 'before class' callback for test class [" + testClass + "]", ex);
                 throw ex;
             }
         }
@@ -189,7 +195,7 @@ public class CayenneTestContextManager {
                 testExecutionListener.prepareTestInstance(getTestContext());
             } catch (Exception ex) {
                 logger.error("Caught exception while allowing TestExecutionListener [" + testExecutionListener
-                        + "] to prepare test instance [" + testInstance + "]", ex);
+                    + "] to prepare test instance [" + testInstance + "]", ex);
                 throw ex;
             }
         }
@@ -206,8 +212,8 @@ public class CayenneTestContextManager {
                 testExecutionListener.beforeTestMethod(getTestContext());
             } catch (Exception ex) {
                 logger.warn("Caught exception while allowing TestExecutionListener [" + testExecutionListener
-                        + "] to process 'before' execution of test method [" + testMethod + "] for test instance ["
-                        + testInstance + "]", ex);
+                    + "] to process 'before' execution of test method [" + testMethod + "] for test instance ["
+                    + testInstance + "]", ex);
                 throw ex;
             }
         }
@@ -228,8 +234,8 @@ public class CayenneTestContextManager {
                 testExecutionListener.afterTestMethod(getTestContext());
             } catch (Exception ex) {
                 logger.warn("Caught exception while allowing TestExecutionListener [" + testExecutionListener
-                        + "] to process 'after' execution for test: method [" + testMethod + "], instance ["
-                        + testInstance + "], exception [" + exception + "]", ex);
+                    + "] to process 'after' execution for test: method [" + testMethod + "], instance ["
+                    + testInstance + "], exception [" + exception + "]", ex);
                 if (afterTestMethodException == null) {
                     afterTestMethodException = ex;
                 }
@@ -255,7 +261,7 @@ public class CayenneTestContextManager {
                 testExecutionListener.afterTestClass(getTestContext());
             } catch (Exception ex) {
                 logger.warn("Caught exception while allowing TestExecutionListener [" + testExecutionListener
-                        + "] to process 'after class' callback for test class [" + testClass + "]", ex);
+                    + "] to process 'after class' callback for test class [" + testClass + "]", ex);
                 if (afterTestClassException == null) {
                     afterTestClassException = ex;
                 }
@@ -288,7 +294,7 @@ public class CayenneTestContextManager {
     }
 
     static boolean isArrayEmpty(Object[] array) {
-        return (array == null || array.length == 0);
+        return array == null || array.length == 0;
     }
 
     static String nullSafeToString(Object[] array) {

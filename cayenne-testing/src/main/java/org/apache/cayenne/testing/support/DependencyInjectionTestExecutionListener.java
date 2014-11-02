@@ -29,7 +29,7 @@ import org.apache.commons.logging.LogFactory;
  * {@code DependencyInjectionTestExecutionListener} provides support for
  * dependency injection and initialization of test instances.
  *
- * @since 3.2
+ * @since 4.0
  *
  */
 public class DependencyInjectionTestExecutionListener extends AbstractTestExecutionListener {
@@ -71,7 +71,7 @@ public class DependencyInjectionTestExecutionListener extends AbstractTestExecut
         } else if (ClassMode.AfterClass.equals(injectMode.classMode())) {
             injectMode = null;
         }
-        if ((injectMode != null) || Boolean.TRUE.equals(testContext.getAttribute(REINJECT_DEPENDENCIES))) {
+        if (injectMode != null || Boolean.TRUE.equals(testContext.getAttribute(REINJECT_DEPENDENCIES))) {
             if (logger.isDebugEnabled()) {
                 logger.debug("Reinjecting dependencies for test context [" + testContext + "].");
             }

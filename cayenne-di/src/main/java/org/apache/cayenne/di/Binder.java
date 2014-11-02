@@ -78,7 +78,7 @@ public interface Binder {
      * @return Returns a new {@link ConstantBindingBuilder builder} instance
      *         allowing to associate a value.
      *
-     * @since 3.2
+     * @since 4.0
      */
     <T> ConstantBindingBuilder<T> bindConstant(Class<T> type, String name);
 
@@ -94,17 +94,17 @@ public interface Binder {
      * @return Returns a new {@link ConstantBindingBuilder builder} instance
      *         allowing to associate a value.
      *
-     * @since 3.2
+     * @since 4.0
      */
     <T> ConstantBindingBuilder<T> bindConstant(Key<T> key);
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     <T> DecoratorBuilder<T> decorate(Class<T> interfaceType);
 
     /**
-     * @since 3.2
+     * @since 4.0
      */
     <T> DecoratorBuilder<T> decorate(Key<T> key);
 }

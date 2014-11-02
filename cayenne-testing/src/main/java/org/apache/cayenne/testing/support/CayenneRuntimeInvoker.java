@@ -28,7 +28,7 @@ import org.apache.cayenne.testing.utils.Assert;
  * This Class is a proxy of {@code CayenneRuntime} resolving the recursive
  * dependency with other module of Cayenne project.
  *
- * @since 3.2
+ * @since 4.0
  */
 public class CayenneRuntimeInvoker {
 

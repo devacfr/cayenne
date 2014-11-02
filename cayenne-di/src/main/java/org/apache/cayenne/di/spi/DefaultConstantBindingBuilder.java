@@ -25,7 +25,7 @@ import org.apache.cayenne.di.Key;
 
 /**
  *
- * @since 3.2
+ * @since 4.0
  * @param <T>
  */
 public final class DefaultConstantBindingBuilder<T> implements ConstantBindingBuilder<T> {

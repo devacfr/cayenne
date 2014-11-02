@@ -37,16 +37,19 @@ import org.springframework.core.style.ToStringCreator;
  * unit test verifies proper <em>execution order</em> of registered
  * {@link TestExecutionListener TestExecutionListeners}.
  *
- * @since 3.2
+ * @since 4.0
  *
  */
 public class CayenneTestContextManagerTest extends TestCase {
 
     private static final String FIRST = "first";
+
     private static final String SECOND = "second";
+
     private static final String THIRD = "third";
 
     private static final List<String> afterTestMethodCalls = new ArrayList<String>();
+
     private static final List<String> beforeTestMethodCalls = new ArrayList<String>();
 
     protected static final Log logger = LogFactory.getLog(CayenneTestContextManagerTest.class);
@@ -66,7 +69,7 @@ public class CayenneTestContextManagerTest extends TestCase {
      * @see #afterTestMethodCalls
      */
     private static void assertExecutionOrder(List<String> expectedBeforeTestMethodCalls,
-            List<String> expectedAfterTestMethodCalls, final String usageContext) {
+                                             List<String> expectedAfterTestMethodCalls, final String usageContext) {
 
         if (expectedBeforeTestMethodCalls == null) {
             expectedBeforeTestMethodCalls = new ArrayList<String>();
@@ -85,9 +88,9 @@ public class CayenneTestContextManagerTest extends TestCase {
         }
 
         assertTrue("Verifying execution order of 'before' listeners' (" + usageContext + ").",
-                expectedBeforeTestMethodCalls.equals(beforeTestMethodCalls));
+            expectedBeforeTestMethodCalls.equals(beforeTestMethodCalls));
         assertTrue("Verifying execution order of 'after' listeners' (" + usageContext + ").",
-                expectedAfterTestMethodCalls.equals(afterTestMethodCalls));
+            expectedAfterTestMethodCalls.equals(afterTestMethodCalls));
     }
 
     @BeforeClass
@@ -104,13 +107,15 @@ public class CayenneTestContextManagerTest extends TestCase {
     @AfterClass
     public static void verifyListenerExecutionOrderAfterClass() throws Exception {
         assertExecutionOrder(Arrays.<String> asList(FIRST, SECOND, THIRD),
-                Arrays.<String> asList(THIRD, SECOND, FIRST), "AfterClass");
+            Arrays.<String> asList(THIRD, SECOND, FIRST),
+            "AfterClass");
     }
 
     @Before
     public void setUpTestContextManager() throws Throwable {
-        assertEquals("Verifying the number of registered TestExecutionListeners.", 3, this.testContextManager
-                .getTestExecutionListeners().size());
+        assertEquals("Verifying the number of registered TestExecutionListeners.",
+            3,
+            this.testContextManager.getTestExecutionListeners().size());
 
         this.testContextManager.beforeTestMethod(new ExampleTestCase(), getTestMethod());
     }

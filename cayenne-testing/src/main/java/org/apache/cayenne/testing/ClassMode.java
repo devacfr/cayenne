@@ -22,7 +22,7 @@ package org.apache.cayenne.testing;
  * Defines <i>modes</i> which determine how {@code @DirtyMode} or
  * {@code @InjectMode} is interpreted when used to annotate a test class.
  *
- * @since 3.2
+ * @since 4.0
  */
 public enum ClassMode {
 

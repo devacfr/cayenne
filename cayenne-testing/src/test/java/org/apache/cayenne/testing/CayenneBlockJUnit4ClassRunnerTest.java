@@ -22,7 +22,7 @@ import org.junit.Test;
 
 /**
  *
- * @since 3.2
+ * @since 4.0
  *
  */
 public class CayenneBlockJUnit4ClassRunnerTest {

@@ -40,7 +40,7 @@ import org.apache.cayenne.testing.utils.Assert;
  * schema before execution test class and restore the cayenne runtime context
  * with initial value.
  *
- * @since 3.2
+ * @since 4.0
  */
 public class SchemaBuilderExecutionListener extends AbstractTestExecutionListener {
 

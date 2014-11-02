@@ -28,7 +28,7 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 /**
  * This class allow to migrate form JUnit 3.x syntax to JUnit 4.</p>
  *
- * @since 3.2
+ * @since 4.0
  *
  */
 @RunWith(BlockJUnit4ClassRunner.class)

@@ -43,7 +43,7 @@ import org.mockito.verification.VerificationWithTimeout;
  * This class allow to migrate form JUnit 3.x syntax to JUnit 4.</p> it is also
  * Mock facility.
  *
- * @since 3.2
+ * @since 4.0
  */
 @RunWith(BlockJUnit4ClassRunner.class)
 public abstract class MockitoTestCase extends Assert {

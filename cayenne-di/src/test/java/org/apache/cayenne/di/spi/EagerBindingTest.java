@@ -31,7 +31,7 @@ import org.junit.Test;
 /**
  * Test to eagerly singleton-scoped binding.
  *
- * @since 3.2
+ * @since 4.0
  */
 public class EagerBindingTest extends TestCase {
 

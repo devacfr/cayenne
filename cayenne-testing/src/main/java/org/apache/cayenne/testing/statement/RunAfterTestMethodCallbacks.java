@@ -36,7 +36,7 @@ import org.junit.runners.model.Statement;
  *
  * @see #evaluate()
  * @see RunBeforeTestMethodCallbacks
- * @since 3.2
+ * @since 4.0
  */
 public class RunAfterTestMethodCallbacks extends Statement {
 
@@ -75,7 +75,7 @@ public class RunAfterTestMethodCallbacks extends Statement {
      *            <code>afterTestMethod()</code>
      */
     public RunAfterTestMethodCallbacks(Statement statement, Object testInstance, Method testMethod,
-            CayenneTestContextManager testContextManager) {
+                                       CayenneTestContextManager testContextManager) {
         this.statement = statement;
         this.testInstance = testInstance;
         this.testMethod = testMethod;

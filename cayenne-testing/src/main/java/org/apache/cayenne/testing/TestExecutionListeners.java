@@ -30,7 +30,7 @@ import java.lang.annotation.Target;
  * {@code TestExecutionListeners @TestExecutionListeners} allows registering
  * {@link TestExecutionListener TestExecutionListener} in test context.
  *
- * @since 3.2
+ * @since 4.0
  */
 @Documented
 @Inherited

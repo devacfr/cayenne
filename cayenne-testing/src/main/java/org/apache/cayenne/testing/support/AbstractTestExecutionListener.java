@@ -26,7 +26,7 @@ import org.apache.cayenne.testing.TestExecutionListener;
  * {@code AbstractTestExecutionListener} is abstract facility class allowing the
  * specific implementation called event methods.
  *
- * @since 3.2
+ * @since 4.0
  *
  */
 public abstract class AbstractTestExecutionListener implements TestExecutionListener {
