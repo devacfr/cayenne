@@ -52,7 +52,7 @@ public class ClientRuntimeTest extends TestCase {
     }
 
     @Test
-    public void testConstructor_Modules() {
+	public void testConstructor_Modules() {
 
         final boolean[] configured = new boolean[2];
 
@@ -83,7 +83,7 @@ public class ClientRuntimeTest extends TestCase {
     }
 
     @Test
-    public void testConstructor_ModulesCollection() {
+	public void testConstructor_ModulesCollection() {
 
         final boolean[] configured = new boolean[2];
 
@@ -116,7 +116,7 @@ public class ClientRuntimeTest extends TestCase {
     }
 
     @Test
-    public void testGetObjectContext() {
+	public void testGetObjectContext() {
 
         Map<String, String> properties = new HashMap<String, String>();
         ClientModule extraModule = new ClientModule(properties) {
@@ -143,7 +143,7 @@ public class ClientRuntimeTest extends TestCase {
     }
 
     @Test
-    public void testGetDataChannel() {
+	public void testGetDataChannel() {
 
         Map<String, String> properties = new HashMap<String, String>();
 
@@ -165,7 +165,7 @@ public class ClientRuntimeTest extends TestCase {
     }
 
     @Test
-    public void testShutdown() throws Exception {
+	public void testShutdown() throws Exception {
 
         Map<String, String> properties = new HashMap<String, String>();
         ClientRuntime runtime = new ClientRuntime(properties);

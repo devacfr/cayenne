@@ -49,8 +49,9 @@ public class ClientLocalRuntimeTest extends TestCase {
             }
         };
 
-        ClientLocalRuntime runtime = new ClientLocalRuntime(DIBootstrap.createInjector(serverModule),
-                Collections.<String, String> emptyMap());
+        ClientLocalRuntime runtime =
+                new ClientLocalRuntime(DIBootstrap.createInjector(serverModule),
+                        Collections.<String, String> emptyMap());
         Collection<Module> cmodules = ((ModuleCollection) runtime.getModule()).getModules();
         assertEquals(2, cmodules.size());
 
@@ -81,8 +82,8 @@ public class ClientLocalRuntimeTest extends TestCase {
             }
         };
 
-        ClientLocalRuntime runtime = new ClientLocalRuntime(DIBootstrap.createInjector(serverModule),
-                Collections.EMPTY_MAP);
+        ClientLocalRuntime runtime =
+                new ClientLocalRuntime(DIBootstrap.createInjector(serverModule), Collections.EMPTY_MAP);
 
         ClientConnection connection = runtime.getConnection();
         assertNotNull(connection);

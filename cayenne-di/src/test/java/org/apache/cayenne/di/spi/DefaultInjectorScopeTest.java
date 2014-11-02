@@ -71,7 +71,10 @@ public class DefaultInjectorScopeTest extends TestCase {
 
             @Override
             public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(MockImplementation1.class).withoutScope();
+                binder
+                        .bind(MockInterface1.class)
+                        .to(MockImplementation1.class)
+                        .withoutScope();
             }
         };
 
@@ -97,7 +100,10 @@ public class DefaultInjectorScopeTest extends TestCase {
 
             @Override
             public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(MockImplementation1.class).inSingletonScope();
+                binder
+                        .bind(MockInterface1.class)
+                        .to(MockImplementation1.class)
+                        .inSingletonScope();
             }
         };
 
@@ -227,7 +233,8 @@ public class DefaultInjectorScopeTest extends TestCase {
 
             @Override
             public void configure(Binder binder) {
-                binder.bind(MockInterface1.class).to(MockImplementation1_EventAnnotations.class).inSingletonScope();
+                binder.bind(MockInterface1.class).to(
+                        MockImplementation1_EventAnnotations.class).inSingletonScope();
             }
         };
 
@@ -262,8 +269,6 @@ public class DefaultInjectorScopeTest extends TestCase {
         };
 
         DefaultInjector injector = new DefaultInjector(module);
-
-        // assertTrue(MockImplementation1_EventAnnotations.initialize1);
 
         MockInterface1 instance1 = injector.getInstance(MockInterface1.class);
         assertEquals("XuI", instance1.getName());

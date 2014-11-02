@@ -18,8 +18,6 @@
  ****************************************************************/
 package org.apache.cayenne.di.spi;
 
-
-
 import org.apache.cayenne.di.Binder;
 import org.apache.cayenne.di.Module;
 import org.apache.cayenne.di.mock.MockImplementation1;

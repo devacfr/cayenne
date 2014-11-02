@@ -23,7 +23,7 @@
 	<parent>
 		<groupId>org.apache.cayenne</groupId>
 		<artifactId>cayenne-parent</artifactId>
-		<version>3.2.M2-SNAPSHOT</version>
+		<version>4.0.M2-SNAPSHOT</version>
 	</parent>
 	<artifactId>cayenne-server</artifactId>
 	<name>Cayenne Server</name>
@@ -291,6 +291,10 @@
                         <exclude>org/apache/cayenne/ejbql/parser/*</exclude>
                     </excludes>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
             </plugin>
         </plugins>
 	</build>
