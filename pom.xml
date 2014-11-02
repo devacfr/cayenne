@@ -669,11 +669,15 @@
                     					<versionRange>[1.0,)</versionRange>
 										<goals>
 											<goal>check</goal>
+                                            <goal>checkstyle</goal>
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore />
+										<configurator>
+                                          <id>com.basistech.m2e.code.quality.checkstyleConfigurator</id>
+                                        </configurator>
 									</action>
+                                    <comment>source: extension(com.basistech.m2e.code.quality.checkstyle_1.0.0.201408150901)</comment>
 								</pluginExecution>
 								<pluginExecution>
 									<pluginExecutionFilter>
@@ -685,8 +689,11 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore />
+										<configurator>
+                                          <id>com.basistech.m2e.code.quality.pmd</id>
+                                        </configurator>
 									</action>
+                                    <comment>source: extension(com.basistech.m2e.code.quality.pmd_1.0.0.201408150901)</comment>
 								</pluginExecution>
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
