@@ -16,7 +16,7 @@
  *  specific language governing permissions and limitations
  *  under the License.
  ****************************************************************/
-package org.apache.cayenne.access.jdbc;
+package org.apache.cayenne.velocity;
 
 import static org.mockito.Mockito.mock;
 
@@ -35,7 +35,7 @@ import org.apache.cayenne.DataRow;
 import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataNode;
 import org.apache.cayenne.access.MockOperationObserver;
-import org.apache.cayenne.access.jdbc.reader.RowReaderFactory;
+import org.apache.cayenne.access.jdbc.SQLTemplateAction;
 import org.apache.cayenne.dba.JdbcAdapter;
 import org.apache.cayenne.dba.oracle.OracleAdapter;
 import org.apache.cayenne.di.Inject;
@@ -70,6 +70,9 @@ public class BindDirectiveIT extends ServerCase {
 
     @Inject
     private JdbcEventLogger logger;
+    
+    @Inject
+    private DataNode node;
 
 
     @Override
@@ -158,7 +161,7 @@ public class BindDirectiveIT extends ServerCase {
         query.setTemplate(OracleAdapter.class.getName(), "SELECT * FROM ARTIST WHERE RTRIM(ARTIST_NAME) in (#bind($ARTISTNAMES))");
         
         query.setColumnNamesCapitalization(CapsStrategy.UPPER);
-        query.setParameters(Collections.singletonMap("ARTISTNAMES", artistNames));
+        query.setParams(Collections.singletonMap("ARTISTNAMES", artistNames));
         List<DataRow> result = context.performQuery(query);
         assertEquals(2, result.size());
     }
@@ -246,12 +249,9 @@ public class BindDirectiveIT extends ServerCase {
         }
         SQLTemplate template = new SQLTemplate(Object.class, templateString);
 
-        template.setParameters(parameters);
+        template.setParams(parameters);
 
-        DataNode node = new DataNode();
-        node.setEntityResolver(context.getEntityResolver());
-        node.setRowReaderFactory(mock(RowReaderFactory.class));
-        node.setAdapter(adapter);
+    
         SQLTemplateAction action = new SQLTemplateAction(template, node);
 
         Connection c = dataSourceFactory.getSharedDataSource().getConnection();

@@ -19,10 +19,9 @@
 package org.apache.cayenne.access.dbsync;
 
 import java.util.Collections;
-import java.util.Map;
 
+import org.apache.cayenne.CayenneRuntimeException;
 import org.apache.cayenne.access.MockOperationObserver;
-import org.apache.cayenne.access.OperationObserver;
 import org.apache.cayenne.query.Query;
 import org.apache.cayenne.query.SQLTemplate;
 import org.apache.cayenne.testing.CayenneConfiguration;
@@ -31,41 +30,61 @@ import org.junit.Test;
 
 
 @CayenneConfiguration(ServerCase.SUS_PROJECT)
-public class SchemaUpdateStrategyIT extends SchemaUpdateStrategyBase {
-
-
-		String template = "SELECT #result('id' 'int') FROM SUS1";
-		SQLTemplate query = new SQLTemplate(Object.class, template);
+public class ThrowOnPartialSchemaStrategyTest extends SchemaUpdateStrategyBase {
 
     @Test
-    public void testDBGeneratorStrategy() throws Exception {
-		setStrategy(CreateIfNoSchemaStrategy.class);
+	public void testThrowOnPartialStrategyTableNoExist() throws Exception {
 
-		String template = "SELECT #result('id' 'int') FROM SUS1";
-		SQLTemplate query = new SQLTemplate(Object.class, template);
-
-		OperationObserver observer = new MockOperationObserver();
-
-		node.performQueries(Collections.singletonList((Query) query), observer);
-		Map<String, Boolean> nameTables = tablesMap();
-		assertTrue(nameTables.get("SUS1"));
-
-		assertEquals(2, existingTables().size());
-		node.performQueries(Collections.singletonList(query), observer);
-		assertEquals(2, existingTables().size());
-
-	}
-
-    @Test
-	public void testNoStandardSchema() throws Exception {
 		String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
 		SQLTemplate query = new SQLTemplate(Object.class, template);
 		MockOperationObserver observer = new MockOperationObserver();
 
-		setStrategy(TstSchemaUpdateStrategy.class);
+		setStrategy(ThrowOnPartialSchemaStrategy.class);
 
-		node.performQueries(Collections.singletonList((Query) query), observer);
-		assertTrue(node.getSchemaUpdateStrategy() instanceof TstSchemaUpdateStrategy);
+		try {
+			node.performQueries(Collections.singletonList((Query) query), observer);
+		} catch (CayenneRuntimeException e) {
+			assertNotNull(e);
+		}
+
+		try {
+			node.performQueries(Collections.singletonList((Query) query), observer);
+		} catch (CayenneRuntimeException e) {
+			assertNotNull(e);
+		}
+	}
+
+    @Test
+	public void testThrowOnPartialStrategyTableExist() throws Exception {
+
+		String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
+		SQLTemplate query = new SQLTemplate(Object.class, template);
+		MockOperationObserver observer = new MockOperationObserver();
+
+		createOneTable("SUS1");
+		createOneTable("SUS2");
+
+		setStrategy(ThrowOnPartialSchemaStrategy.class);
+		node.performQueries(Collections.singletonList(query), observer);
+	}
+
+    @Test
+	public void testThrowOnPartialStrategyWithOneTable() throws Exception {
+		createOneTable("SUS1");
+
+		setStrategy(ThrowOnPartialSchemaStrategy.class);
+
+		String template = "SELECT #result('ARTIST_ID' 'int') FROM ARTIST ORDER BY ARTIST_ID";
+		SQLTemplate query = new SQLTemplate(Object.class, template);
+		MockOperationObserver observer = new MockOperationObserver();
+
+		try {
+			node.performQueries(Collections.singletonList(query), observer);
+			assertEquals(1, existingTables().size());
+			fail("Must have thrown on partial schema");
+		} catch (CayenneRuntimeException e) {
+			// expected
+		}
 	}
 
 }

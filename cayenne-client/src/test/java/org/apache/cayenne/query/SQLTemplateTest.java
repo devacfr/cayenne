@@ -19,7 +19,6 @@
 package org.apache.cayenne.query;
 
 import java.util.Collections;
-import java.util.Map;
 
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
@@ -40,11 +39,9 @@ public class SQLTemplateTest extends TestCase {
         assertEquals(o.getRoot(), c1.getRoot());
         assertEquals(o.getDefaultTemplate(), c1.getDefaultTemplate());
 
-        // set immutable parameters ... query must recast them to mutable
-        // version
-        @SuppressWarnings("unchecked")
-        Map<String, Object>[] parameters = new Map[] { Collections.EMPTY_MAP };
-        o.setParameters(parameters);
+		// set immutable parameters ... query must recast them to mutable
+		// version
+		o.setParams(Collections.<String, Object> emptyMap());
 
         HessianUtil.cloneViaClientServerSerialization(o, new EntityResolver());
     }
