@@ -45,10 +45,8 @@ public class SelectActionIT extends ServerCase {
     @Inject
     private DBHelper dbHelper;
 
-
     @Override
-    public void setUp() throws Exception {
-    	super.setUp();
+    protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("CLOB_TEST_RELATION");
         
         if (accessStackAdapter.supportsLobs()) {
@@ -63,7 +61,7 @@ public class SelectActionIT extends ServerCase {
             insertClobDb();
 
             Expression qual = Expression.fromString("clobValue.value = 100");
-            SelectQuery<ClobTestEntity> select = new SelectQuery<ClobTestEntity>(ClobTestEntity.class, qual);
+            SelectQuery select = new SelectQuery(ClobTestEntity.class, qual);
             select.setFetchLimit(25);
             List<DataRow> resultRows = context.performQuery(select);
 

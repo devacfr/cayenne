@@ -46,7 +46,7 @@ public class CDOMany2OneNoRevIT extends ServerCase {
     
     @Test
     public void testNewAdd() throws Exception {
-       
+
         Artist a1 = context.newObject(Artist.class);
         a1.setArtistName("a");
         Painting1 p1 = context.newObject(Painting1.class);

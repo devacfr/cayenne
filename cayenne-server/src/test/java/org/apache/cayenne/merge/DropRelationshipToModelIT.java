@@ -35,7 +35,7 @@ import org.junit.Test;
 @CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DropRelationshipToModelIT extends MergeCase {
 
-	@Test
+    @Test
     public void testForeignKey() throws Exception {
         dropTableIfPresent("NEW_TABLE");
         dropTableIfPresent("NEW_TABLE2");

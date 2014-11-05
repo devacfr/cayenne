@@ -78,7 +78,7 @@ public class CayenneContextEJBQLIT extends ClientCase {
         createTwoRecords();
 
         EJBQLQuery query = new EJBQLQuery(
-                        "SELECT COUNT(a), a, a.serverAttribute1 FROM MtTable1 a Group By a ORDER BY a.serverAttribute1");
+                "SELECT COUNT(a), a, a.serverAttribute1 FROM MtTable1 a Group By a ORDER BY a.serverAttribute1");
 
         List<Object[]> results = context.performQuery(query);
 

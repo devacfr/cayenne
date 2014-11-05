@@ -22,6 +22,7 @@ import org.apache.cayenne.ObjectContext;
 import org.apache.cayenne.access.DataContext;
 import org.apache.cayenne.di.Inject;
 import org.apache.cayenne.exp.Expression;
+import org.apache.cayenne.exp.ExpressionFactory;
 import org.apache.cayenne.map.ObjEntity;
 import org.apache.cayenne.testdo.mt.ClientMtTable1Subclass1;
 import org.apache.cayenne.testdo.mt.MtTable1Subclass1;
@@ -32,7 +33,6 @@ import org.junit.Test;
 @CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
 public class ValueInjectorIT extends RemoteCayenneCase {
 
-
     @Inject
     protected DataContext serverContext;
 
@@ -42,7 +42,7 @@ public class ValueInjectorIT extends RemoteCayenneCase {
     public ValueInjectorIT(int serializationPolicy) {
         super(serializationPolicy);
     }
-    
+
     @Test
     public void testServer() {
         ObjEntity entity = serverContext.getEntityResolver().getObjEntity(MtTable1Subclass1.class);
@@ -53,7 +53,7 @@ public class ValueInjectorIT extends RemoteCayenneCase {
             assertEquals(ee.getGlobalAttribute1(), "sub1");
 
             // check AND
-            entity.setDeclaredQualifier(qualifier.andExp(Expression.fromString("serverAttribute1 = 'sa'")));
+            entity.setDeclaredQualifier(qualifier.andExp(ExpressionFactory.exp("serverAttribute1 = 'sa'")));
             ee = serverContext.newObject(MtTable1Subclass1.class);
             assertEquals(ee.getGlobalAttribute1(), "sub1");
             assertEquals(ee.getServerAttribute1(), "sa");
@@ -73,7 +73,7 @@ public class ValueInjectorIT extends RemoteCayenneCase {
             assertEquals(ee.getGlobalAttribute1(), "sub1");
 
             // check AND
-            entity.setDeclaredQualifier(qualifier.andExp(Expression.fromString("serverAttribute1 = 'sa'")));
+            entity.setDeclaredQualifier(qualifier.andExp(ExpressionFactory.exp("serverAttribute1 = 'sa'")));
             ee = context.newObject(ClientMtTable1Subclass1.class);
             assertEquals(ee.getGlobalAttribute1(), "sub1");
             assertEquals(ee.getServerAttribute1(), "sa");

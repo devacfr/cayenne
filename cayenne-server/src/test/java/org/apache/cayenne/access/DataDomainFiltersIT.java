@@ -46,6 +46,7 @@ public class DataDomainFiltersIT extends ServerCase {
     @Inject
     private ServerRuntime runtime;
 
+    @Test
     public void testDefaultNoFilters() {
 
         DataDomain domain = runtime.getDataDomain();

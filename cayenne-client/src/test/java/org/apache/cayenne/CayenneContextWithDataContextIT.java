@@ -220,18 +220,18 @@ public class CayenneContextWithDataContextIT extends ClientCase {
             final Persistent clientObject = clientContext.newObject(ClientMtTable1.class);
             clientContext.commitChanges();
 
-            new ParallelTestContainer() {
+        new ParallelTestContainer() {
 
-                @Override
-                protected void assertResult() throws Exception {
-                    // find peer
+            @Override
+            protected void assertResult() throws Exception {
+            	// find peer
             	MtTable1 peer = (MtTable1) serverContext.getGraphManager().getNode(
                     clientObject.getObjectId());
 
-                    assertNotNull(peer);
-                    assertTrue(peer.isPrePersisted());
-                }
-            }.runTest(1000);
+            	assertNotNull(peer);
+            	assertTrue(peer.isPrePersisted());
+            }
+        }.runTest(1000);
 
 
         }
@@ -401,7 +401,8 @@ public class CayenneContextWithDataContextIT extends ClientCase {
         try {
             o.getGlobalAttribute1();
             fail("resolving bad fault should've thrown");
-        } catch (FaultFailureException e) {
+        }
+        catch (FaultFailureException e) {
             // expected
         }
     }

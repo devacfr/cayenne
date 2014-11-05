@@ -66,7 +66,7 @@ public class VerticalInheritanceIT extends ServerCase {
 		dbHelper.deleteAll("IV2_X");
 	}
 
-	@Test
+    @Test
 	public void testInsert_Root() throws Exception {
 
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
@@ -88,7 +88,7 @@ public class VerticalInheritanceIT extends ServerCase {
 		assertNull(rootData[2]);
 	}
 
-	@Test
+    @Test
 	public void testInsert_Sub1() throws Exception {
 
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
@@ -137,7 +137,7 @@ public class VerticalInheritanceIT extends ServerCase {
 		assertEquals("BdE2", subdata[1]);
 	}
 
-	@Test
+    @Test
 	public void testInsert_Sub2() throws Exception {
 
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
@@ -204,7 +204,7 @@ public class VerticalInheritanceIT extends ServerCase {
 		assertEquals(0, ivSub2Table.getRowCount());
 	}
 
-	@Test
+    @Test
 	public void testInsert_Sub1Sub1() throws Exception {
 
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
@@ -244,7 +244,7 @@ public class VerticalInheritanceIT extends ServerCase {
 		assertEquals("3DQa", subsubdata[1]);
 	}
 
-	@Test
+    @Test
 	public void testSelectQuery_SuperSub() throws Exception {
 
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
@@ -286,7 +286,7 @@ public class VerticalInheritanceIT extends ServerCase {
 		assertEquals("IvSub1", sub1.getDiscriminator());
 	}
 
-	@Test
+    @Test
 	public void testSelectQuery_DeepAndWide() throws Exception {
 
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
@@ -356,7 +356,7 @@ public class VerticalInheritanceIT extends ServerCase {
 		assertEquals("xSUB2", sub2.getSub2Name());
 	}
 
-	@Test
+    @Test
 	public void testSelectQuery_MiddleLeaf() throws Exception {
 
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
@@ -415,7 +415,7 @@ public class VerticalInheritanceIT extends ServerCase {
 		assertEquals("xSUB1_SUB1", sub1Sub1.getSub1Sub1Name());
 	}
 
-	@Test
+    @Test
 	public void testDelete_Mix() throws Exception {
 
 		TableHelper ivRootTable = new TableHelper(dbHelper, "IV_ROOT");
@@ -474,7 +474,7 @@ public class VerticalInheritanceIT extends ServerCase {
 		assertEquals(2, results.size());
 	}
 
-	@Test
+    @Test
 	public void testSelectQuery_AttributeOverrides() throws Exception {
 
 		TableHelper iv1RootTable = new TableHelper(dbHelper, "IV1_ROOT");
@@ -515,7 +515,7 @@ public class VerticalInheritanceIT extends ServerCase {
 		assertEquals("xSUB1", sub1.getName());
 	}
 
-	@Test
+    @Test
 	public void testInsertWithRelationship() throws SQLException {
 		TableHelper xTable = new TableHelper(dbHelper, "IV2_X");
 		TableHelper rootTable = new TableHelper(dbHelper, "IV2_ROOT");

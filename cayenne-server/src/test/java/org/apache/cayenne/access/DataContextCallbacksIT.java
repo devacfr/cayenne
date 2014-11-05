@@ -43,8 +43,7 @@ public class DataContextCallbacksIT extends ServerCase {
     private DBHelper dbHelper;
 
     @Override
-    public void setUp() throws Exception {
-    	super.setUp();
+    protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("PAINTING_INFO");
         dbHelper.deleteAll("PAINTING");
         dbHelper.deleteAll("ARTIST_EXHIBIT");
@@ -53,8 +52,7 @@ public class DataContextCallbacksIT extends ServerCase {
     }
 
     @Override
-    public void tearDown() throws Exception {
-    	super.tearDown();
+    protected void tearDownBeforeInjection() throws Exception {
         EntityResolver resolver = runtime.getDataDomain().getEntityResolver();
         resolver.getCallbackRegistry().clear();
     }

@@ -71,8 +71,7 @@ public class SelectTranslatorIT extends ServerCase {
     private Connection connection;
 
     @Override
-    public void setUp() throws Exception {
-    	super.setUp();
+    protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("PAINTING_INFO");
         dbHelper.deleteAll("PAINTING");
         dbHelper.deleteAll("ARTIST_EXHIBIT");
@@ -83,8 +82,7 @@ public class SelectTranslatorIT extends ServerCase {
     }
 
     @Override
-    public void tearDown() throws Exception {
-    	super.tearDown();
+    protected void tearDownBeforeInjection() throws Exception {
         connection.close();
     }
 
@@ -146,7 +144,7 @@ public class SelectTranslatorIT extends ServerCase {
     @Test
     public void testDbEntityQualifier_OuterJoin() throws Exception {
 
-        SelectQuery<Painting> q = new SelectQuery<Painting>(Painting.class);
+        SelectQuery q = new SelectQuery(Painting.class);
         q.addOrdering("toArtist+.artistName", SortOrder.ASCENDING);
 
         final DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
@@ -257,7 +255,7 @@ public class SelectTranslatorIT extends ServerCase {
     @Test
     public void testCreateSqlString2() throws Exception {
         // query with "distinct" set
-        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
+        SelectQuery q = new SelectQuery(Artist.class);
         q.setDistinct(true);
 
         String generatedSql = new SelectTranslator(q, dataNode, connection).createSqlString();
@@ -275,7 +273,7 @@ public class SelectTranslatorIT extends ServerCase {
     @Test
     public void testCreateSqlString5() throws Exception {
         // query with qualifier and ordering
-        SelectQuery<ArtistExhibit> q = new SelectQuery<ArtistExhibit>(ArtistExhibit.class);
+        SelectQuery q = new SelectQuery(ArtistExhibit.class);
         q.setQualifier(ExpressionFactory.likeExp("toArtist.artistName", "a%"));
         q.andQualifier(ExpressionFactory.likeExp("toExhibit.toGallery.paintingArray.toArtist.artistName", "a%"));
 
@@ -306,7 +304,7 @@ public class SelectTranslatorIT extends ServerCase {
     @Test
     public void testCreateSqlString6() throws Exception {
         // query with qualifier and ordering
-        SelectQuery<ArtistExhibit> q = new SelectQuery<ArtistExhibit>(ArtistExhibit.class);
+        SelectQuery q = new SelectQuery(ArtistExhibit.class);
         q.setQualifier(ExpressionFactory.likeExp("toArtist.artistName", "a%"));
         q.andQualifier(ExpressionFactory.likeExp("toArtist.paintingArray.paintingTitle", "p%"));
 
@@ -333,7 +331,7 @@ public class SelectTranslatorIT extends ServerCase {
      */
     @Test
     public void testCreateSqlString7() throws Exception {
-        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
+        SelectQuery q = new SelectQuery(Artist.class);
         q.setQualifier(ExpressionFactory.greaterExp("dateOfBirth", new Date()));
         q.andQualifier(ExpressionFactory.lessExp("dateOfBirth", new Date()));
 
@@ -365,7 +363,7 @@ public class SelectTranslatorIT extends ServerCase {
      */
     @Test
     public void testCreateSqlString8() throws Exception {
-        SelectQuery<Artist> q = new SelectQuery<Artist>();
+        SelectQuery q = new SelectQuery();
         q.setRoot(Painting.class);
         q.setQualifier(ExpressionFactory.greaterExp("toArtist.dateOfBirth", new Date()));
         q.andQualifier(ExpressionFactory.lessExp("toArtist.dateOfBirth", new Date()));
@@ -392,8 +390,7 @@ public class SelectTranslatorIT extends ServerCase {
     @Test
     public void testCreateSqlString9() throws Exception {
         // query for a compound ObjEntity with qualifier
-        SelectQuery<CompoundPainting> q = new SelectQuery<CompoundPainting>(CompoundPainting.class,
-        		ExpressionFactory.likeExp("artistName", "a%"));
+        SelectQuery q = new SelectQuery(CompoundPainting.class, ExpressionFactory.likeExp("artistName", "a%"));
 
         String sql = new SelectTranslator(q, dataNode, connection).createSqlString();
 
@@ -445,7 +442,7 @@ public class SelectTranslatorIT extends ServerCase {
     @Test
     public void testCreateSqlString10() throws Exception {
         // query with to-many joint prefetches
-        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
+        SelectQuery q = new SelectQuery(Artist.class);
         q.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
         SelectTranslator transl = new SelectTranslator(q, dataNode, connection);
@@ -468,7 +465,7 @@ public class SelectTranslatorIT extends ServerCase {
     @Test
     public void testCreateSqlString11() throws Exception {
         // query with joint prefetches and other joins
-        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class, Expression.fromString("paintingArray.paintingTitle = 'a'"));
+        SelectQuery q = new SelectQuery(Artist.class, Expression.fromString("paintingArray.paintingTitle = 'a'"));
         q.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
         SelectTranslator transl = new SelectTranslator(q, dataNode, connection);
@@ -482,7 +479,7 @@ public class SelectTranslatorIT extends ServerCase {
     @Test
     public void testCreateSqlString12() throws Exception {
         // query with to-one joint prefetches
-        SelectQuery<Painting> q = new SelectQuery<Painting>(Painting.class);
+        SelectQuery q = new SelectQuery(Painting.class);
         q.addPrefetch(Painting.TO_ARTIST_PROPERTY).setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
         SelectTranslator transl = new SelectTranslator(q, dataNode, connection);
@@ -506,7 +503,7 @@ public class SelectTranslatorIT extends ServerCase {
     @Test
     public void testCreateSqlString13() throws Exception {
         // query with invalid joint prefetches
-        SelectQuery<Painting> q = new SelectQuery<Painting>(Painting.class);
+        SelectQuery q = new SelectQuery(Painting.class);
         q.addPrefetch("invalid.invalid").setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
         try {
@@ -521,7 +518,7 @@ public class SelectTranslatorIT extends ServerCase {
     public void testCreateSqlStringWithQuoteSqlIdentifiers() throws Exception {
 
         try {
-            SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
+            SelectQuery q = new SelectQuery(Artist.class);
             DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
             entity.getDataMap().setQuotingSQLIdentifiers(true);
             q.addOrdering("dateOfBirth", SortOrder.ASCENDING);
@@ -558,7 +555,7 @@ public class SelectTranslatorIT extends ServerCase {
     public void testCreateSqlStringWithQuoteSqlIdentifiers2() throws Exception {
 
         try {
-            SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
+            SelectQuery q = new SelectQuery(Artist.class);
             DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
             entity.getDataMap().setQuotingSQLIdentifiers(true);
             q.setQualifier(ExpressionFactory.greaterExp("dateOfBirth", new Date()));
@@ -605,7 +602,7 @@ public class SelectTranslatorIT extends ServerCase {
         // query with joint prefetches and other joins
         // and with QuoteSqlIdentifiers = true
         try {
-            SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class, Expression.fromString("paintingArray.paintingTitle = 'a'"));
+            SelectQuery q = new SelectQuery(Artist.class, Expression.fromString("paintingArray.paintingTitle = 'a'"));
             q.addPrefetch(Artist.PAINTING_ARRAY_PROPERTY).setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
             DbEntity entity = context.getEntityResolver().getDbEntity("ARTIST");
@@ -684,7 +681,7 @@ public class SelectTranslatorIT extends ServerCase {
         // query with to-one joint prefetches
         // and with QuoteSqlIdentifiers = true
         try {
-            SelectQuery<Painting> q = new SelectQuery<Painting>(Painting.class);
+            SelectQuery q = new SelectQuery(Painting.class);
             q.addPrefetch(Painting.TO_ARTIST_PROPERTY).setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
             DbEntity entity = context.getEntityResolver().getDbEntity("PAINTING");
@@ -746,7 +743,7 @@ public class SelectTranslatorIT extends ServerCase {
      */
     @Test
     public void testBuildResultColumns1() throws Exception {
-        SelectQuery<Painting> q = new SelectQuery<Painting>(Painting.class);
+        SelectQuery q = new SelectQuery(Painting.class);
         SelectTranslator tr = new SelectTranslator(q, dataNode, connection);
 
         List<?> columns = tr.buildResultColumns();
@@ -764,7 +761,7 @@ public class SelectTranslatorIT extends ServerCase {
      */
     @Test
     public void testBuildResultColumns2() throws Exception {
-        SelectQuery<Painting> q = new SelectQuery<Painting>(Painting.class);
+        SelectQuery q = new SelectQuery(Painting.class);
         q.addPrefetch(Painting.TO_ARTIST_PROPERTY).setSemantics(PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
         SelectTranslator tr = new SelectTranslator(q, dataNode, connection);
 

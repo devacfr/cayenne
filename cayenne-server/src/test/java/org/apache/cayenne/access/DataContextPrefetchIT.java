@@ -544,7 +544,8 @@ public class DataContextPrefetchIT extends ServerCase {
             }
         });
     }
-    
+
+    @Test
     public void testPrefetch_ToOneWith_OuterJoinFlattenedQualifier() throws Exception {
 
         tArtGroup.insert(1, "AG");

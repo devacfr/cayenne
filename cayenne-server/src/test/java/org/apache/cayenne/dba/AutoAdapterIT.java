@@ -49,6 +49,7 @@ public class AutoAdapterIT extends ServerCase {
         assertSame(dataNode.getAdapter(), detected);
     }
 
+    @Test
     public void testCreateSQLTemplateAction() {
 
         Provider<DbAdapter> adapterProvider = mock(Provider.class);

@@ -55,7 +55,7 @@ public class EntityResolverIT extends ServerCase {
         EntityResolver resolver = new EntityResolver(runtime.getDataDomain().getDataMaps());
         assertIsArtistObjEntity(resolver.getObjEntity(Artist.class));
     }
-    
+
     @Test
     public void testLookupObjEntityByInstance() {
         EntityResolver resolver = new EntityResolver(runtime.getDataDomain().getDataMaps());

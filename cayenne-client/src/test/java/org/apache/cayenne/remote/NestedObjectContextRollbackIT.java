@@ -28,7 +28,7 @@ import org.junit.Test;
 
 @CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
 public class NestedObjectContextRollbackIT extends RemoteCayenneCase {
-
+    
     @Inject
     private ClientRuntime runtime;
 
@@ -42,40 +42,40 @@ public class NestedObjectContextRollbackIT extends RemoteCayenneCase {
     @Test
     public void testRollbackChanges() {
         ObjectContext child1 = runtime.newContext(clientContext);
-
+        
         assertFalse(clientContext.hasChanges());
         assertFalse(child1.hasChanges());
-
+        
         clientContext.newObject(ClientMtTable1.class);
         child1.newObject(ClientMtTable1.class);
-
+        
         assertTrue(clientContext.hasChanges());
         assertTrue(child1.hasChanges());
-
+        
         child1.rollbackChanges();
         assertFalse(clientContext.hasChanges());
         assertFalse(child1.hasChanges());
-
+        
         clientContext.rollbackChanges();
     }
 
     @Test
     public void testRollbackChangesLocally() {
         ObjectContext child1 = runtime.newContext(clientContext);
-
+        
         assertFalse(clientContext.hasChanges());
         assertFalse(child1.hasChanges());
-
+        
         clientContext.newObject(ClientMtTable1.class);
         child1.newObject(ClientMtTable1.class);
-
+        
         assertTrue(clientContext.hasChanges());
         assertTrue(child1.hasChanges());
-
+        
         child1.rollbackChangesLocally();
         assertTrue(clientContext.hasChanges());
         assertFalse(child1.hasChanges());
-
+        
         clientContext.rollbackChanges();
     }
 }

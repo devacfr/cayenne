@@ -27,7 +27,6 @@ import org.junit.Test;
 
 @CayenneConfiguration(ClientCase.MULTI_TIER_PROJECT)
 public class RemoteCallbacksIT extends RemoteCayenneCase implements LifecycleListener {
-
     private int added, loaded, prePersisted, postPersisted, preRemoved, postRemoved, preUpdated, postUpdated;
 
     /**
@@ -40,7 +39,7 @@ public class RemoteCallbacksIT extends RemoteCayenneCase implements LifecycleLis
     @Override
     public void setUpAfterInjection() throws Exception {
         super.setUpAfterInjection();
-
+        
         added = 0;
         loaded = 0;
         prePersisted = 0;
@@ -55,35 +54,35 @@ public class RemoteCallbacksIT extends RemoteCayenneCase implements LifecycleLis
     public void testDefault() throws InterruptedException {
         ObjectContext context = createROPContext();
         context.getEntityResolver().getCallbackRegistry().addListener(ClientMtLifecycles.class, this);
-
+        
         assertAll(0, 0, 0, 0, 0, 0, 0, 0);
         ClientMtLifecycles l1 = context.newObject(ClientMtLifecycles.class);
-
+        
         assertAll(1, 0, 0, 0, 0, 0, 0, 0);
         l1.setName("x");
         assertAll(1, 0, 0, 0, 0, 0, 0, 0);
-
+        
         context.commitChanges();
         Thread.sleep(5); //until commit
         assertAll(1, 0, 1, 1, 0, 0, 0, 0);
-
+        
         l1.setName("x2");
         assertAll(1, 0, 1, 1, 0, 0, 0, 0);
-
+        
         context.commitChanges();
         Thread.sleep(5); //until commit
         assertAll(1, 0, 1, 1, 1, 1, 0, 0);
-
+        
         context.deleteObjects(l1);
         assertAll(1, 0, 1, 1, 1, 1, 1, 0);
-
+        
         context.commitChanges();
         Thread.sleep(5); //until commit
         assertAll(1, 0, 1, 1, 1, 1, 1, 1);
     }
-
-    private void assertAll(int added, int loaded, int prePersisted, int postPersisted, int preUpdated, int postUpdated,
-                           int preRemoved, int postRemoved) {
+    
+    private void assertAll(int added, int loaded, int prePersisted, int postPersisted,
+            int preUpdated, int postUpdated, int preRemoved, int postRemoved) {
         assertEquals(this.added, added);
         assertEquals(this.loaded, loaded);
         assertEquals(this.prePersisted, prePersisted);
@@ -94,42 +93,34 @@ public class RemoteCallbacksIT extends RemoteCayenneCase implements LifecycleLis
         assertEquals(this.postUpdated, postUpdated);
     }
 
-    @Override
     public void postAdd(Object entity) {
         added++;
     }
 
-    @Override
     public void postLoad(Object entity) {
         loaded++;
     }
 
-    @Override
     public void postPersist(Object entity) {
         postPersisted++;
     }
 
-    @Override
     public void postRemove(Object entity) {
         postRemoved++;
     }
 
-    @Override
     public void postUpdate(Object entity) {
         postUpdated++;
     }
 
-    @Override
     public void prePersist(Object entity) {
         prePersisted++;
     }
 
-    @Override
     public void preRemove(Object entity) {
         preRemoved++;
     }
 
-    @Override
     public void preUpdate(Object entity) {
         preUpdated++;
     }

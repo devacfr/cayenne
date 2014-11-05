@@ -73,7 +73,7 @@ public class DeepMergeOperationInheritanceIT extends ServerCase {
         d1.getEmployees().size();
 
         // resolve Employees
-        context1.performQuery(new SelectQuery<Employee>(Employee.class));
+        context1.performQuery(new SelectQuery(Employee.class));
 
         final DeepMergeOperation op = new DeepMergeOperation(context1);
 
@@ -97,6 +97,7 @@ public class DeepMergeOperationInheritanceIT extends ServerCase {
 
     }
 
+    @Test
     public void testDeepMergeNonExistentSubclass() {
 
         final Department d1 = context.newObject(Department.class);

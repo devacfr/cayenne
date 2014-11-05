@@ -206,6 +206,7 @@ public class DataDomainIT extends ServerCase {
         assertFalse(domain.isValidatingObjectsOnCommit());
     }
 
+    @Test
     public void testShutdownCache() {
         DataDomain domain = new DataDomain("X");
 

@@ -64,7 +64,8 @@ public class CayenneContextDeleteRulesIT extends ClientCase {
         try {
             context.deleteObjects(object);
             fail("Should have thrown an exception");
-        } catch (DeleteDenyException e) {
+        }
+        catch (DeleteDenyException e) {
             // expected
         }
 

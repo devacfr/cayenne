@@ -48,10 +48,8 @@ public class CAY_194IT extends ServerCase {
     @Inject
     private DBHelper dbHelper;
 
-
     @Override
-    public void setUp() throws Exception {
-    	super.setUp();
+    protected void setUpAfterInjection() throws Exception {
         TableHelper tReflexive = new TableHelper(dbHelper, "REFLEXIVE_AND_TO_ONE");
         tReflexive.setColumns("REFLEXIVE_AND_TO_ONE_ID", "PARENT_ID");
 
@@ -88,6 +86,7 @@ public class CAY_194IT extends ServerCase {
         assertEquals(0, parents.size());
     }
 
+    @Test
     public void testQualifyOnToOne() {
 
         ReflexiveAndToOne ox = context.newObject(ReflexiveAndToOne.class);

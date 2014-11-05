@@ -273,7 +273,7 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
         ArtistExhibit ae1 = aexhibits.get(0);
         assertEquals(PersistenceState.COMMITTED, ae1.getPersistenceState());
     }
-    
+
     @Test
     public void testToManyToOne_EmptyToMany() throws Exception {
 
@@ -294,7 +294,7 @@ public class DataContextPrefetchMultistepIT extends ServerCase {
         assertFalse(((ValueHolder) exhibits).isFault());
         assertEquals(0, exhibits.size());
     }
-    
+
     @Test
     public void testToManyToOne_EmptyToMany_NoRootQualifier() throws Exception {
 

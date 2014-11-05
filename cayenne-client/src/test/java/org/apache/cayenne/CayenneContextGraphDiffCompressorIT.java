@@ -46,10 +46,10 @@ public class CayenneContextGraphDiffCompressorIT extends ClientCase {
         DataChannelSyncStats stats = clientServerInterceptor
                 .runWithSyncStatsCollection(new UnitTestClosure() {
 
-            public void execute() {
-                context.commitChanges();
-            }
-        });
+                    public void execute() {
+                        context.commitChanges();
+                    }
+                });
 
         assertEquals(1, stats.nodePropertiesChanged);
         assertEquals(1, stats.nodesCreated);
@@ -66,10 +66,10 @@ public class CayenneContextGraphDiffCompressorIT extends ClientCase {
         DataChannelSyncStats stats = clientServerInterceptor
                 .runWithSyncStatsCollection(new UnitTestClosure() {
 
-            public void execute() {
-                context.commitChanges();
-            }
-        });
+                    public void execute() {
+                        context.commitChanges();
+                    }
+                });
 
         assertEquals(0, stats.nodePropertiesChanged);
         assertEquals(2, stats.nodesCreated);
@@ -87,10 +87,10 @@ public class CayenneContextGraphDiffCompressorIT extends ClientCase {
         DataChannelSyncStats stats = clientServerInterceptor
                 .runWithSyncStatsCollection(new UnitTestClosure() {
 
-            public void execute() {
-                context.commitChanges();
-            }
-        });
+                    public void execute() {
+                        context.commitChanges();
+                    }
+                });
         assertEquals(0, stats.nodePropertiesChanged);
         assertEquals(0, stats.nodesCreated);
         assertEquals(0, stats.nodesRemoved);

@@ -18,31 +18,34 @@
  ****************************************************************/
 package org.apache.cayenne.query;
 
-import java.util.Collections;
-
 import org.apache.cayenne.map.EntityResolver;
 import org.apache.cayenne.remote.hessian.service.HessianUtil;
-import org.apache.cayenne.testing.TestCase;
 import org.junit.Test;
 
-public class SQLTemplateTest extends TestCase {
+import java.util.Collections;
 
-    @Test
-    public void testSerializabilityWithHessian() throws Exception {
-        SQLTemplate o = new SQLTemplate("Test", "DO SQL");
-        Object clone = HessianUtil.cloneViaClientServerSerialization(o, new EntityResolver());
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertTrue;
 
-        assertTrue(clone instanceof SQLTemplate);
-        SQLTemplate c1 = (SQLTemplate) clone;
+public class SQLTemplateTest {
 
-        assertNotSame(o, c1);
-        assertEquals(o.getRoot(), c1.getRoot());
-        assertEquals(o.getDefaultTemplate(), c1.getDefaultTemplate());
+	@Test
+	public void testSerializabilityWithHessian() throws Exception {
+		SQLTemplate o = new SQLTemplate("Test", "DO SQL");
+		Object clone = HessianUtil.cloneViaClientServerSerialization(o, new EntityResolver());
+
+		assertTrue(clone instanceof SQLTemplate);
+		SQLTemplate c1 = (SQLTemplate) clone;
+
+		assertNotSame(o, c1);
+		assertEquals(o.getRoot(), c1.getRoot());
+		assertEquals(o.getDefaultTemplate(), c1.getDefaultTemplate());
 
 		// set immutable parameters ... query must recast them to mutable
 		// version
 		o.setParams(Collections.<String, Object> emptyMap());
 
-        HessianUtil.cloneViaClientServerSerialization(o, new EntityResolver());
-    }
+		HessianUtil.cloneViaClientServerSerialization(o, new EntityResolver());
+	}
 }

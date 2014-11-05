@@ -60,10 +60,8 @@ public class CayenneIT extends ServerCase {
     protected TableHelper tCompoundPKTest;
     protected TableHelper tCharPKTest;
 
-
-	@Override
-	public void setUp() throws Exception {		
-		super.setUp();
+    @Override
+    protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("PAINTING_INFO");
         dbHelper.deleteAll("PAINTING");
         dbHelper.deleteAll("ARTIST_EXHIBIT");
@@ -84,9 +82,8 @@ public class CayenneIT extends ServerCase {
 
         tCharPKTest = new TableHelper(dbHelper, "CHAR_PK_TEST");
         tCharPKTest.setColumns("PK_COL", "OTHER_COL");
-	}
-    
-    
+    }
+
     private void createOneCompoundPK() throws Exception {
         tCompoundPKTest.insert("PK1", "PK2", "BBB");
     }
@@ -163,7 +160,7 @@ public class CayenneIT extends ServerCase {
                 object instanceof Number);
         assertEquals(2, ((Number) object).intValue());
     }
-    
+
     @Test
     public void testMakePath() {
         assertEquals("", Cayenne.makePath());
@@ -199,7 +196,7 @@ public class CayenneIT extends ServerCase {
         assertTrue(object instanceof Artist);
         assertEquals("artist2", ((Artist) object).getArtistName());
     }
-    
+
     @Test
     public void testObjectForQueryNoObject() throws Exception {
 

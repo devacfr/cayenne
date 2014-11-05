@@ -82,7 +82,8 @@ public class CayenneContextValidationIT extends ClientCase {
         try {
             context.commitChanges();
             fail("Validation failure must have prevented commit");
-        } catch (ValidationException e) {
+        }
+        catch (ValidationException e) {
             // expected
         }
     }

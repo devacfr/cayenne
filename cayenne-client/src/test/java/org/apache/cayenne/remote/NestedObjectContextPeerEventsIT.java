@@ -35,7 +35,7 @@ public class NestedObjectContextPeerEventsIT extends RemoteCayenneCase {
 
     @Inject
     private ClientRuntime runtime;
-
+    
     @Inject
     private DBHelper dbHelper;
 
@@ -89,7 +89,9 @@ public class NestedObjectContextPeerEventsIT extends RemoteCayenneCase {
         peer1.commitChangesToParent();
         assertEquals("Y", a2.getGlobalAttribute1());
 
-        assertFalse("Peer data context became dirty on event processing", peer2.hasChanges());
+        assertFalse(
+                "Peer data context became dirty on event processing",
+                peer2.hasChanges());
     }
 
     @Test
@@ -118,7 +120,9 @@ public class NestedObjectContextPeerEventsIT extends RemoteCayenneCase {
         peer1.commitChangesToParent();
         assertEquals(altA2, p2.getTable1());
 
-        assertFalse("Peer data context became dirty on event processing", peer2.hasChanges());
+        assertFalse(
+                "Peer data context became dirty on event processing",
+                peer2.hasChanges());
     }
 
     @Test
@@ -150,6 +154,8 @@ public class NestedObjectContextPeerEventsIT extends RemoteCayenneCase {
         assertEquals(2, a2.getTable2Array().size());
         assertTrue(a2.getTable2Array().contains(py2));
 
-        assertFalse("Peer data context became dirty on event processing", peer2.hasChanges());
+        assertFalse(
+                "Peer data context became dirty on event processing",
+                peer2.hasChanges());
     }
 }

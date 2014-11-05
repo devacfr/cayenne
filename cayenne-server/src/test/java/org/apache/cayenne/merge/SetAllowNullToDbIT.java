@@ -29,7 +29,7 @@ import org.junit.Test;
 @CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class SetAllowNullToDbIT extends MergeCase {
 
-	@Test
+    @Test
     public void test() throws Exception {
         DbEntity dbEntity = map.getDbEntity("PAINTING");
         assertNotNull(dbEntity);

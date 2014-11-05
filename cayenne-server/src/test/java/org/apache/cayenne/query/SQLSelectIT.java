@@ -59,6 +59,7 @@ public class SQLSelectIT extends ServerCase {
 		}
 	}
 
+    @Test
 	public void test_DataRows_DataMapNameRoot() throws Exception {
 
 		createArtistsDataSet();
@@ -71,7 +72,7 @@ public class SQLSelectIT extends ServerCase {
 		assertTrue(result.get(0) instanceof DataRow);
 	}
 
-	@Test
+    @Test
 	public void test_DataRows_DefaultRoot() throws Exception {
 
 		createArtistsDataSet();
@@ -84,7 +85,7 @@ public class SQLSelectIT extends ServerCase {
 		assertTrue(result.get(0) instanceof DataRow);
 	}
 
-	@Test
+    @Test
 	public void test_DataRows_ClassRoot() throws Exception {
 
 		createArtistsDataSet();
@@ -96,7 +97,7 @@ public class SQLSelectIT extends ServerCase {
 		assertTrue(result.get(0) instanceof Artist);
 	}
 
-	@Test
+    @Test
 	public void test_DataRows_ClassRoot_Parameters() throws Exception {
 
 		createArtistsDataSet();
@@ -109,7 +110,7 @@ public class SQLSelectIT extends ServerCase {
 		assertEquals("artist3", a.getArtistName());
 	}
 
-	@Test
+    @Test
 	public void test_DataRows_ClassRoot_Bind() throws Exception {
 
 		createArtistsDataSet();
@@ -122,7 +123,7 @@ public class SQLSelectIT extends ServerCase {
 		assertEquals(2, result.size());
 	}
 
-	@Test
+    @Test
 	public void test_DataRows_ColumnNameCaps() throws Exception {
 
 		SQLSelect<DataRow> q1 = SQLSelect.dataRowQuery("SELECT * FROM ARTIST WHERE ARTIST_NAME = 'artist2'");
@@ -136,7 +137,7 @@ public class SQLSelectIT extends ServerCase {
 		assertEquals(CapsStrategy.LOWER, r2.getColumnNamesCapitalization());
 	}
 
-	@Test
+    @Test
 	public void test_DataRows_FetchLimit() throws Exception {
 
 		createArtistsDataSet();
@@ -147,7 +148,7 @@ public class SQLSelectIT extends ServerCase {
 		assertEquals(5, context.select(q1).size());
 	}
 
-	@Test
+    @Test
 	public void test_DataRows_FetchOffset() throws Exception {
 
 		createArtistsDataSet();
@@ -158,7 +159,7 @@ public class SQLSelectIT extends ServerCase {
 		assertEquals(16, context.select(q1).size());
 	}
 
-	@Test
+    @Test
 	public void test_Append() throws Exception {
 
 		createArtistsDataSet();
@@ -170,7 +171,7 @@ public class SQLSelectIT extends ServerCase {
 		assertEquals(1, result.size());
 	}
 
-	@Test
+    @Test
 	public void test_Select() throws Exception {
 
 		createArtistsDataSet();
@@ -181,7 +182,7 @@ public class SQLSelectIT extends ServerCase {
 		assertEquals(1, result.size());
 	}
 
-	@Test
+    @Test
 	public void test_SelectOne() throws Exception {
 
 		createArtistsDataSet();
@@ -192,7 +193,7 @@ public class SQLSelectIT extends ServerCase {
 		assertEquals("artist3", a.getArtistName());
 	}
 
-	@Test
+    @Test
 	public void test_SelectLong() throws Exception {
 
 		createArtistsDataSet();
@@ -203,7 +204,7 @@ public class SQLSelectIT extends ServerCase {
 		assertEquals(3l, id);
 	}
 
-	@Test
+    @Test
 	public void test_SelectLongArray() throws Exception {
 
 		createArtistsDataSet();
@@ -215,7 +216,7 @@ public class SQLSelectIT extends ServerCase {
 		assertEquals(2l, ids.get(1).longValue());
 	}
 
-	@Test
+    @Test
 	public void test_SelectCount() throws Exception {
 
 		createArtistsDataSet();
@@ -225,7 +226,7 @@ public class SQLSelectIT extends ServerCase {
 		assertEquals(20, c);
 	}
 
-	@Test
+    @Test
 	public void testSQLTemplate_PositionalParams() throws Exception {
 
 		createArtistsDataSet();

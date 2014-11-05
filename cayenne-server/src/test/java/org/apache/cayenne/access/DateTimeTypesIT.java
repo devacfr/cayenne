@@ -64,7 +64,7 @@ public class DateTimeTypesIT extends ServerCase {
         test.setCalendarField(cal);
         context.commitChanges();
 
-        SelectQuery<CalendarEntity> q = new SelectQuery<CalendarEntity>(CalendarEntity.class);
+        SelectQuery q = new SelectQuery(CalendarEntity.class);
         CalendarEntity testRead = (CalendarEntity) context.performQuery(q).get(0);
         assertNotNull(testRead.getCalendarField());
         assertEquals(cal, testRead.getCalendarField());
@@ -84,7 +84,7 @@ public class DateTimeTypesIT extends ServerCase {
         test.setDateColumn(nowDate);
         context.commitChanges();
 
-        SelectQuery<DateTestEntity> q = new SelectQuery<DateTestEntity>(DateTestEntity.class);
+        SelectQuery q = new SelectQuery(DateTestEntity.class);
         DateTestEntity testRead = (DateTestEntity) context.performQuery(q).get(0);
         assertNotNull(testRead.getDateColumn());
         assertEquals(nowDate, testRead.getDateColumn());
@@ -102,7 +102,7 @@ public class DateTimeTypesIT extends ServerCase {
         test.setTimeColumn(nowTime);
         context.commitChanges();
 
-        SelectQuery<DateTestEntity> q = new SelectQuery<DateTestEntity>(DateTestEntity.class);
+        SelectQuery q = new SelectQuery(DateTestEntity.class);
         DateTestEntity testRead = (DateTestEntity) context.performQuery(q).get(0);
         assertNotNull(testRead.getTimeColumn());
         assertEquals(Date.class, testRead.getTimeColumn().getClass());
@@ -131,7 +131,7 @@ public class DateTimeTypesIT extends ServerCase {
         test.setTimestampColumn(now);
         context.commitChanges();
 
-        SelectQuery<DateTestEntity> q = new SelectQuery<DateTestEntity>(DateTestEntity.class);
+        SelectQuery q = new SelectQuery(DateTestEntity.class);
         DateTestEntity testRead = (DateTestEntity) context.performQuery(q).get(0);
         assertNotNull(testRead.getTimestampColumn());
         assertEquals(now, testRead.getTimestampColumn());

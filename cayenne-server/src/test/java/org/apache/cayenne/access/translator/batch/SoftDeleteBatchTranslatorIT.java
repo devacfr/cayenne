@@ -175,3 +175,4 @@ public class SoftDeleteBatchTranslatorIT extends ServerCase {
     }
 
 }
+

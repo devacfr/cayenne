@@ -612,7 +612,7 @@ public class DataContextIT extends ServerCase {
     }
 
     @Test
-    public void testIterate() throws Exception {
+	public void testIterate() throws Exception {
 
 		createArtistsDataSet();
 

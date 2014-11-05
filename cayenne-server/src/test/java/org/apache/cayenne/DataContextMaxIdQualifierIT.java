@@ -173,7 +173,7 @@ public class DataContextMaxIdQualifierIT extends ServerCase {
 
         assertEquals(21, queriesCount);
     }
-    
+
     @Test
     public void testIncrementalFaultList_Higher() throws Exception {
         insertData_OneBag_100Boxes();

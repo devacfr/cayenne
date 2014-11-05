@@ -49,8 +49,7 @@ public class DataContextClobIT extends ServerCase {
     private DBHelper dbHelper;
 
     @Override
-    public void setUp() throws Exception {
-    	super.setUp();
+    protected void setUpAfterInjection() throws Exception {
         if (accessStackAdapter.supportsLobs()) {
             dbHelper.deleteAll("CLOB_TEST");
         }
@@ -107,7 +106,7 @@ public class DataContextClobIT extends ServerCase {
         context.commitChanges();
 
         // read the CLOB in the new context
-        List<?> objects2 = context2.performQuery(new SelectQuery<ClobTestEntity>(ClobTestEntity.class));
+        List<?> objects2 = context2.performQuery(new SelectQuery(ClobTestEntity.class));
         assertEquals(1, objects2.size());
 
         ClobTestEntity clobObj2 = (ClobTestEntity) objects2.get(0);
@@ -119,7 +118,7 @@ public class DataContextClobIT extends ServerCase {
         context2.commitChanges();
 
         // read into yet another context and check for changes
-        List<?> objects3 = context3.performQuery(new SelectQuery<ClobTestEntity>(ClobTestEntity.class));
+        List<?> objects3 = context3.performQuery(new SelectQuery(ClobTestEntity.class));
         assertEquals(1, objects3.size());
 
         ClobTestEntity clobObj3 = (ClobTestEntity) objects3.get(0);
@@ -145,7 +144,7 @@ public class DataContextClobIT extends ServerCase {
         context.commitChanges();
 
         // read the CLOB in the new context
-        List<?> objects2 = context2.performQuery(new SelectQuery<ClobTestEntity>(ClobTestEntity.class));
+        List<?> objects2 = context2.performQuery(new SelectQuery(ClobTestEntity.class));
         assertEquals(1, objects2.size());
 
         ClobTestEntity clobObj2 = (ClobTestEntity) objects2.get(0);
@@ -156,7 +155,7 @@ public class DataContextClobIT extends ServerCase {
         context2.commitChanges();
 
         // read into yet another context and check for changes
-        List<?> objects3 = context3.performQuery(new SelectQuery<ClobTestEntity>(ClobTestEntity.class));
+        List<?> objects3 = context3.performQuery(new SelectQuery(ClobTestEntity.class));
         assertEquals(1, objects3.size());
 
         ClobTestEntity clobObj3 = (ClobTestEntity) objects3.get(0);

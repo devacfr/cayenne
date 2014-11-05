@@ -882,3 +882,5 @@ public class ReturnTypesMappingIT extends ServerCase {
         assertEquals(varcharValue, columnValue);
     }
 }
+
+

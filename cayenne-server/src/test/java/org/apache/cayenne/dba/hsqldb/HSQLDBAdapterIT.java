@@ -53,7 +53,7 @@ public class HSQLDBAdapterIT extends ServerCase {
         assertTrue(sql.indexOf("DOUBLE") > 0);
         assertEquals(-1, sql.indexOf("DOUBLE(22)"));
     }
-    
+
     @Test
     public void testCreateTableAddsCachedKeyword() {
         HSQLDBAdapter adapter = objectFactory.newInstance(

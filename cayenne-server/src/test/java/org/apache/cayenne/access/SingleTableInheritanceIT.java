@@ -158,7 +158,7 @@ public class SingleTableInheritanceIT extends ServerCase {
         create2PersonDataSet();
 
         // fetch on leaf, but match on a super attribute
-        SelectQuery<Manager> select = new SelectQuery<Manager>(Manager.class);
+        SelectQuery select = new SelectQuery(Manager.class);
         select.andQualifier(ExpressionFactory
                 .matchExp(AbstractPerson.NAME_PROPERTY, "E2"));
 
@@ -172,7 +172,7 @@ public class SingleTableInheritanceIT extends ServerCase {
         create2PersonDataSet();
 
         // fetch on leaf, but match on a super attribute
-        SelectQuery<Employee> select = new SelectQuery<Employee>(Employee.class);
+        SelectQuery select = new SelectQuery(Employee.class);
         select.addPrefetch(Employee.TO_DEPARTMENT_PROPERTY);
         select.andQualifier(ExpressionFactory
                 .matchExp(AbstractPerson.NAME_PROPERTY, "E2"));
@@ -187,7 +187,7 @@ public class SingleTableInheritanceIT extends ServerCase {
 
         create5PersonDataSet();
 
-        SelectQuery<AbstractPerson> select = new SelectQuery<AbstractPerson>(AbstractPerson.class);
+        SelectQuery select = new SelectQuery(AbstractPerson.class);
         select.addOrdering(
                 "db:" + AbstractPerson.PERSON_ID_PK_COLUMN,
                 SortOrder.ASCENDING);
@@ -236,7 +236,7 @@ public class SingleTableInheritanceIT extends ServerCase {
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (4, 'BB', 3)"));
 
-        SelectQuery<AbstractPerson> query = new SelectQuery<AbstractPerson>(AbstractPerson.class);
+        SelectQuery query = new SelectQuery(AbstractPerson.class);
         query.addPrefetch(AbstractPerson.NOTES_PROPERTY).setSemantics(
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
@@ -276,7 +276,7 @@ public class SingleTableInheritanceIT extends ServerCase {
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (4, 'BB', 3)"));
 
-        SelectQuery<AbstractPerson> query = new SelectQuery<AbstractPerson>(AbstractPerson.class);
+        SelectQuery query = new SelectQuery(AbstractPerson.class);
         query.addPrefetch(AbstractPerson.NOTES_PROPERTY);
 
         final AbstractPerson person = (AbstractPerson) Cayenne.objectForQuery(
@@ -315,7 +315,7 @@ public class SingleTableInheritanceIT extends ServerCase {
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (3, 'BB', 2)"));
 
-        SelectQuery<PersonNotes> query = new SelectQuery<PersonNotes>(PersonNotes.class);
+        SelectQuery query = new SelectQuery(PersonNotes.class);
         query.addPrefetch(PersonNotes.PERSON_PROPERTY);
         query.addOrdering(PersonNotes.NOTES_PROPERTY, SortOrder.ASCENDING);
 
@@ -342,7 +342,7 @@ public class SingleTableInheritanceIT extends ServerCase {
                 PersonNotes.class,
                 "INSERT INTO PERSON_NOTES (ID, NOTES, PERSON_ID) VALUES (3, 'AA', 3)"));
 
-        SelectQuery<PersonNotes> query = new SelectQuery<PersonNotes>(PersonNotes.class);
+        SelectQuery query = new SelectQuery(PersonNotes.class);
         query.addPrefetch(PersonNotes.PERSON_PROPERTY).setSemantics(
                 PrefetchTreeNode.JOINT_PREFETCH_SEMANTICS);
 
@@ -374,8 +374,7 @@ public class SingleTableInheritanceIT extends ServerCase {
         context.commitChanges();
         context.invalidateObjects(company, rep, employee);
 
-        SelectQuery<CustomerRepresentative> query = 
-        		new SelectQuery<CustomerRepresentative>(CustomerRepresentative.class);
+        SelectQuery query = new SelectQuery(CustomerRepresentative.class);
         List<?> reps = context2.performQuery(query);
 
         assertEquals(1, reps.size());
@@ -389,7 +388,7 @@ public class SingleTableInheritanceIT extends ServerCase {
     public void testEmployeeAddress() throws Exception {
         createEmployeeAddressDataSet();
 
-        List<?> addresses = context.performQuery(new SelectQuery<Address>(Address.class));
+        List<?> addresses = context.performQuery(new SelectQuery(Address.class));
 
         assertEquals(1, addresses.size());
         Address address = (Address) addresses.get(0);
@@ -403,7 +402,7 @@ public class SingleTableInheritanceIT extends ServerCase {
     public void testManagerAddress() throws Exception {
         createManagerAddressDataSet();
 
-        List<?> addresses = context.performQuery(new SelectQuery<Address>(Address.class));
+        List<?> addresses = context.performQuery(new SelectQuery(Address.class));
 
         assertEquals(1, addresses.size());
         Address address = (Address) addresses.get(0);
@@ -505,7 +504,6 @@ public class SingleTableInheritanceIT extends ServerCase {
     /**
      * Test for CAY-1009: Bogus runtime relationships can mess up commit.
      */
-    @Ignore
     @Test
     public void testCAY1009() {
 

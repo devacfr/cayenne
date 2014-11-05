@@ -39,6 +39,7 @@ public class MergerFactoryIT extends MergeCase {
     @Inject
     private DataContext context;
 
+    @Test
     public void testAddAndDropColumnToDb() throws Exception {
         DbEntity dbEntity = map.getDbEntity("PAINTING");
         assertNotNull(dbEntity);

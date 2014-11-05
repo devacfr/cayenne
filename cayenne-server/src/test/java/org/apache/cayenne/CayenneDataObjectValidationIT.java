@@ -40,6 +40,7 @@ public class CayenneDataObjectValidationIT extends ServerCase {
     @Inject
     private ObjectContext context;
 
+    @Test
     public void testValidateForSaveMandatoryToOneMissing() throws Exception {
 
         Exhibit exhibit = context.newObject(Exhibit.class);

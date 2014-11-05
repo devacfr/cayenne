@@ -85,7 +85,7 @@ public class DbGeneratorIT extends ServerCase {
         generator.setShouldCreateTables(false);
         assertFalse(generator.shouldCreateTables());
     }
-    
+
     @Test
     public void testDropPkSupport() throws Exception {
 

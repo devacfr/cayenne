@@ -46,8 +46,7 @@ public class DataContextBinaryPKIT extends ServerCase {
     private DBHelper dbHelper;
 
     @Override
-    public void setUp() throws Exception {
-    	super.setUp();
+    protected void setUpAfterInjection() throws Exception {
         if (accessStackAdapter.supportsBinaryPK()) {
             dbHelper.deleteAll("BINARY_PK_TEST2");
             dbHelper.deleteAll("BINARY_PK_TEST1");
@@ -86,7 +85,7 @@ public class DataContextBinaryPKIT extends ServerCase {
             context.invalidateObjects(master, detail);
 
             BinaryPKTest2 fetchedDetail = (BinaryPKTest2) context1.performQuery(
-                    new SelectQuery<BinaryPKTest2>(BinaryPKTest2.class)).get(0);
+                    new SelectQuery(BinaryPKTest2.class)).get(0);
 
             assertNotNull(fetchedDetail.readPropertyDirectly("toBinaryPKMaster"));
 

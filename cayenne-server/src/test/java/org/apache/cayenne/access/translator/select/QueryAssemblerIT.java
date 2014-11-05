@@ -44,15 +44,13 @@ public class QueryAssemblerIT extends ServerCase {
     private TstQueryAssembler qa;
 
     @Override
-    public void setUp() throws Exception {
-    	super.setUp();
+    protected void setUpAfterInjection() throws Exception {
         this.connection = dataSourceFactory.getSharedDataSource().getConnection();
         this.qa = new TstQueryAssembler(new SelectQuery<Object>(), dataNode, connection);
     }
 
     @Override
-    public void tearDown() throws Exception {
-    	super.tearDown();
+    protected void tearDownBeforeInjection() throws Exception {
         connection.close();
     }
 

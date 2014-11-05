@@ -50,13 +50,9 @@ public class CayenneContextClientChannelEventsIT extends ClientCase {
     private ClientRuntime runtime;
 
     private TableHelper tMtTable1;
-
     private TableHelper tMtTable2;
-
     private TableHelper tMtTable4;
-
     private TableHelper tMtTable5;
-
     private TableHelper tMtJoin45;
 
     @Override
@@ -185,7 +181,7 @@ public class CayenneContextClientChannelEventsIT extends ClientCase {
 
         o1.setGlobalAttribute1("X");
         c1.commitChanges();
-
+        
         // let the events propagate to peers
         Thread.sleep(500);
 
@@ -220,7 +216,7 @@ public class CayenneContextClientChannelEventsIT extends ClientCase {
                 new ObjectIdQuery(new ObjectId("MtTable1", "TABLE1_ID", 2)));
         o1.setTable1(o1r);
         c1.commitChanges();
-
+        
         // let the events propagate to peers
         Thread.sleep(500);
 
@@ -254,7 +250,7 @@ public class CayenneContextClientChannelEventsIT extends ClientCase {
         o1.addToTable2Array(o1r);
 
         c1.commitChanges();
-
+        
         // let the events propagate to peers
         Thread.sleep(500);
 

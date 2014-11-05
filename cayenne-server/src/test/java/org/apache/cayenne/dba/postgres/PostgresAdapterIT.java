@@ -33,7 +33,7 @@ public class PostgresAdapterIT extends ServerCase {
     
     @Inject
     private AdhocObjectFactory objectFactory;
-    
+
     @Test
     public void testCreateTableWithFloatAttributeWithScale () {
         PostgresAdapter adapter = objectFactory.newInstance(

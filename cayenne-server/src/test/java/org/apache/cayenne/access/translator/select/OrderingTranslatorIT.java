@@ -43,17 +43,14 @@ public class OrderingTranslatorIT extends ServerCase {
 
     private Connection connection;
 
-
     @Override
-    public void setUp() throws Exception {
-    	super.setUp();
-    	this.connection = dataSourceFactory.getSharedDataSource().getConnection();
+    protected void setUpAfterInjection() throws Exception {
+        this.connection = dataSourceFactory.getSharedDataSource().getConnection();
     }
 
     @Override
-    public void tearDown() throws Exception {
-    	super.tearDown();
-    	connection.close();
+    protected void tearDownBeforeInjection() throws Exception {
+        connection.close();
     }
 
     /**
@@ -61,7 +58,7 @@ public class OrderingTranslatorIT extends ServerCase {
      */
     @Test
     public void testDoTranslation1() throws Exception {
-        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
+        SelectQuery q = new SelectQuery(Artist.class);
         q.addOrdering("artistName", SortOrder.ASCENDING);
 
         TstQueryAssembler qa = new TstQueryAssembler(q, node, connection);
@@ -80,7 +77,7 @@ public class OrderingTranslatorIT extends ServerCase {
      */
     @Test
     public void testDoTranslation2() throws Exception {
-        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
+        SelectQuery q = new SelectQuery(Artist.class);
         q.addOrdering("artistName", SortOrder.DESCENDING);
 
         TstQueryAssembler qa = new TstQueryAssembler(q, node, connection);
@@ -99,7 +96,7 @@ public class OrderingTranslatorIT extends ServerCase {
      */
     @Test
     public void testDoTranslation4() throws Exception {
-        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
+        SelectQuery q = new SelectQuery(Artist.class);
         q.addOrdering("artistName", SortOrder.ASCENDING_INSENSITIVE);
 
         TstQueryAssembler qa = new TstQueryAssembler(q, node, connection);
@@ -117,7 +114,7 @@ public class OrderingTranslatorIT extends ServerCase {
 
     @Test
     public void testDoTranslation5() throws Exception {
-        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
+        SelectQuery q = new SelectQuery(Artist.class);
         q.addOrdering("artistName", SortOrder.DESCENDING_INSENSITIVE);
         q.addOrdering("paintingArray.estimatedPrice", SortOrder.ASCENDING);
 
@@ -142,7 +139,7 @@ public class OrderingTranslatorIT extends ServerCase {
 
     @Test
     public void testDoTranslation6() throws Exception {
-        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
+        SelectQuery q = new SelectQuery(Artist.class);
         q.addOrdering("artistName", SortOrder.ASCENDING_INSENSITIVE);
         q.addOrdering("paintingArray.estimatedPrice", SortOrder.ASCENDING_INSENSITIVE);
 
@@ -169,7 +166,7 @@ public class OrderingTranslatorIT extends ServerCase {
 
     @Test
     public void testDoTranslation3() throws Exception {
-        SelectQuery<Artist> q = new SelectQuery<Artist>(Artist.class);
+        SelectQuery q = new SelectQuery(Artist.class);
 
         q.addOrdering("artistName", SortOrder.DESCENDING);
         q.addOrdering("paintingArray.estimatedPrice", SortOrder.ASCENDING);

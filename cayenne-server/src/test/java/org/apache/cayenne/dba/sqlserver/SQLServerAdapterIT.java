@@ -33,7 +33,7 @@ public class SQLServerAdapterIT extends ServerCase {
     
     @Inject
     private AdhocObjectFactory objectFactory;
-    
+
     @Test
     public void testCreateTableWithFloatAttributeWithScale () {
         SQLServerAdapter adapter = objectFactory.newInstance(

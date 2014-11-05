@@ -57,7 +57,7 @@ public class Expression_InContextIT extends ServerCase {
 		dbHelper.deleteAll("GALLERY");
 	}
 
-	@Test
+    @Test
 	public void testMatch() {
 
 		assertTrue(context instanceof DataContext);
@@ -107,7 +107,7 @@ public class Expression_InContextIT extends ServerCase {
 		assertFalse(ex.match(objects.get(0)));
 	}
 
-	@Test
+    @Test
 	public void testFirst() {
 		List<Painting> paintingList = new ArrayList<Painting>();
 		Painting p1 = context.newObject(Painting.class);

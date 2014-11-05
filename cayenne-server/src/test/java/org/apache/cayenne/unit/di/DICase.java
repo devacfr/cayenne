@@ -56,7 +56,7 @@ public abstract class DICase extends TestCase {
      */
     @Deprecated()
     protected void setUpAfterInjection() throws Exception {
-    
+        // noop
     }
 
     /**
@@ -66,8 +66,6 @@ public abstract class DICase extends TestCase {
      */
     @Deprecated()
     protected void tearDownBeforeInjection() throws Exception {
-        
+        // noop
     }
-    
-
 }

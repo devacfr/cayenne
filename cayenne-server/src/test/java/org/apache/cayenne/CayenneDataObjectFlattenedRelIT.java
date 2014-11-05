@@ -58,10 +58,9 @@ public class CayenneDataObjectFlattenedRelIT extends ServerCase {
 
     private TableHelper tArtistGroup;
 
-	@Override
-	public void setUp() throws Exception {
-		super.setUp();
-		dbHelper.deleteAll("PAINTING_INFO");
+    @Override
+    protected void setUpAfterInjection() throws Exception {
+        dbHelper.deleteAll("PAINTING_INFO");
         dbHelper.deleteAll("PAINTING");
         dbHelper.deleteAll("ARTIST_EXHIBIT");
         dbHelper.deleteAll("ARTIST_GROUP");
@@ -77,9 +76,8 @@ public class CayenneDataObjectFlattenedRelIT extends ServerCase {
 
         tArtistGroup = new TableHelper(dbHelper, "ARTIST_GROUP");
         tArtistGroup.setColumns("ARTIST_ID", "GROUP_ID");
-	}
-    
-    
+    }
+
     private void create1Artist1ArtGroupDataSet() throws Exception {
         tArtist.insert(33001, "artist1");
         tArtGroup.insert(1, "g1");
@@ -126,7 +124,7 @@ public class CayenneDataObjectFlattenedRelIT extends ServerCase {
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
         assertEquals(0, a1.getGroupArray().size());
 
-        SelectQuery<ArtGroup> q = new SelectQuery<ArtGroup>(ArtGroup.class, ExpressionFactory.matchExp(
+        SelectQuery q = new SelectQuery(ArtGroup.class, ExpressionFactory.matchExp(
                 "name",
                 "g1"));
         List<?> results = context.performQuery(q);
@@ -162,7 +160,7 @@ public class CayenneDataObjectFlattenedRelIT extends ServerCase {
 
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
 
-        SelectQuery<ArtGroup> q = new SelectQuery<ArtGroup>(ArtGroup.class, ExpressionFactory.matchExp(
+        SelectQuery q = new SelectQuery(ArtGroup.class, ExpressionFactory.matchExp(
                 "name",
                 "g1"));
         List<?> results = context.performQuery(q);
@@ -238,7 +236,7 @@ public class CayenneDataObjectFlattenedRelIT extends ServerCase {
 
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
 
-        SelectQuery<ArtGroup> q = new SelectQuery<ArtGroup>(ArtGroup.class, ExpressionFactory.matchExp(
+        SelectQuery q = new SelectQuery(ArtGroup.class, ExpressionFactory.matchExp(
                 "name",
                 "g1"));
         List<?> results = context.performQuery(q);
@@ -262,7 +260,7 @@ public class CayenneDataObjectFlattenedRelIT extends ServerCase {
 
         Artist a1 = Cayenne.objectForPK(context, Artist.class, 33001);
 
-        SelectQuery<ArtGroup> q = new SelectQuery<ArtGroup>(ArtGroup.class);
+        SelectQuery q = new SelectQuery(ArtGroup.class);
         List<?> results = context.performQuery(q);
         assertEquals(2, results.size());
 

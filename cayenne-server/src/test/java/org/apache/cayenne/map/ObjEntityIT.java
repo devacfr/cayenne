@@ -291,6 +291,7 @@ public class ObjEntityIT extends ServerCase {
         assertEquals(e1.getRelationships().size(), e2.getRelationships().size());
     }
 
+    @Test
     public void testSerializability() throws Exception {
         ObjEntity entity = new ObjEntity("entity");
 
@@ -298,6 +299,7 @@ public class ObjEntityIT extends ServerCase {
         assertEquals(entity.getName(), d1.getName());
     }
 
+    @Test
     public void testDbEntityName() {
         ObjEntity entity = new ObjEntity("entity");
         assertNull(entity.getDbEntityName());
@@ -309,6 +311,7 @@ public class ObjEntityIT extends ServerCase {
         assertNull(entity.getDbEntityName());
     }
 
+    @Test
     public void testDbEntity() {
         ObjEntity entity = new ObjEntity("entity");
         DbEntity dbentity = new DbEntity("dbe");
@@ -330,6 +333,7 @@ public class ObjEntityIT extends ServerCase {
         assertSame(dbentity, entity.getDbEntity());
     }
 
+    @Test
     public void testDbEntityNoContainer() {
         ObjEntity entity = new ObjEntity("entity");
         entity.setDbEntityName("dbe");
@@ -342,6 +346,7 @@ public class ObjEntityIT extends ServerCase {
         }
     }
 
+    @Test
     public void testClassName() {
         ObjEntity entity = new ObjEntity("entity");
         String tstName = "tst_name";
@@ -349,6 +354,7 @@ public class ObjEntityIT extends ServerCase {
         assertEquals(tstName, entity.getClassName());
     }
 
+    @Test
     public void testSuperClassName() {
         ObjEntity entity = new ObjEntity("entity");
         String tstName = "super_tst_name";
@@ -356,6 +362,7 @@ public class ObjEntityIT extends ServerCase {
         assertEquals(tstName, entity.getSuperClassName());
     }
 
+    @Test
     public void testAttributeForDbAttribute() throws Exception {
         ObjEntity ae = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
         DbEntity dae = ae.getDbEntity();
@@ -364,6 +371,7 @@ public class ObjEntityIT extends ServerCase {
         assertNotNull(ae.getAttributeForDbAttribute(dae.getAttribute("ARTIST_NAME")));
     }
 
+    @Test
     public void testRelationshipForDbRelationship() throws Exception {
         ObjEntity ae = runtime.getDataDomain().getEntityResolver().getObjEntity("Artist");
         DbEntity dae = ae.getDbEntity();
@@ -372,6 +380,7 @@ public class ObjEntityIT extends ServerCase {
         assertNotNull(ae.getRelationshipForDbRelationship(dae.getRelationship("paintingArray")));
     }
 
+    @Test
     public void testReadOnly() throws Exception {
         ObjEntity entity = new ObjEntity("entity");
         assertFalse(entity.isReadOnly());
@@ -379,6 +388,7 @@ public class ObjEntityIT extends ServerCase {
         assertTrue(entity.isReadOnly());
     }
 
+    @Test
     public void testTranslateToRelatedEntityIndependentPath() throws Exception {
         ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity(Artist.class);
 
@@ -387,6 +397,7 @@ public class ObjEntityIT extends ServerCase {
         assertEquals("failure: " + translated, Expression.fromString("db:toArtist.paintingArray"), translated);
     }
 
+    @Test
     public void testTranslateToRelatedEntityTrimmedPath() throws Exception {
         ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity(Artist.class);
 
@@ -396,6 +407,7 @@ public class ObjEntityIT extends ServerCase {
                 translated);
     }
 
+    @Test
     public void testTranslateToRelatedEntitySplitHalfWay() throws Exception {
         ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity(Artist.class);
 
@@ -405,6 +417,7 @@ public class ObjEntityIT extends ServerCase {
                 Expression.fromString("db:paintingArray.toArtist.paintingArray.toPaintingInfo.TEXT_REVIEW"), translated);
     }
 
+    @Test
     public void testTranslateToRelatedEntityMatchingPath() throws Exception {
         ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity(Artist.class);
         Expression e1 = Expression.fromString("artistExhibitArray.toExhibit");
@@ -413,6 +426,7 @@ public class ObjEntityIT extends ServerCase {
                 Expression.fromString("db:artistExhibitArray.toArtist.artistExhibitArray.toExhibit"), translated);
     }
 
+    @Test
     public void testTranslateToRelatedEntityMultiplePaths() throws Exception {
         ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity(Artist.class);
 
@@ -421,7 +435,8 @@ public class ObjEntityIT extends ServerCase {
         assertEquals("failure: " + translated, Expression.fromString("db:toArtist.paintingArray = $p "
                 + "and db:toArtist.artistExhibitArray.toExhibit.CLOSING_DATE = $d"), translated);
     }
-    
+
+    @Test
     public void testTranslateToRelatedEntityOuterJoin_Flattened() throws Exception {
         ObjEntity artistE = runtime.getDataDomain().getEntityResolver().getObjEntity(Artist.class);
 
@@ -430,6 +445,7 @@ public class ObjEntityIT extends ServerCase {
         assertEquals("failure: " + translated, Expression.fromString("db:toArtist.artistGroupArray+.toGroup+.NAME"), translated);
     }
 
+    @Test
     public void testTranslateNullArg() {
         ObjEntity entity = context.getEntityResolver().getObjEntity("Artist");
 

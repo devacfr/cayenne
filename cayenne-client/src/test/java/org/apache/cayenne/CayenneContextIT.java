@@ -258,17 +258,17 @@ public class CayenneContextIT extends ClientCase {
         when(connection.sendMessage((ClientMessage) any())).thenAnswer(
                 new Answer<Object>() {
 
-            public Object answer(InvocationOnMock invocation) {
-                ClientMessage arg = (ClientMessage) invocation.getArguments()[0];
+                    public Object answer(InvocationOnMock invocation) {
+                        ClientMessage arg = (ClientMessage) invocation.getArguments()[0];
 
-                if (arg instanceof BootstrapMessage) {
-                    return new EntityResolver();
+                        if (arg instanceof BootstrapMessage) {
+                            return new EntityResolver();
                         }
                         else {
-                    return new GenericResponse(Arrays.asList(inflated));
-                }
-            }
-        });
+                            return new GenericResponse(Arrays.asList(inflated));
+                        }
+                    }
+                });
 
         ClientChannel channel = new ClientChannel(
                 connection,
@@ -324,17 +324,17 @@ public class CayenneContextIT extends ClientCase {
         when(connection.sendMessage((ClientMessage) any())).thenAnswer(
                 new Answer<Object>() {
 
-            public Object answer(InvocationOnMock invocation) {
-                ClientMessage arg = (ClientMessage) invocation.getArguments()[0];
+                    public Object answer(InvocationOnMock invocation) {
+                        ClientMessage arg = (ClientMessage) invocation.getArguments()[0];
 
-                if (arg instanceof BootstrapMessage) {
-                    return new EntityResolver();
+                        if (arg instanceof BootstrapMessage) {
+                            return new EntityResolver();
                         }
                         else {
-                    return new GenericResponse(Arrays.asList(inflated));
-                }
-            }
-        });
+                            return new GenericResponse(Arrays.asList(inflated));
+                        }
+                    }
+                });
         ClientChannel channel = new ClientChannel(
                 connection,
                 false,

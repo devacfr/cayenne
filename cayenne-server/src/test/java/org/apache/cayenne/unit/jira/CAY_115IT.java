@@ -50,8 +50,8 @@ public class CAY_115IT extends ServerCase {
     
     protected TableHelper tClobMaster;
     protected TableHelper tClobDetail;
-
-
+    
+    @Override
     protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("CLOB_DETAIL");
         dbHelper.deleteAll("CLOB_MASTER");

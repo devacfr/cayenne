@@ -37,7 +37,7 @@ public class CayenneContextPrimitiveIT extends ClientCase {
 
     @Inject
     private CayenneContext context;
-
+    
     @Inject
     private UnitDbAdapter accessStackAdapter;
 
@@ -51,12 +51,12 @@ public class CayenneContextPrimitiveIT extends ClientCase {
         dbHelper.deleteAll("MT_TABLE_PRIMITIVES");
 
         int bool = accessStackAdapter.supportsBoolean() ? Types.BOOLEAN : Types.INTEGER;
-
+        
         tMtTablePrimitives = new TableHelper(dbHelper, "MT_TABLE_PRIMITIVES");
         tMtTablePrimitives.setColumns("ID", "BOOLEAN_COLUMN", "INT_COLUMN").setColumnTypes(
                 Types.INTEGER,
-            bool,
-            Types.INTEGER);
+                bool,
+                Types.INTEGER);
     }
 
     private void createTwoPrimitivesDataSet() throws Exception {

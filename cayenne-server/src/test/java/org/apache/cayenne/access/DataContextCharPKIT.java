@@ -40,9 +40,7 @@ public class DataContextCharPKIT extends ServerCase {
     private DBHelper dbHelper;
 
     @Override
-    @Test
-    public void setUp() throws Exception {
-    	super.setUp();
+    protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("CHAR_FK_TEST");
         dbHelper.deleteAll("CHAR_PK_TEST");
     }

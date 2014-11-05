@@ -74,7 +74,8 @@ public class LightSuperClassIT extends RemoteCayenneCase {
     private ObjectContext createContext() {
         if (server) {
             return serverContext;
-        } else {
+        }
+        else {
             return createROPContext();
         }
     }
@@ -103,7 +104,7 @@ public class LightSuperClassIT extends RemoteCayenneCase {
         context.commitChanges();
         context.performQuery(new RefreshQuery());
 
-        assertEquals(context.performQuery(new SelectQuery<Country>(Country.class)).size(), 0);
-        assertEquals(context.performQuery(new SelectQuery<Continent>(Continent.class)).size(), 1);
+        assertEquals(context.performQuery(new SelectQuery(Country.class)).size(), 0);
+        assertEquals(context.performQuery(new SelectQuery(Continent.class)).size(), 1);
     }
 }

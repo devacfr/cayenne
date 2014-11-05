@@ -39,7 +39,7 @@ public class NestedDataContextPeerEventsIT extends ServerCase {
 	@Inject
 	private ServerRuntime runtime;
 
-	@Test
+    @Test
 	public void testPeerObjectUpdatedTempOID() throws Exception {
 
 		ObjectContext peer1 = runtime.newContext(context);
@@ -68,7 +68,7 @@ public class NestedDataContextPeerEventsIT extends ServerCase {
 		}.runTest(2000);
 	}
 
-	@Test
+    @Test
 	public void testPeerObjectUpdatedSimpleProperty() throws Exception {
 		Artist a = context.newObject(Artist.class);
 		a.setArtistName("X");
@@ -98,7 +98,7 @@ public class NestedDataContextPeerEventsIT extends ServerCase {
 
 	}
 
-	@Test
+    @Test
 	public void testPeerObjectUpdatedToOneRelationship() throws Exception {
 
 		Artist a = context.newObject(Artist.class);
@@ -139,7 +139,7 @@ public class NestedDataContextPeerEventsIT extends ServerCase {
 
 	}
 
-	@Test
+    @Test
 	public void testPeerObjectUpdatedToManyRelationship() throws Exception {
 
 		Artist a = context.newObject(Artist.class);

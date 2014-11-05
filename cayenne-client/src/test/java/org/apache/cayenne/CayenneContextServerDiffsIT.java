@@ -49,9 +49,9 @@ public class CayenneContextServerDiffsIT extends ClientCase {
 
             callbackRegistry.addListener(
                     LifecycleEvent.POST_ADD,
-                MtTable1.class,
-                new ClientChannelServerDiffsListener1(),
-                "prePersist");
+                    MtTable1.class,
+                    new ClientChannelServerDiffsListener1(),
+                    "prePersist");
 
             ClientMtTable1 o = context.newObject(ClientMtTable1.class);
             o.setServerAttribute1("YY");
@@ -76,9 +76,9 @@ public class CayenneContextServerDiffsIT extends ClientCase {
 
             callbackRegistry.addListener(
                     LifecycleEvent.PRE_UPDATE,
-                MtTable1.class,
-                new ClientChannelServerDiffsListener1(),
-                "preUpdate");
+                    MtTable1.class,
+                    new ClientChannelServerDiffsListener1(),
+                    "preUpdate");
 
             ClientMtTable1 o = context.newObject(ClientMtTable1.class);
             o.setServerAttribute1("YY");
@@ -108,9 +108,9 @@ public class CayenneContextServerDiffsIT extends ClientCase {
         try {
             callbackRegistry.addListener(
                     LifecycleEvent.POST_ADD,
-                MtTable1.class,
-                new ClientChannelServerDiffsListener1(),
-                "prePersist");
+                    MtTable1.class,
+                    new ClientChannelServerDiffsListener1(),
+                    "prePersist");
 
             ClientMtTable1 o = context.newObject(ClientMtTable1.class);
             ClientMtTable2 o1 = context.newObject(ClientMtTable2.class);
@@ -136,9 +136,9 @@ public class CayenneContextServerDiffsIT extends ClientCase {
         try {
             callbackRegistry.addListener(
                     LifecycleEvent.POST_ADD,
-                MtTable1.class,
-                new ClientChannelServerDiffsListener1(),
-                "prePersistAddRelationship");
+                    MtTable1.class,
+                    new ClientChannelServerDiffsListener1(),
+                    "prePersistAddRelationship");
 
             ClientMtTable1 o = context.newObject(ClientMtTable1.class);
             ClientMtTable2 o1 = context.newObject(ClientMtTable2.class);

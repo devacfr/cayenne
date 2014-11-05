@@ -71,38 +71,31 @@ public class UserTransactionIT extends ServerCase {
             this.delegate = delegate;
         }
 
-        @Override
         public void begin() {
             delegate.begin();
         }
 
-        @Override
         public void commit() {
             commitCount++;
             delegate.commit();
         }
 
-        @Override
         public void rollback() {
             delegate.rollback();
         }
 
-        @Override
         public void setRollbackOnly() {
             delegate.setRollbackOnly();
         }
 
-        @Override
         public boolean isRollbackOnly() {
             return delegate.isRollbackOnly();
         }
 
-        @Override
         public Connection getConnection(String name) {
             return delegate.getConnection(name);
         }
 
-        @Override
         public void addConnection(String name, Connection connection) {
             connectionCount++;
             delegate.addConnection(name, connection);

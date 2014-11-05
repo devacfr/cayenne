@@ -32,7 +32,7 @@ public class IncrementalFaultListIT extends ServerCase {
 	@Inject
 	protected DataContext context;
 
-	@Test
+    @Test
 	public void testSerialization() throws Exception {
 		SelectQuery query = new SelectQuery(Artist.class);
 		query.setPageSize(10);

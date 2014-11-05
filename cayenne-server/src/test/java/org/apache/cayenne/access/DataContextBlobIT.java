@@ -50,8 +50,7 @@ public class DataContextBlobIT extends ServerCase {
     private DBHelper dbHelper;
 
     @Override
-    public void setUp() throws Exception {
-    	super.setUp();
+    protected void setUpAfterInjection() throws Exception {
         if (accessStackAdapter.supportsLobs()) {
             dbHelper.deleteAll("BLOB_TEST");
         }
@@ -64,7 +63,7 @@ public class DataContextBlobIT extends ServerCase {
     protected boolean skipEmptyLOBTests() {
         return !accessStackAdapter.handlesNullVsEmptyLOBs();
     }
-    
+
     @Test
     public void testManyBlobsInOneTX() throws Exception {
         if (skipTests()) {
@@ -139,7 +138,7 @@ public class DataContextBlobIT extends ServerCase {
 
         // read the BLOB in the new context
 
-        List<?> objects2 = context2.performQuery(new SelectQuery<BlobTestEntity>(BlobTestEntity.class));
+        List<?> objects2 = context2.performQuery(new SelectQuery(BlobTestEntity.class));
         assertEquals(1, objects2.size());
 
         BlobTestEntity blobObj2 = (BlobTestEntity) objects2.get(0);
@@ -150,7 +149,7 @@ public class DataContextBlobIT extends ServerCase {
         context2.commitChanges();
 
         // read into yet another context and check for changes
-        List<?> objects3 = context3.performQuery(new SelectQuery<BlobTestEntity>(BlobTestEntity.class));
+        List<?> objects3 = context3.performQuery(new SelectQuery(BlobTestEntity.class));
         assertEquals(1, objects3.size());
 
         BlobTestEntity blobObj3 = (BlobTestEntity) objects3.get(0);
@@ -173,7 +172,7 @@ public class DataContextBlobIT extends ServerCase {
         context.commitChanges();
 
         // read the CLOB in the new context
-        List<?> objects2 = context2.performQuery(new SelectQuery<BlobTestEntity>(BlobTestEntity.class));
+        List<?> objects2 = context2.performQuery(new SelectQuery(BlobTestEntity.class));
         assertEquals(1, objects2.size());
 
         BlobTestEntity blobObj2 = (BlobTestEntity) objects2.get(0);
@@ -187,7 +186,7 @@ public class DataContextBlobIT extends ServerCase {
         context2.commitChanges();
 
         // read into yet another context and check for changes
-        List<?> objects3 = context3.performQuery(new SelectQuery<BlobTestEntity>(BlobTestEntity.class));
+        List<?> objects3 = context3.performQuery(new SelectQuery(BlobTestEntity.class));
         assertEquals(1, objects3.size());
 
         BlobTestEntity blobObj3 = (BlobTestEntity) objects3.get(0);

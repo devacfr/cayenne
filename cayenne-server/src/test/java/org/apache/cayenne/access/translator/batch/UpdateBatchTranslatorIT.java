@@ -67,8 +67,8 @@ public class UpdateBatchTranslatorIT extends ServerCase {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
 
-        List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
-        List<DbAttribute> updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
+        List idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
+        List updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
 
         UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes,
                 Collections.<String> emptySet(), 1);
@@ -85,11 +85,11 @@ public class UpdateBatchTranslatorIT extends ServerCase {
         DbEntity entity = runtime.getDataDomain().getEntityResolver().getObjEntity(SimpleLockingTestEntity.class)
                 .getDbEntity();
 
-        List<DbAttribute> idAttributes = Arrays.asList(entity.getAttribute("LOCKING_TEST_ID"), entity.getAttribute("NAME"));
+        List idAttributes = Arrays.asList(entity.getAttribute("LOCKING_TEST_ID"), entity.getAttribute("NAME"));
 
-        List<DbAttribute> updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
+        List updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
 
-        Collection<String> nullAttributes = Collections.singleton("NAME");
+        Collection nullAttributes = Collections.singleton("NAME");
 
         UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes, nullAttributes, 1);
 
@@ -109,8 +109,8 @@ public class UpdateBatchTranslatorIT extends ServerCase {
         try {
 
             entity.getDataMap().setQuotingSQLIdentifiers(true);
-            List<DbAttribute> idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
-            List<DbAttribute> updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
+            List idAttributes = Collections.singletonList(entity.getAttribute("LOCKING_TEST_ID"));
+            List updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
 
             UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes,
                     Collections.<String> emptySet(), 1);
@@ -138,11 +138,11 @@ public class UpdateBatchTranslatorIT extends ServerCase {
         try {
 
             entity.getDataMap().setQuotingSQLIdentifiers(true);
-            List<DbAttribute> idAttributes = Arrays.asList(entity.getAttribute("LOCKING_TEST_ID"), entity.getAttribute("NAME"));
+            List idAttributes = Arrays.asList(entity.getAttribute("LOCKING_TEST_ID"), entity.getAttribute("NAME"));
 
-            List<DbAttribute> updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
+            List updatedAttributes = Collections.singletonList(entity.getAttribute("DESCRIPTION"));
 
-            Collection<String> nullAttributes = Collections.singleton("NAME");
+            Collection nullAttributes = Collections.singleton("NAME");
 
             UpdateBatchQuery updateQuery = new UpdateBatchQuery(entity, idAttributes, updatedAttributes,
                     nullAttributes, 1);

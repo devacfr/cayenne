@@ -27,7 +27,7 @@ import org.junit.Test;
 @CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DefaultOperationObserverIT extends ServerCase {
 
-	@Test
+    @Test
     public void testHasExceptions1() throws Exception {
         DefaultOperationObserver observer = new DefaultOperationObserver();
         assertFalse(observer.hasExceptions());
@@ -35,7 +35,7 @@ public class DefaultOperationObserverIT extends ServerCase {
         assertTrue(observer.hasExceptions());
     }
 
-	@Test
+    @Test
     public void testHasExceptions2() throws Exception {
         DefaultOperationObserver observer = new DefaultOperationObserver();
         assertFalse(observer.hasExceptions());

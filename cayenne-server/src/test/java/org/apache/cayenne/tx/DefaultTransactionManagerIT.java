@@ -40,7 +40,6 @@ public class DefaultTransactionManagerIT extends ServerCase {
 
         final Object expectedResult = new Object();
         Object result = txManager.performInTransaction(new TransactionalOperation<Object>() {
-            @Override
             public Object perform() {
                 assertNotNull(BaseTransaction.getThreadTransaction());
                 return expectedResult;
@@ -65,7 +64,6 @@ public class DefaultTransactionManagerIT extends ServerCase {
 
             final Object expectedResult = new Object();
             Object result = txManager.performInTransaction(new TransactionalOperation<Object>() {
-                @Override
                 public Object perform() {
                     assertSame(tx2, BaseTransaction.getThreadTransaction());
                     return expectedResult;

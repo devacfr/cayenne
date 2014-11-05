@@ -135,7 +135,7 @@ public class MiscTypesIT extends ServerCase {
         test.setCharWrapperArray(null);
         context.commitChanges();
     }
-    
+
     @Test
     public void testCharacter() {
         CharacterEntity test = context.newObject(CharacterEntity.class);

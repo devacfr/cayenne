@@ -29,7 +29,7 @@ import org.junit.Test;
 @CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class SetPrimaryKeyToDbIT extends MergeCase {
 
-	@Test
+    @Test
     public void test() throws Exception {
         dropTableIfPresent("NEW_TABLE");
         assertTokensAndExecute(0, 0);

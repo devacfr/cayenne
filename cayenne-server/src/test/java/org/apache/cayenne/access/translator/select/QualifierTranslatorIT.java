@@ -53,14 +53,12 @@ public class QualifierTranslatorIT extends ServerCase {
     private Connection connection;
 
     @Override
-    public void setUp() throws Exception {
-    	super.setUp();
+    protected void setUpAfterInjection() throws Exception {
         this.connection = dataSourceFactory.getSharedDataSource().getConnection();
     }
 
     @Override
-    public void tearDown() throws Exception {
-    	super.tearDown();
+    protected void tearDownBeforeInjection() throws Exception {
         connection.close();
     }
 
@@ -131,7 +129,7 @@ public class QualifierTranslatorIT extends ServerCase {
 
                 ObjEntity entity = node.getEntityResolver().getObjEntity(cases[i].getRootEntity());
                 assertNotNull(entity);
-                SelectQuery<?> q = new SelectQuery<Object>(entity);
+                SelectQuery q = new SelectQuery(entity);
                 q.setQualifier(cases[i].getCayenneExp());
 
                 TstQueryAssembler qa = new TstQueryAssembler(q, node, connection);

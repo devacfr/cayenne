@@ -42,7 +42,6 @@ public class CayenneContextMapRelationshipIT extends ClientCase {
     private DBHelper dbHelper;
 
     private TableHelper tMtMapToMany;
-
     private TableHelper tMtMapToManyTarget;
 
     @Override

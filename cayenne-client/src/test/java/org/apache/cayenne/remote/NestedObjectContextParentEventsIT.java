@@ -33,7 +33,7 @@ public class NestedObjectContextParentEventsIT extends RemoteCayenneCase {
 
     @Inject
     private DBHelper dbHelper;
-
+    
     @Inject
     private ClientRuntime runtime;
 
@@ -60,7 +60,8 @@ public class NestedObjectContextParentEventsIT extends RemoteCayenneCase {
         ac.setGlobalAttribute1("X");
         child.commitChangesToParent();
 
-        ClientMtTable1 ap = (ClientMtTable1) clientContext.getGraphManager().getNode(ac.getObjectId());
+        ClientMtTable1 ap = (ClientMtTable1) clientContext.getGraphManager().getNode(
+                ac.getObjectId());
         assertNotNull(ap);
 
         assertTrue(ap.getObjectId().isTemporary());

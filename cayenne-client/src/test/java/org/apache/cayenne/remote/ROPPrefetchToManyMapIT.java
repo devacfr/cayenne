@@ -33,10 +33,10 @@ import org.junit.Test;
 
 @CayenneConfiguration("cayenne-multi-tier.xml")
 public class ROPPrefetchToManyMapIT extends RemoteCayenneCase {
-
+    
     @Inject
     private DBHelper dbHelper;
-
+    
     @Inject
     private DataChannelInterceptor queryInterceptor;
 
@@ -50,28 +50,27 @@ public class ROPPrefetchToManyMapIT extends RemoteCayenneCase {
     @Override
     public void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("MT_MAP_TO_MANY_TARGET");
-        dbHelper.deleteAll("MT_MAP_TO_MANY");
+        dbHelper.deleteAll("MT_MAP_TO_MANY");        
     }
 
     @Test
     public void test() throws Exception {
         ObjectContext context = createROPContext();
-
+        
         ClientMtMapToMany map = context.newObject(ClientMtMapToMany.class);
         ClientMtMapToManyTarget target = context.newObject(ClientMtMapToManyTarget.class);
         target.setMapToMany(map);
         context.commitChanges();
-
+        
         context.performQuery(new RefreshQuery());
-
-        SelectQuery query = new SelectQuery(ClientMtMapToMany.class);
+        
+        SelectQuery<ClientMtMapToMany> query = new SelectQuery<ClientMtMapToMany>(ClientMtMapToMany.class);
         query.addPrefetch("targets");
-
+        
         final ClientMtMapToMany mapToMany = (ClientMtMapToMany) Cayenne.objectForQuery(context, query);
-
+        
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
-
-            @Override
+            
             public void execute() {
                 assertEquals(mapToMany.getTargets().size(), 1);
             }

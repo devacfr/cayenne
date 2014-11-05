@@ -61,7 +61,7 @@ public class DataContextPerformQueryAPIIT extends ServerCase {
 
     @Inject
     private DataChannelInterceptor queryInterceptor;
-
+    
     @Inject
     private JdbcEventLogger jdbcEventLogger;
 
@@ -212,7 +212,6 @@ public class DataContextPerformQueryAPIIT extends ServerCase {
 
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-            @Override
             public void execute() {
                 List<?> artists1 = context.performQuery("QueryWithLocalCache", false);
                 assertEquals(2, artists1.size());
@@ -229,7 +228,6 @@ public class DataContextPerformQueryAPIIT extends ServerCase {
 
         queryInterceptor.runWithQueriesBlocked(new UnitTestClosure() {
 
-            @Override
             public void execute() {
                 List<?> artists1 = context2.performQuery("QueryWithSharedCache", false);
                 assertEquals(2, artists1.size());

@@ -74,17 +74,15 @@ public class BindDirectiveIT extends ServerCase {
     @Inject
     private DataNode node;
 
-
     @Override
-    public void setUp() throws Exception {
-    	super.setUp();
+    protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("PAINTING_INFO");
         dbHelper.deleteAll("PAINTING");
         dbHelper.deleteAll("ARTIST_EXHIBIT");
         dbHelper.deleteAll("ARTIST_GROUP");
         dbHelper.deleteAll("ARTIST");
     }
-    
+
     @Test
     public void testBindTimestamp() throws Exception {
         Map<String, Object> parameters = new HashMap<String, Object>();

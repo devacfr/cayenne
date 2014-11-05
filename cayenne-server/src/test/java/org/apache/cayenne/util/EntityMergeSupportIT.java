@@ -99,3 +99,4 @@ public class EntityMergeSupportIT extends MergeCase {
         map.removeDbEntity(dbEntity1.getName());
     }
 }
+

@@ -32,7 +32,7 @@ import org.junit.Test;
 @CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DropTableToModelIT extends MergeCase {
 
-	@Test
+    @Test
     public void testDropTable() throws Exception {
         dropTableIfPresent("NEW_TABLE");
         assertTokensAndExecute(0, 0);

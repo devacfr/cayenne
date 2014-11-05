@@ -62,7 +62,7 @@ public class SelectQueryAbstractEntityIT extends ServerCase {
         }
        
     }
-    
+
     @Test
     public void testSublclassEntitySelect() throws Exception{
         createDataSet();
@@ -78,7 +78,7 @@ public class SelectQueryAbstractEntityIT extends ServerCase {
         assertNotNull(sub1List);
         assertNotNull(sub2List);
     }
-    
+
     @Test
     public void test1AbstractEntitySelect() throws Exception{
         createDataSet();
@@ -94,7 +94,7 @@ public class SelectQueryAbstractEntityIT extends ServerCase {
             }
         }
     }
-    
+
     @Test
     public void test2AbstractEntitySelect() throws Exception{
         createDataSet();

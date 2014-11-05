@@ -106,7 +106,7 @@ public class CayenneContextNamedQueryCachingIT extends ClientCase {
                 assertSame(result1, result2);
             }
         });
-
+        
         final List<?> result3 = context.performQuery(q2);
         assertNotSame(result1, result3);
         assertEquals(1, result3.size());
@@ -121,15 +121,15 @@ public class CayenneContextNamedQueryCachingIT extends ClientCase {
                 assertSame(result1, result5);
             }
         });
-
+    
     }
 
     @Test
     public void testParameterizedMappedToEJBQLQueries() throws Exception {
-
+        
         createThreeMtTable1sDataSet();
         NamedQuery query = new NamedQuery("ParameterizedEJBQLMtQuery", Collections.singletonMap("g", "g1"));
-
+        
         List<?> r1 = context.performQuery(query);
         assertEquals(1, r1.size());
     }

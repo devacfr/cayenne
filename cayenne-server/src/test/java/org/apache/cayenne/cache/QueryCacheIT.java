@@ -37,7 +37,7 @@ public class QueryCacheIT extends ServerCase {
     
     @Inject
     private ObjectContext context2;
-    
+
     @Test
     public void testLocalCache() {
         

@@ -97,7 +97,8 @@ public class RemoteRollbackIT extends RemoteCayenneCase {
 
         try {
             clientContext.rollbackChanges();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
             fail("rollbackChanges should not have caused the exception " + e.getMessage());
         }
@@ -114,7 +115,7 @@ public class RemoteRollbackIT extends RemoteCayenneCase {
         ClientMtTable2 o2 = clientContext.newObject(ClientMtTable2.class);
         o2.setGlobalAttribute(o2Title);
         o2.setTable1(o1);
-
+        
         assertEquals(1, o1.getTable2Array().size());
         clientContext.commitChanges();
 

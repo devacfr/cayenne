@@ -85,37 +85,30 @@ public class TransactionThreadIT extends ServerCase {
             this.delegate = delegate;
         }
 
-        @Override
         public void begin() {
             delegate.begin();
         }
 
-        @Override
         public void commit() {
             delegate.commit();
         }
 
-        @Override
         public void rollback() {
             delegate.rollback();
         }
 
-        @Override
         public void setRollbackOnly() {
             delegate.setRollbackOnly();
         }
 
-        @Override
         public boolean isRollbackOnly() {
             return delegate.isRollbackOnly();
         }
 
-        @Override
         public Connection getConnection(String name) {
             return delegate.getConnection(name);
         }
 
-        @Override
         public void addConnection(String name, Connection connection) {
             if (connectionCount++ > 0) {
                 fail("Invalid attempt to add connection");

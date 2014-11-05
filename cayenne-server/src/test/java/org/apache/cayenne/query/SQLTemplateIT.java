@@ -59,7 +59,7 @@ public class SQLTemplateIT extends ServerCase {
 				Types.INTEGER, Types.BIGINT, Types.VARCHAR, Types.DECIMAL);
 	}
 
-	@Test
+    @Test
 	public void testSQLTemplateForDataMap() {
 		DataMap testDataMap = context.getEntityResolver().getDataMap("tstmap");
 		SQLTemplate q1 = new SQLTemplate(testDataMap, "SELECT * FROM ARTIST", true);
@@ -67,7 +67,7 @@ public class SQLTemplateIT extends ServerCase {
 		assertEquals(0, result.size());
 	}
 
-	@Test
+    @Test
 	public void testSQLTemplateForDataMapWithInsert() {
 		DataMap testDataMap = context.getEntityResolver().getDataMap("tstmap");
 		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
@@ -79,7 +79,7 @@ public class SQLTemplateIT extends ServerCase {
 		assertEquals(1, result.size());
 	}
 
-	@Test
+    @Test
 	public void testSQLTemplateForDataMapWithInsertException() {
 		DataMap testDataMap = context.getEntityResolver().getDataMap("tstmap");
 		String sql = "INSERT INTO ARTIST VALUES (15, 'Surikov', null)";
@@ -97,7 +97,7 @@ public class SQLTemplateIT extends ServerCase {
 				gotRuntimeException);
 	}
 
-	@Test
+    @Test
 	public void testSQLTemplate_PositionalParams() throws SQLException {
 
 		String sql = "INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) "
@@ -112,7 +112,7 @@ public class SQLTemplateIT extends ServerCase {
 		assertEquals(10005.d, tPainting.getDouble("ESTIMATED_PRICE"), 0.001);
 	}
 
-	@Test
+    @Test
 	public void testSQLTemplate_PositionalParams_RepeatingVars() throws SQLException {
 
 		String sql = "INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) "
@@ -127,7 +127,7 @@ public class SQLTemplateIT extends ServerCase {
 		assertEquals(4567.d, tPainting.getDouble("ESTIMATED_PRICE"), 0.001);
 	}
 
-	@Test
+    @Test
 	public void testSQLTemplate_PositionalParams_ToFewParams() throws SQLException {
 
 		String sql = "INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) "
@@ -144,7 +144,7 @@ public class SQLTemplateIT extends ServerCase {
 		}
 	}
 
-	@Test
+    @Test
 	public void testSQLTemplate_PositionalParams_ToManyParams() throws SQLException {
 
 		String sql = "INSERT INTO PAINTING (PAINTING_ID, PAINTING_TITLE, ESTIMATED_PRICE) "

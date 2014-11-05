@@ -33,12 +33,9 @@ import org.junit.Test;
 @CayenneConfiguration(ServerCase.SUS_PROJECT)
 public class SchemaUpdateStrategyIT extends SchemaUpdateStrategyBase {
 
-
-		String template = "SELECT #result('id' 'int') FROM SUS1";
-		SQLTemplate query = new SQLTemplate(Object.class, template);
-
     @Test
-    public void testDBGeneratorStrategy() throws Exception {
+	public void testCreateIfNoSchemaStrategy() throws Exception {
+
 		setStrategy(CreateIfNoSchemaStrategy.class);
 
 		String template = "SELECT #result('id' 'int') FROM SUS1";
@@ -53,7 +50,6 @@ public class SchemaUpdateStrategyIT extends SchemaUpdateStrategyBase {
 		assertEquals(2, existingTables().size());
 		node.performQueries(Collections.singletonList(query), observer);
 		assertEquals(2, existingTables().size());
-
 	}
 
     @Test

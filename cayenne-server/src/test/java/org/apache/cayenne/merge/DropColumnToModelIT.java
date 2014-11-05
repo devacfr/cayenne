@@ -35,7 +35,7 @@ import org.junit.Test;
 @CayenneConfiguration(ServerCase.TESTMAP_PROJECT)
 public class DropColumnToModelIT extends MergeCase {
 
-	@Test
+    @Test
     public void testSimpleColumn() throws Exception {
         dropTableIfPresent("NEW_TABLE");
 
@@ -93,7 +93,7 @@ public class DropColumnToModelIT extends MergeCase {
         assertTokensAndExecute(0, 0);
     }
 
-	@Test
+    @Test
     public void testRemoveFKColumnWithoutRelationshipInDb() throws Exception {
         dropTableIfPresent("NEW_TABLE");
         dropTableIfPresent("NEW_TABLE2");

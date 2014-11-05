@@ -52,6 +52,8 @@ public class NestedDataContextWriteIT extends ServerCase {
     @Inject
     private ServerRuntime runtime;
     
+    @Inject
+    private DataContext context;
 
     @Inject
     private DataChannelInterceptor queryInterceptor;
@@ -124,10 +126,8 @@ public class NestedDataContextWriteIT extends ServerCase {
      */
     // TODO : pluggable retain strategy
     private DataContext createDataContext() {
-    	DataContext c = (DataContext)runtime.newContext();
-        c.getObjectStore().objectMap = new HashMap<Object, Persistent>();
-        //c.getObjectStore().changes = new HashMap<Object, ObjectDiff>();
-        return c;
+        context.getObjectStore().objectMap = new HashMap<Object, Persistent>();
+        return context;
     }
 
     @Test

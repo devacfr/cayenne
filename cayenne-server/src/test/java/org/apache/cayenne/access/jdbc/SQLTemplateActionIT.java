@@ -69,10 +69,8 @@ public class SQLTemplateActionIT extends ServerCase {
 
     protected TableHelper tArtist;
 
-
     @Override
-    public void setUp() throws Exception {
-    	super.setUp();
+    protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("PAINTING_INFO");
         dbHelper.deleteAll("PAINTING");
         dbHelper.deleteAll("ARTIST_EXHIBIT");

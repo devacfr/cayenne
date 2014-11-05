@@ -60,3 +60,4 @@ public class StatementFetchSizeIT extends ServerCase {
         context.performQuery(relationshipQuery);
     }
 }
+

@@ -54,10 +54,8 @@ public class ShallowMergeOperationIT extends ServerCase {
 
     private TableHelper tArtist;
 
-
     @Override
-    public void setUp() throws Exception {
-    	super.setUp();
+    protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("PAINTING_INFO");
         dbHelper.deleteAll("PAINTING");
         dbHelper.deleteAll("ARTIST_EXHIBIT");
@@ -66,6 +64,7 @@ public class ShallowMergeOperationIT extends ServerCase {
 
         tArtist = new TableHelper(dbHelper, "ARTIST");
         tArtist.setColumns("ARTIST_ID", "ARTIST_NAME");
+
     }
 
     private void createArtistsDataSet() throws Exception {

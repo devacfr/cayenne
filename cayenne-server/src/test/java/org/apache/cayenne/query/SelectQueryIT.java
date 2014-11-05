@@ -121,7 +121,8 @@ public class SelectQueryIT extends ServerCase {
         tNumerics.insert(4, 3);
         tNumerics.insert(5, 4);
     }
-    
+
+    @Test
     public void testSetQualifier() {
         SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
         assertNull(query.getQualifier());
@@ -132,6 +133,7 @@ public class SelectQueryIT extends ServerCase {
         assertSame(qual, query.getQualifier());
     }
 
+    @Test
     public void testAndQualifier() {
     	SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
         assertNull(query.getQualifier());
@@ -145,6 +147,7 @@ public class SelectQueryIT extends ServerCase {
         assertEquals(Expression.AND, query.getQualifier().getType());
     }
 
+    @Test
     public void testOrQualifier() {
     	SelectQuery<Artist> query = new SelectQuery<Artist>(Artist.class);
         assertNull(query.getQualifier());

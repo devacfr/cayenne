@@ -91,7 +91,7 @@ public class SelectQueryCacheKeyIT extends ServerCase {
         assertEquals(QueryCacheStrategy.SHARED_CACHE, md1.getCacheStrategy());
         assertNotNull(md1.getCacheKey());
     }
-    
+
     @Test
     public void testUseSharedCache() {
 

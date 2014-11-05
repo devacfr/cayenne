@@ -71,7 +71,7 @@ public class ResultDirectiveIT extends ServerCase {
 		dbHelper.deleteAll("GALLERY");
 	}
 
-	@Test
+    @Test
 	public void testWithoutResultDirective() throws Exception {
 		String sql = "SELECT ARTIST_ID, ARTIST_NAME FROM ARTIST";
 		Map<String, Object> artist = insertArtist();
@@ -81,7 +81,7 @@ public class ResultDirectiveIT extends ServerCase {
 		assertEquals(artist.get("ARTIST_NAME"), selectResult.get("ARTIST_NAME"));
 	}
 
-	@Test
+    @Test
 	public void testWithOnlyResultDirective() throws Exception {
 		String sql = "SELECT #result('ARTIST_ID' 'java.lang.Integer')," + " #result('ARTIST_NAME' 'java.lang.String')"
 				+ " FROM ARTIST";
@@ -92,7 +92,7 @@ public class ResultDirectiveIT extends ServerCase {
 		assertEquals(artist.get("ARTIST_NAME"), selectResult.get("ARTIST_NAME").toString().trim());
 	}
 
-	@Test
+    @Test
 	public void testWithMixedDirectiveUse1() throws Exception {
 		String sql = "SELECT ARTIST_ID," + " #result('ARTIST_NAME' 'java.lang.String')" + " FROM ARTIST";
 		Map<String, Object> artist = insertArtist();
@@ -102,7 +102,7 @@ public class ResultDirectiveIT extends ServerCase {
 		assertEquals(artist.get("ARTIST_NAME"), selectResult.get("ARTIST_NAME").toString().trim());
 	}
 
-	@Test
+    @Test
 	public void testWithMixedDirectiveUse2() throws Exception {
 		String sql = "SELECT #result('ARTIST_ID' 'java.lang.Integer')," + " ARTIST_NAME " + " FROM ARTIST";
 		Map<String, Object> artist = insertArtist();

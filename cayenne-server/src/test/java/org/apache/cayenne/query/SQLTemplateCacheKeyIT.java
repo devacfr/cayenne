@@ -70,6 +70,7 @@ public class SQLTemplateCacheKeyIT extends ServerCase {
         assertNotNull(md1.getCacheKey());
     }
 
+    @Test
     public void testNamedQuery() {
 
         SQLTemplate query = new SQLTemplate(Artist.class, "SELECT ME");
@@ -82,6 +83,7 @@ public class SQLTemplateCacheKeyIT extends ServerCase {
         assertFalse("XYZ".equals(md1.getCacheKey()));
     }
 
+    @Test
     public void testCacheFetchLimitAndOffset() {
         SQLTemplate q1 = new SQLTemplate(Artist.class, "SELECT ME");
         q1.setFetchOffset(5);

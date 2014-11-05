@@ -104,7 +104,7 @@ public class DataContextPrefetchExtrasIT extends ServerCase {
     public void testPrefetchToManyOnCharKey() throws Exception {
         createPrefetchToManyOnCharKeyDataSet();
 
-        SelectQuery<CharPkTestEntity> q = new SelectQuery<CharPkTestEntity>(CharPkTestEntity.class);
+        SelectQuery q = new SelectQuery(CharPkTestEntity.class);
         q.addPrefetch("charFKs");
         q.addOrdering(CharPkTestEntity.OTHER_COL_PROPERTY, SortOrder.ASCENDING);
 
@@ -131,7 +131,7 @@ public class DataContextPrefetchExtrasIT extends ServerCase {
         createCompoundDataSet();
 
         Expression e = ExpressionFactory.matchExp("name", "CFK2");
-        SelectQuery<CompoundFkTestEntity> q = new SelectQuery<CompoundFkTestEntity>(CompoundFkTestEntity.class, e);
+        SelectQuery q = new SelectQuery(CompoundFkTestEntity.class, e);
         q.addPrefetch("toCompoundPk");
 
         List<?> objects = context.performQuery(q);
@@ -157,7 +157,7 @@ public class DataContextPrefetchExtrasIT extends ServerCase {
         createCompoundDataSet();
 
         Expression e = ExpressionFactory.matchExp("name", "CPK2");
-        SelectQuery<CompoundPkTestEntity> q = new SelectQuery<CompoundPkTestEntity>(CompoundPkTestEntity.class, e);
+        SelectQuery q = new SelectQuery(CompoundPkTestEntity.class, e);
         q.addPrefetch("compoundFkArray");
 
         List<?> pks = context.performQuery(q);

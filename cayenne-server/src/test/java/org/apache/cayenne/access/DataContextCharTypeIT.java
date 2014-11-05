@@ -45,11 +45,10 @@ public class DataContextCharTypeIT extends ServerCase {
     private UnitDbAdapter unitDbAdapter;
     
     @Override
-    public void setUp() throws Exception {
-    	super.setUp();
+    protected void setUpAfterInjection() throws Exception {
         dbHelper.deleteAll("TYPES_MAPPING_TEST1");
     }
-    
+
     @Test
     public void testCharTrimming() {
         if (unitDbAdapter.supportsLobs()) {
@@ -63,14 +62,14 @@ public class DataContextCharTypeIT extends ServerCase {
             context.commitChanges();
             
             Expression qual = ExpressionFactory.matchExp(ReturnTypesMap1.CHAR_COLUMN_PROPERTY, "  text");
-            SelectQuery<ReturnTypesMap1> query = new SelectQuery<ReturnTypesMap1>(ReturnTypesMap1.class, qual);
+            SelectQuery query = new SelectQuery(ReturnTypesMap1.class, qual);
             List<ReturnTypesMap1> result =  context.performQuery(query);
             
             assertTrue("CHAR type trimming is not valid.", result.get(0).getCharColumn().startsWith("  text"));
             assertTrue("CHAR type trimming is not valid.", result.get(1).getCharColumn().startsWith("  text"));
             
             qual = ExpressionFactory.matchExp(ReturnTypesMap1.CHAR_COLUMN_PROPERTY, "text");
-            query = new SelectQuery<ReturnTypesMap1>(ReturnTypesMap1.class, qual);
+            query = new SelectQuery(ReturnTypesMap1.class, qual);
             result =  context.performQuery(query);
             
             assertTrue("CHAR type trimming is not valid.", result.get(0).getCharColumn().startsWith("text"));

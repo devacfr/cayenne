@@ -208,6 +208,7 @@ public class DataContextFlattenedAttributesIT extends ServerCase {
         assertNotNull(objects);
     }
 
+    @Test
     public void testSelectEJQBQL() throws Exception {
         createTestDataSet();
         EJBQLQuery query = new EJBQLQuery(

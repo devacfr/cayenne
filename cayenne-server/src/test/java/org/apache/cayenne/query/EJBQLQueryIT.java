@@ -98,7 +98,7 @@ public class EJBQLQueryIT extends ServerCase {
         tBigIntegerEntity.insert(44001, new Long(744073709551715l));
     }
 
-	@Test
+    @Test
     public void testLongParameter() throws Exception {
         createBigIntegerEntitiesDataSet();
         String ejbql = "SELECT bie FROM BigIntegerEntity bie WHERE bie.bigIntegerField > ?1";
@@ -108,7 +108,7 @@ public class EJBQLQueryIT extends ServerCase {
         assertEquals(1, result.size());
     }
 
-	@Test
+    @Test
     public void testLongLiteral() throws Exception {
         createBigIntegerEntitiesDataSet();
         String ejbql = "SELECT bie FROM BigIntegerEntity bie WHERE bie.bigIntegerField > 744073709551615";
@@ -422,7 +422,7 @@ public class EJBQLQueryIT extends ServerCase {
         context.performQuery(query);
     }
 
-	@Test
+    @Test
     public void testLikeWithExplicitEscape() throws Exception {
         createPaintingsDataSet();
         EJBQLQuery query = new EJBQLQuery("SELECT p FROM Painting p WHERE p.paintingTitle LIKE '|%|%?|_title|%|%|_' ESCAPE '|'");

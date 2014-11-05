@@ -87,7 +87,7 @@ public class ClientServerChannelQueryIT extends ClientCase {
     public void testPaginatedQueryServerCacheOverflow() throws Exception {
         createSevenMtTable1sDataSet();
 
-        SelectQuery<ClientMtTable1> query = new SelectQuery<ClientMtTable1>(ClientMtTable1.class);
+        SelectQuery query = new SelectQuery(ClientMtTable1.class);
         query.addOrdering(ClientMtTable1.GLOBAL_ATTRIBUTE1_PROPERTY, SortOrder.ASCENDING);
         query.setPageSize(3);
 
@@ -116,7 +116,7 @@ public class ClientServerChannelQueryIT extends ClientCase {
         assertEquals(1, r1.size());
         assertTrue(r1.get(0) instanceof ClientMtTable1);
     }
-    
+
     @Test
     public void testNamedQuery() throws Exception {
         createTwoMtTable1sAnd2sDataSet();

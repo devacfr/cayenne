@@ -323,7 +323,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         match.setEstimatedPrice(new BigDecimal(9999));
         assertTrue("Failed: " + e, e.match(match));
     }
-    
+
     @Test
     public void testEvaluateLESS_THAN_Null() throws Exception {
         Expression ltNull = new ASTLess(new ASTObjPath("estimatedPrice"), null);
@@ -350,7 +350,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         match.setEstimatedPrice(new BigDecimal(9999));
         assertTrue("Failed: " + e, e.match(match));
     }
-    
+
     @Test
     public void testEvaluateLESS_THAN_EQUAL_TO_Null() throws Exception {
         Expression ltNull = new ASTLessOrEqual(new ASTObjPath("estimatedPrice"), null);
@@ -377,7 +377,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         match.setEstimatedPrice(new BigDecimal(10001));
         assertTrue("Failed: " + e, e.match(match));
     }
-    
+
     @Test
     public void testEvaluateGREATER_THAN_Null() throws Exception {
         Expression gtNull = new ASTGreater(new ASTObjPath("estimatedPrice"), null);
@@ -404,7 +404,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         match.setEstimatedPrice(new BigDecimal(10001));
         assertTrue("Failed: " + e, e.match(match));
     }
-    
+
     @Test
     public void testEvaluateGREATER_THAN_EQUAL_TO_Null() throws Exception {
         Expression gtNull = new ASTGreaterOrEqual(new ASTObjPath("estimatedPrice"), null);
@@ -442,7 +442,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertTrue("Failed: " + between, between.match(match3));
         assertFalse("Failed: " + notBetween, notBetween.match(match3));
     }
-    
+
     @Test
     public void testEvaluateBETWEEN_Null() throws Exception {
         Expression btNull = new ASTBetween(new ASTObjPath("estimatedPrice"), new BigDecimal(10d), new BigDecimal(20d));
@@ -482,7 +482,7 @@ public class ExpressionEvaluateInMemoryIT extends ServerCase {
         assertTrue("Failed: " + in, in.match(match2));
         assertFalse("Failed: " + notIn, notIn.match(match2));
     }
-    
+
     @Test
     public void testEvaluateIN_Null() throws Exception {
         Expression in = new ASTIn(new ASTObjPath("estimatedPrice"), new ASTList(new Object[] {

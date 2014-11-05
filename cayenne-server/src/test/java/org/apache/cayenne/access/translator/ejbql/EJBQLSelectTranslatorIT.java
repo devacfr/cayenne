@@ -44,14 +44,13 @@ public class EJBQLSelectTranslatorIT extends ServerCase {
     private DbAdapter adapter;
 
     private SQLTemplate translateSelect(String ejbql) {
-        return translateSelect(ejbql, Collections.<Integer, Object>emptyMap());
+        return translateSelect(ejbql, Collections.EMPTY_MAP);
     }
 
     private SQLTemplate translateSelect(String ejbql, final Map<Integer, Object> queryParameters) {
         EJBQLParser parser = EJBQLParserFactory.getParser();
         EJBQLCompiledExpression select = parser.compile(ejbql, runtime.getDataDomain().getEntityResolver());
-        @SuppressWarnings("serial")
-		EJBQLQuery query = new EJBQLQuery(ejbql) {
+        EJBQLQuery query = new EJBQLQuery(ejbql) {
 
             @Override
             public Map<Integer, Object> getPositionalParameters() {
